@@ -1,0 +1,34 @@
+﻿Options +FollowSymLinks
+RewriteEngine On
+
+RewriteBase /modiWeb/
+
+DirectoryIndex page.php?_page=index sitedown.php
+
+RewriteCond 	%{HTTP_REFERER} 			.								
+RewriteCond 	%{HTTP_REFERER} 			!^http://([^.]+.)?yoursite. 	[NC]
+RewriteCond 	%{HTTP_REFERER} 			!google. 						[NC]
+RewriteCond 	%{HTTP_REFERER} 			!search?q=cache 				[NC]
+RewriteCond 	%{HTTP_REFERER} 			!msn. 							[NC]
+RewriteCond 	%{HTTP_REFERER} 			!yahoo. 						[NC]
+RewriteCond 	%{REQUEST_URI} 				!^/hotlinker.gif$				
+RewriteRule 	.(gif|jpg|png)$ 			/img/forbidden_hotlink.gif 		[NC,L]
+
+RewriteRule		^admin/						admin/index.php					[NC]
+RewriteRule		^([a-z_]+)/(.+)				page.php?_page=$1&$2			[NC] OR
+RewriteRule		^([a-z_]+)/					page.php?_page=$1				[NC] OR
+RewriteRule		^([a-z_]+)$					page.php?_page=$1				[NC]
+
+ErrorDocument 400 /modiWeb/error.php?e=400
+ErrorDocument 401 /modiWeb/error.php?e=401
+ErrorDocument 403 /modiWeb/error.php?e=403
+ErrorDocument 404 /modiWeb/error.php?e=404
+ErrorDocument 408 /modiWeb/error.php?e=408
+ErrorDocument 429 /modiWeb/error.php?e=429
+ErrorDocument 500 /modiWeb/error.php?e=500
+ErrorDocument 501 /modiWeb/error.php?e=501
+ErrorDocument 502 /modiWeb/error.php?e=502
+ErrorDocument 503 /modiWeb/error.php?e=503
+ErrorDocument 504 /modiWeb/error.php?e=504
+ErrorDocument 505 /modiWeb/error.php?e=505
+ErrorDocument 508 /modiWeb/error.php?e=508

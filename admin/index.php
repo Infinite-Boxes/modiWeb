@@ -1,0 +1,9 @@
+<?php
+require("../inc/bootstrap.php");
+?>
+ADMIN
+<pre>
+<?php
+print_r($_GET);
+?>
+</pre>
