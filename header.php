@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -10,3 +11,6 @@ if(Config::getCSS()["theme"] != "") {
 ?>
 </head>
 <body>
+<div id="header">
+<img src="img/logo.png" />
+</div>

@@ -2,6 +2,19 @@ body {
 	padding: 0px;
 	margin: 0px;
 }
-* {
-	border: 1px solid #f00;
+#footer {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	border-top: 1px solid #000;
+	width: 100%;
+}
+#footer p {
+	margin: 2px;
+}
+p {
+	font-family: Verdana, serif;
+}
+#header {
+	
 }

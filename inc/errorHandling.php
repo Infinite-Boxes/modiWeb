@@ -1,7 +1,7 @@
 <?php
 function customError($errno, $errstr) {
 	if($errno == 2) {
-		header("Location: error.php?e=404");
+		header("Location: error404");
 	} else {
 		echo "<b>Fel: [$errno]</b> $errstr<br>";
 		die();
