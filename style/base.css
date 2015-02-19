@@ -1,20 +1,148 @@
+@font-face {
+    font-family: Zag;
+    src: url(../fonts/zagregular.otf);
+}
+@font-face {
+    font-family: Zag;
+    src: url(../fonts/zagbold.otf);
+	font-weight: bold;
+}
 body {
-	padding: 0px;
-	margin: 0px;
+	padding: 10px;
+	font-size: 100%;
 }
 #footer {
-	position: absolute;
+	position: fixed;
 	bottom: 0px;
 	left: 0px;
-	border-top: 1px solid #000;
+	border-top: 1px solid #260E78;
+	background: #fff;
 	width: 100%;
 }
 #footer p {
 	margin: 2px;
+	text-align: center;
+}
+* {
+	font-family: Verdana, Geneva, sans-serif;
 }
 p {
-	font-family: Verdana, serif;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.8em;
 }
+a {
+	font-family: Verdana, Geneva, sans-serif;
+	text-decoration: none;
+}
+h1,h2,h3 {
+	font-family: Zag, Times New Roman, Verdana, Geneva, sans-serif;
+	margin: 5px;
+}
+h1 {
+	font-size: 2.4em;
+}
+h2 {
+	font-size: 2em;
+}
+h3 {
+	font-size: 1.4em;
+}
+
 #header {
-	
+}
+#header img {
+	margin: 10px;
+}
+#headerContent {
+	border: 1px solid;
+}
+#menu {
+	margin: 0px;
+	overflow: auto;
+}
+#menu ul {
+    list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+}
+#menu li {
+	line-height: 20pt;
+}
+#menu .link {
+	background: linear-gradient(180deg, #5234bc, #260E78);
+	text-align: center;
+	width: 200px;
+	height: 30px;
+	float: left;
+	color: #eee;
+}
+#menu .link:first-child {
+	border-radius: 0px 0px 0px 10px;
+}
+#menu .link:last-child {
+	border-radius: 0px 0px 10px 0px;
+}
+#menu .link:hover {
+	background: linear-gradient(180deg, #417cd3, #260E78);
+	color: #fff;
+}
+table p {
+	display: inline;
+}
+input {
+	color: #000;
+	border: 1px solid #000;
+	border-radius: 10px;
+}
+input[type="text"],input[type="password"] {
+	padding: 3px 10px;
+	background: linear-gradient(180deg, #ddd, #fff);
+}
+input[type="button"],input[type="submit"] {
+	padding: 2px 10px; 
+	background: linear-gradient(180deg, #fff, #ddd);
+}
+
+#msg {
+	border: 1px solid;
+	border-radius: 5px;
+	margin: 5px;
+	padding: 10px;
+}
+#msg p {
+	margin: 0px;
+}
+.warning {
+	color: #f00;
+}
+.notice {
+	color: #000;
+}
+.warning:before {
+	content: url(../img/warning.png);
+	margin-right: 5px;
+}
+.notice:before {
+	content: url(../img/notice.png);
+	margin-right: 5px;
+}
+pre {
+	display: block;
+	font-family: Monospace;
+}
+table {
+	margin: 10px 0px;
+}
+.bold {
+	font-weight: bold;
+}
+.tablehorizontal tr th {
+	padding-right: 20px;
+}
+.tablevertical tr  td {
+	padding: 0px 5px;
+}
+.tablevertical tr th {
+	border-bottom: 1px solid #260E78;
 }

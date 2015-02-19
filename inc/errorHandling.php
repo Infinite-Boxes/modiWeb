@@ -1,5 +1,6 @@
 <?php
 function customError($errno, $errstr) {
+	log::add("error", $errno.": ".$errstr);
 	if($errno == 2) {
 		header("Location: error404");
 	} else {
@@ -8,6 +9,7 @@ function customError($errno, $errstr) {
 	}
 }
 function customException($exception) {
+	log::add("exception", $exception->getCode());
 	if($exception->getCode() == "1044") {
 		echo "<b>Fel:</b> Felaktig login för databasen.<br>";
 	}elseif($exception->getCode() == "1045") {

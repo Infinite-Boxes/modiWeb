@@ -1,11 +1,10 @@
-﻿Options +FollowSymLinks
+﻿Options +FollowSymLinks -Multiviews
 RewriteEngine On
 
 RewriteBase /modiWeb/
 
 DirectoryIndex page.php?_page=index sitedown.php
 
-RewriteRule		^admin/$					admin/index.php					[NC]
 RewriteRule		^error([0-9]+)$				error.php?e=$1					[NC]
 RewriteRule		^headermaker$				headermaker.php					[NC]
 RewriteRule		^([a-z_]+)$					page.php?_page=$1				[NC,L]

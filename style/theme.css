@@ -1,0 +1,19 @@
+body {
+	background: #fff;
+}
+p {
+	color: #A90010;
+}
+h1 {
+	color: #A90010;
+}
+#headerContent {
+	border-color: #260E78;
+}
+input {
+	color: #87000D;
+	border-color: #260E78;
+}
+#msg {
+	border-color: #260E78;
+}

@@ -3,18 +3,25 @@ class Config {
 	private static $modules = [];
 	private static $db = [];
 	private static $css = [];
-	static function setup() {
+	private static $menu = [];
+	static function init() {
 		// Required modules
 		self::$db["dsn"] = "mysql:host=localhost;dbname=modiweb";
 		self::$db["user"] = "root";
 		self::$db["pass"] = "";
 		
-		self::$css["theme"] = "";
+		self::$css["theme"] = "theme.css";
 		
-		array_push(self::$modules, "sql");
-		array_push(self::$modules, "elements");
+		self::$menu["orientation"] = "horizontal";
 		
 		// Other modules
+		array_push(self::$modules, "msg");
+		array_push(self::$modules, "sql");
+		array_push(self::$modules, "log");
+		array_push(self::$modules, "statistics");
+		array_push(self::$modules, "elements");
+		array_push(self::$modules, "users");
+		
 		self::loadModules();
 	}
 	private static function loadModules() {
@@ -28,4 +35,8 @@ class Config {
 	public static function getCSS() {
 		return self::$css;
 	}
+	public static function getMenu() {
+		return self::$menu;
+	}
 }
+Config::init();
