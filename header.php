@@ -38,22 +38,26 @@ if(isset($_SESSION["user"])) {
 menu::write();
 ?>
 </div>
+<div id="content">
 <?php
 $msgs = msg::get();
 if((count($msgs["warnings"]) > 0) || (count($msgs["notices"]) > 0)) {
+	$showWarnings = true;
+} else {
+	$showWarnings = false;
+}
+if($showWarnings == true) {
 	echo("<div id=\"msg\">");
-}
-if(count($msgs["warnings"]) > 0) {
-	foreach($msgs["warnings"] as $k => $v) {
-		echo("<p class=\"warning\">".$v."</p>");
+	if(count($msgs["warnings"]) > 0) {
+		foreach($msgs["warnings"] as $k => $v) {
+			echo("<p class=\"warning\">".$v."</p>");
+		}
 	}
-}
-if(count($msgs["notices"]) > 0) {
-	foreach($msgs["notices"] as $k => $v) {
-		echo("<p class=\"notice\">".$v."</p>");
+	if(count($msgs["notices"]) > 0) {
+		foreach($msgs["notices"] as $k => $v) {
+			echo("<p class=\"notice\">".$v."</p>");
+		}
 	}
-}
-if((count($msgs["warnings"]) > 0) || (count($msgs["notices"]) > 0)) {
 	echo("</div>");
 }
 ?>

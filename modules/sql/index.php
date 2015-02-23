@@ -12,8 +12,10 @@ class sql {
 		$todo->execute();
 		if($todo->rowCount() > 1) {
 			return $todo->fetchAll();
-		} else {
+		} elseif($todo->rowCount() == 1) {
 			return $todo->fetch();
+		} else {
+			return false;
 		}
 	}
 	public static function insert($q) {

@@ -6,4 +6,7 @@ class moduleManifest {
 		array_push(self::$modules, $module);
 		require(ROOT."modules/".$module."/index.php");
 	}
+	public static function get() {
+		return self::$modules;
+	}
 }

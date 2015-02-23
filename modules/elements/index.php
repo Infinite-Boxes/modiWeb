@@ -8,7 +8,7 @@ class elements {
 		$t = sql::get("SELECT * FROM texts WHERE id = '".$id."'");
 		return $t;
 	}
-	public static function write($type, $id = "", $parameters = "") {
+	public static function write($type = "", $id = "", $parameters = "") {
 		if($parameters != "") {
 			$parameters = " ".$parameters;
 		}
@@ -24,7 +24,33 @@ class elements {
 				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"], $id);
 			}
 		}
-		echo("<".$type.$parameters.">".$id."</".$type.">");
+		if($type != "") {
+			echo("<".$type.$parameters.">".$id."</".$type.">");
+		} else {
+			echo($id);
+		}
+	}
+	public static function keyReplace($type = "", $id = "", $parameters = "") {
+		if($parameters != "") {
+			$parameters = " ".$parameters;
+		}
+		$t = sql::get("SELECT name,id FROM texts");
+		$texts = [];
+		foreach($t as $k => $v) {
+			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
+		}
+		foreach($texts as $k => $v) {
+			if(isset($_SESSION["user"])) {
+				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"]."</a>", $id);
+			} else {
+				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"], $id);
+			}
+		}
+		if($type != "") {
+			return "<".$type.$parameters.">".$id."</".$type.">";
+		} else {
+			return $id;
+		}
 	}
 	public static function writeTable($content, $type = "horizontal") {
 		/*

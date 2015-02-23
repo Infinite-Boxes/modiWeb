@@ -20,6 +20,7 @@ class Config {
 		array_push(self::$modules, "log");
 		array_push(self::$modules, "statistics");
 		array_push(self::$modules, "elements");
+		array_push(self::$modules, "page");
 		array_push(self::$modules, "users");
 		
 		self::loadModules();
