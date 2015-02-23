@@ -22,7 +22,7 @@ class users {
 			}
 		} else {
 			$user["base"] = sql::get("SELECT * FROM users WHERE username = '".$name."';");
-			$user["contactdetails"] = sql::get("SELECT * FROM contactdetails WHERE id = '".$user["contactid"]."';");
+			$user["contactdetails"] = sql::get("SELECT * FROM contactdetails WHERE id = '".$user["base"]["contactid"]."';");
 		}
 		return $user;
 	}

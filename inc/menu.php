@@ -4,10 +4,14 @@ class menu {
 	static private $links;
 	static public function init() {
 		$items = scandir(ROOT."modules");
-		unset($items[0]);
-		unset($items[1]);
 		self::$items[0] = "Hem";
 		self::$links[0] = "index";
+		if(isset($_SESSION["user"])) {
+			self::$items[1] = "Admin";
+			self::$links[1] = "admin";
+		}
+		self::$items[2] = "Test";
+		self::$links[2] = "test";
 		foreach($items as $k => $v) {
 			if(file_exists(ROOT."modules/".$v."/manifest.php")) {
 				include(ROOT."modules/".$v."/manifest.php");
@@ -24,7 +28,7 @@ class menu {
 			echo("<div id=\"menu\"><ul>");
 			foreach(self::$items as $k => $v) {
 				echo("
-<a href=\"".self::$links[$k]."\" class=\"td link\"><li>".$v."</li></a>
+<li class=\"td link\"><a href=\"".self::$links[$k]."\">".$v."</a></li>
 ");
 			}
 			echo("</ul></div>

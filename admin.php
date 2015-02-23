@@ -1,18 +1,29 @@
 <?php
 elements::write("h1", "Admin");
-$_SESSION["rid"] = crypt(time());
+if(!isset($_SESSION["user"])) {
+	// $_SESSION["rid"] = crypt(time());	Register-check
 ?>
-<form action="functions/register.php" method="POST">
+<form action="functions/login.php" method="POST">
 <?php
 $form = [];
 $form["Användarnamn"] = "<input type=\"text\" name=\"username\" />";
 $form["Lösenord"] = "<input type=\"password\" name=\"password\" />";
-$form["null0"] = "<input type=\"submit\" value=\"Registrera\" />";
+$form["null0"] = "<input type=\"submit\" value=\"Logga in\" />";
 elements::writeTable($form);
 ?>
 <input type="hidden" name="rid" value="<?php echo($_SESSION["rid"]); ?>" />
 </form>
 <?php
+} else {
+	// LOGIN STUFF
+	$configs = sql::get("SELECT * FROM config_site");
+	$configOut = [];
+	foreach($configs as $k => $v) {
+		$configOut[$v["name"]] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
+	}
+	elements::writeTable($configOut);
+	elements::write("a", "Logga ut", "a href=\"functions/logout.php\"");
+}
 $users = users::get("all");
 $userlist = [];
 if($users != "Tomt") {

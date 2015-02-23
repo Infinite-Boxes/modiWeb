@@ -7,6 +7,7 @@ $rootPath = "";
 for($c = 0; $c < substr_count($currentPath, "/"); $c++) {
 	$rootPath .= "../";
 }
+define("PAGE", str_replace($sitePath, "", $_SERVER["REQUEST_URI"]));
 if($_SERVER["SERVER_NAME"] != "localhost") {
 	define("ROOT", $_SERVER["DOCUMENT_ROOT"]."/modiWeb/");
 } else {

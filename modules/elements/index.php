@@ -1,19 +1,28 @@
 <?php
 class elements {
-	private static function keyname($kn) {
-		
+	public static function keyName($id) {
+		$t = sql::get("SELECT * FROM texts WHERE name = '".$id."'");
+		return $t;
+	}
+	public static function keyId($id) {
+		$t = sql::get("SELECT * FROM texts WHERE id = '".$id."'");
+		return $t;
 	}
 	public static function write($type, $id = "", $parameters = "") {
 		if($parameters != "") {
 			$parameters = " ".$parameters;
 		}
-		$t = sql::get("SELECT name FROM texts");
+		$t = sql::get("SELECT name,id FROM texts");
 		$texts = [];
 		foreach($t as $k => $v) {
-			array_push($texts, $v["name"]);
+			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
 		}
 		foreach($texts as $k => $v) {
-			$id = str_ireplace("!:!".$v."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v."';")["text"], $id);
+			if(isset($_SESSION["user"])) {
+				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"]."</a>", $id);
+			} else {
+				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"], $id);
+			}
 		}
 		echo("<".$type.$parameters.">".$id."</".$type.">");
 	}

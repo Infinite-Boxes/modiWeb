@@ -17,3 +17,10 @@ input {
 #msg {
 	border-color: #260E78;
 }
+.edit {
+	color: #8B6E00;
+	border-color: #8B6E00;
+}
+.edit:hover {
+	color: #B19D50;
+}

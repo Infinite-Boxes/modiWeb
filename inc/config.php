@@ -38,5 +38,8 @@ class Config {
 	public static function getMenu() {
 		return self::$menu;
 	}
+	public static function getConfig($key = "all") {
+		return sql::get("SELECT val FROM config_site WHERE name = '".$key."'")["val"];
+	}
 }
 Config::init();

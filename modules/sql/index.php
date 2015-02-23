@@ -7,7 +7,7 @@ class sql {
 		self::$pdo = new PDO($db["dsn"], $db["user"], $db["pass"], $options);
 	}
 	public static function get($q) {
-		$todo = self::$pdo->prepare($q);
+		$todo = self::$pdo->prepare($q.";");
 		$todo->setFetchMode(PDO::FETCH_ASSOC);
 		$todo->execute();
 		if($todo->rowCount() > 1) {
@@ -17,10 +17,19 @@ class sql {
 		}
 	}
 	public static function insert($q) {
-		$todo = self::$pdo->prepare($q);
+		$todo = self::$pdo->prepare($q.";");
 		$todo->execute();
 		if($todo->rowCount() == 1) {
 			return self::$pdo->lastInsertId();
+		} else {
+			return false;
+		}
+	}
+	public static function upd($q) {
+		$todo = self::$pdo->prepare($q.";");
+		$todo->execute();
+		if($todo->rowCount() == 1) {
+			return true;
 		} else {
 			return false;
 		}

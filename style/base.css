@@ -1,15 +1,11 @@
 @font-face {
-    font-family: Zag;
-    src: url(../fonts/zagregular.otf);
-}
-@font-face {
-    font-family: Zag;
-    src: url(../fonts/zagbold.otf);
-	font-weight: bold;
+    font-family: theano;
+    src: url('../fonts/theano.ttf');
 }
 body {
 	padding: 10px;
 	font-size: 100%;
+	padding-bottom: 25px;
 }
 #footer {
 	position: fixed;
@@ -25,18 +21,24 @@ body {
 }
 * {
 	font-family: Verdana, Geneva, sans-serif;
+	text-decoration: none;
 }
 p {
 	font-family: Verdana, Geneva, sans-serif;
 	font-size: 0.8em;
+	text-indent: 10px;
 }
 a {
 	font-family: Verdana, Geneva, sans-serif;
 	text-decoration: none;
+	font-size: 0.8em;
 }
 h1,h2,h3 {
-	font-family: Zag, Times New Roman, Verdana, Geneva, sans-serif;
+	font-family: theano, Times New Roman, serif;
 	margin: 5px;
+}
+h1 *,h2 *,h3 * {
+	font-family: inherit;
 }
 h1 {
 	font-size: 2.4em;
@@ -68,14 +70,15 @@ h3 {
 }
 #menu li {
 	line-height: 20pt;
+	font-size: 1.4em;
 }
 #menu .link {
 	background: linear-gradient(180deg, #5234bc, #260E78);
+	background: -webkit-linear-gradient(270deg, #5234bc, #260E78);
 	text-align: center;
 	width: 200px;
 	height: 30px;
 	float: left;
-	color: #eee;
 }
 #menu .link:first-child {
 	border-radius: 0px 0px 0px 10px;
@@ -85,6 +88,15 @@ h3 {
 }
 #menu .link:hover {
 	background: linear-gradient(180deg, #417cd3, #260E78);
+	background: -webkit-linear-gradient(270deg, #417cd3, #260E78);
+}
+#menu .link a {
+	color: #eee;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+#menu .link a:hover{
 	color: #fff;
 }
 table p {
@@ -107,7 +119,7 @@ input[type="button"],input[type="submit"] {
 #msg {
 	border: 1px solid;
 	border-radius: 5px;
-	margin: 5px;
+	margin: 5px 0px;
 	padding: 10px;
 }
 #msg p {
@@ -145,4 +157,59 @@ table {
 }
 .tablevertical tr th {
 	border-bottom: 1px solid #260E78;
+}
+.edit {
+	color: #00f;
+	font-size: inherit;
+	font-family: inherit;
+	border: 1px solid;
+	border-width: 0px 1px;
+	margin: 0px -1px;
+	border-radius: 20%;
+}
+#adminedit {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	width: auto;
+	height: auto;
+	display: none;
+}
+#adminedit div {
+	border: 1px solid;
+	border-radius: 10px 10px 0px;
+	background: #fff;
+	padding: 5px;
+	position: relative;
+	left: -150px;
+	top: -100px;
+	overflow: hidden;
+}
+#adminedit input[type="submit"] {
+	width: 100%;
+	border-radius: 0px 0px 10px 10px;
+}
+#adminedit textarea {
+	min-width: 300px;
+	min-height: 100px;
+	border-radius: 10px 10px 0px 0px;
+	clear: both;
+	width: 100%;
+	height: 100%;
+	resize: both;
+	-moz-box-sizing: border-box;   /* Firefox 1, probably can drop this */
+	-webkit-box-sizing: border-box;   /* Safari 3-4, also probably droppable */
+	box-sizing: border-box;
+	overflow: auto;
+	padding: 5px;
+}
+#adminedit * {
+	display: block;
+}
+#adminedit a img {
+	float: right;
+	margin: 0px 2px 5px;
+}
+#admineditmoveable {
+	cursor: move;
 }
