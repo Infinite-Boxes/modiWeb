@@ -10,12 +10,13 @@ class Config {
 		self::$db["user"] = "root";
 		self::$db["pass"] = "";
 		
-		self::$css["theme"] = "theme.css";
+		//self::$css["theme"] = "theme.css";
 		
 		self::$menu["orientation"] = "horizontal";
 		
 		// Other modules
 		array_push(self::$modules, "msg");
+		array_push(self::$modules, "browsercheck");
 		array_push(self::$modules, "sql");
 		array_push(self::$modules, "log");
 		array_push(self::$modules, "statistics");
@@ -33,8 +34,12 @@ class Config {
 	public static function getDB() {
 		return self::$db;
 	}
-	public static function getCSS() {
-		return self::$css;
+	public static function getCSS($style = NULL) {
+		if(isset(self::$css[$style])) {
+			return self::$css[$style];
+		} else {
+			return false;
+		}
 	}
 	public static function getMenu() {
 		return self::$menu;

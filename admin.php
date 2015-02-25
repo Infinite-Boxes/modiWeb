@@ -9,21 +9,46 @@ $form = [];
 $form["Användarnamn"] = "<input type=\"text\" name=\"username\" />";
 $form["Lösenord"] = "<input type=\"password\" name=\"password\" />";
 $form["null0"] = "<input type=\"submit\" value=\"Logga in\" />";
-elements::writeTable($form);
+echo(elements::group(elements::writeTable($form), "Logga in"));
 ?>
 <input type="hidden" name="rid" value="<?php echo($_SESSION["rid"]); ?>" />
 </form>
 <?php
 } else {
-	// LOGIN STUFF
+	// --- LOGIN STUFF ---
+	// Logout-button
+	echo(elements::keyReplace("a", "Logga ut", "a href=\"functions/logout.php\""));
+	// Config-variables
 	$configs = sql::get("SELECT * FROM config_site");
 	$configOut = [];
 	foreach($configs as $k => $v) {
-		$configOut[$v["name"]] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
+		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
 	}
-	elements::writeTable($configOut);
-	elements::write("a", "Logga ut", "a href=\"functions/logout.php\"");
+	echo(elements::group(elements::writeTable($configOut), "Sidans konfiguration"));
+	// Pages
+	$pageslist = sql::get("SELECT * FROM pages");
+	$pages = [];
+	if(!isset($pageslist["url"])) {
+		foreach($pageslist as $k => $v) {
+			array_push($pages, elements::link($v["name"], "pages?id=".$v["id"]));
+		}
+	} else {
+		array_push($pages, elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
+	}
+	$pagesText = "";
+	foreach($pages as $k => $v) {
+		if($pagesText == "") {
+			$pagesText .= $v;
+		} else {
+			$pagesText .= "<br />".$v;
+		}
+	}
+	if(count($pages) > 0) {
+		echo(elements::group($pagesText, "Sidor"));
+	}
 }
+
+/*
 $users = users::get("all");
 $userlist = [];
 if($users != "Tomt") {
@@ -44,6 +69,6 @@ if($users != "Tomt") {
 		];
 		array_push($userlist, $user);
 	}
-	elements::writeTable($userlist, "vertical");
+	echo(elements::group(elements::writeTable($userlist, "vertical"), "Användare"));
 }
-?>
+*/

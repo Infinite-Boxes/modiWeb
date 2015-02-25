@@ -52,7 +52,8 @@ class elements {
 			return $id;
 		}
 	}
-	public static function writeTable($content, $type = "horizontal") {
+	public static function writeTable($content, $type = "horizontal", $withKeys = true) {
+		$ret = "";
 		/*
 		$t = sql::get("SELECT name FROM texts");
 		$texts = [];
@@ -70,49 +71,67 @@ class elements {
 			}
 		}
 		if($type == "horizontal") {
-			echo("<table class=\"tablehorizontal\">
-");
+			$ret .= "<table class=\"tablehorizontal\">
+";
 			if($multiDim == false) {
 				foreach($content as $k => $v) {
 					if(substr($k, 0, 4) == "null") {
 						$k = "";
 					}
-					echo("	<tr>
-			<td><p class=\"bold\">".$k."<p /></td>
-			<td>".$v."</td>
+					$ret .= "	<tr>";
+					if($withKeys == true) {
+						$ret .= "<td><p class=\"bold\">".$k."<p /></td>";
+					}
+					$ret .= "<td>".$v."</td>
 		</tr>
-	");
+	";
 				}
 			} else {
 				foreach($content as $k => $v) {
-					echo("	<tr>
-			<th><p class=\"bold\">".$k."<p /></th>
-	");
-					foreach($v as $v2) {
-						echo("		<td>".$v2."</td>
-	");
+					$ret .= "	<tr>";
+					if($withKeys == true) {
+						$ret .= "<th><p class=\"bold\">".$k."<p /></th>";
 					}
-					echo("	</tr>
-	");
+					foreach($v as $v2) {
+						$ret .= "		<td>".$v2."</td>
+	";
+					}
+					$ret .= "	</tr>
+	";
 				}
 			}
 		} else {
-			echo("<table class=\"tablevertical\">
-");
-			echo("<tr>");
-			foreach($content[0] as $k => $v) {
-				echo("<th><p class=\"bold\">".$k."</p></th>");
-			}
-			echo("</tr>");
-			foreach($content as $k => $v) {
-				echo("<tr>");
-				foreach($v as $k2 => $v2) {
-					echo("<td><p>".$v2."</p></td>");
+			$ret .= "<table class=\"tablevertical\">";
+			if($withKeys == true) {
+				$ret .= "<tr>";
+				foreach($content[0] as $k => $v) {
+					$ret .= "<th><p class=\"bold\">".$k."</p></th>
+";
 				}
-				echo("</tr>");
+				$ret .= "</tr>
+";
+			}
+			foreach($content as $k => $v) {
+				$ret .= "<tr>
+";
+				foreach($v as $k2 => $v2) {
+					$ret .= "<td><p>".$v2."</p></td>
+";
+				}
+				$ret .= "</tr>
+";
 			}
 		}
-		echo("</table>
-");
+		$ret .= "</table>
+";
+		return $ret;
+	}
+	public static function group($content, $title = false) {
+		if($title != false) {
+			return "<div class=\"group\"><div class=\"grouptitle\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>";
+		}
+	}
+	public static function link($content, $href) {
+		return "<a href=\"".$href."\">".$content."</a>";
 	}
 }

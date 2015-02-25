@@ -1,33 +1,19 @@
+window.innerHeight = window.innerHeight || document.documentElement.clientHeight;
 function o(ut) {
 	document.getElementById("lol").innerHTML = ut;
 }
 function edit(id) {
 	ajax("modules/elements/gettexts.php?id="+id, "editFinal");
 	document.getElementById("admineditid").value = id;
-	show("adminedit", "show");
+	document.getElementById("admineditfullid").value = id;
+	show("adminedit", true);
 	document.getElementById("adminedittextarea").focus();
 }
 function editFinal(txt) {
 	document.getElementById("adminedittextarea").value = txt;
+	document.getElementById("admineditfulltextarea").value = txt;
 }
 var elements = [];
-function full(element) {
-	var o = document.getElementById(element).style;
-	if(o.width != "100%") {
-		o.left = "150px";
-		o.top = "100px";
-		o.width = "100%";
-		o.height = window.innerHeight+"px";
-		document.getElementById(element).childNodes[1].childNodes[7].childNodes[1].style.height = (window.innerHeight-80)+"px";
-		document.getElementById(element).childNodes[1].childNodes[7].childNodes[1].style.width = "100%";
-	} else {
-		o.left = "50%";
-		o.top = "50%";
-		o.width = "auto";
-		o.height = "200px";
-		document.getElementById(element).childNodes[1].childNodes[7].childNodes[1].style.height = "100%";
-	}
-}
 function show(element, type) {
 	if (typeof(type)==='undefined') type = "none";
 	var el = document.getElementById(element).style;
@@ -38,7 +24,7 @@ function show(element, type) {
 			el.display = "block";
 		}
 	} else {
-		if(type === "show") {
+		if(type === true) {
 			el.display = "block";
 		} else {
 			el.display = "none";

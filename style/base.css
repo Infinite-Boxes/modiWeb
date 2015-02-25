@@ -1,24 +1,13 @@
 @font-face {
     font-family: theano;
-    src: url('../fonts/theano.ttf');
+    src: url('../fonts/theano.ttf') format('truetype');
 }
 body {
+	background: #fff;
 	font-size: 100%;
 	padding: 0px;
 	margin: 0px;
 	padding-bottom: 25px;
-}
-#footer {
-	position: fixed;
-	bottom: 0px;
-	left: 0px;
-	border-top: 1px solid #260E78;
-	background: #fff;
-	width: 100%;
-}
-#footer p {
-	margin: 2px;
-	text-align: center;
 }
 * {
 	font-family: Verdana, Geneva, sans-serif;
@@ -29,14 +18,25 @@ p {
 	font-size: 0.8em;
 	text-indent: 10px;
 }
-a {
+p,h1,h2,h3 {
+	color: #116F50;
+}
+a:not(img) {
 	font-family: Verdana, Geneva, sans-serif;
 	text-decoration: none;
 	font-size: 0.8em;
+	color: #D22F4F;
+}
+a img {
+	border: none;
+}
+a:hover {
+	color: #EE5573;
 }
 h1,h2,h3 {
 	font-family: theano, Times New Roman, serif;
 	margin: 5px;
+	line-height: 100%;
 }
 h1 *,h2 *,h3 * {
 	font-family: inherit;
@@ -59,6 +59,8 @@ img {
 }
 #headerContent {
 	border-bottom: 1px solid;
+	border-color: #260E78;
+	padding: 10px;
 }
 #menu {
 	margin: 0px;
@@ -75,28 +77,26 @@ img {
 	font-size: 1.4em;
 }
 #menu .link {
-	background: linear-gradient(180deg, #5234bc, #260E78);
-	background: -webkit-linear-gradient(270deg, #5234bc, #260E78);
+	background: #FFA55B;
+	border: 4px solid;
+	border-color: #FFB577 #E28233 #E28233 #FFB577;
 	text-align: center;
 	width: 200px;
 	height: 30px;
 	float: left;
-}
-#menu .link:last-child {
-	border-radius: 0px 0px 10px 0px;
+	transition: border 200ms;
+	border-radius: 0px 0px 10px 10px;
 }
 #menu .link:hover {
-	background: linear-gradient(180deg, #417cd3, #260E78);
-	background: -webkit-linear-gradient(270deg, #417cd3, #260E78);
+	background: #FFA55B;
+	border-color: #E28233 #FFB577 #FFB577 #E28233;
+	transition: border 20ms;
 }
 #menu .link a {
-	color: #eee;
+	color: #fff;
 	width: 100%;
 	height: 100%;
 	display: block;
-}
-#menu .link a:hover{
-	color: #fff;
 }
 
 #content {
@@ -105,13 +105,26 @@ img {
 	padding: 10px;
 }
 
+#footer {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	border-top: 1px solid #260E78;
+	background: #fff;
+	width: 100%;
+}
+#footer p {
+	margin: 2px;
+	text-align: center;
+}
+
 table p {
 	display: inline;
 }
 input {
-	color: #000;
-	border: 1px solid #000;
+	border: 1px solid #A75A1A;
 	border-radius: 10px;
+	color: #116F50;
 }
 input[type="text"],input[type="password"] {
 	padding: 3px 10px;
@@ -123,7 +136,7 @@ input[type="button"],input[type="submit"] {
 }
 
 #msg {
-	border: 1px solid;
+	border: 1px solid #A75A1A;
 	border-radius: 5px;
 	margin: 5px 0px;
 	padding: 10px;
@@ -150,7 +163,7 @@ pre {
 	font-family: Monospace;
 }
 table {
-	margin: 10px 0px;
+	margin: 5px 0px;
 }
 .bold {
 	font-weight: bold;
@@ -164,14 +177,64 @@ table {
 .tablevertical tr th {
 	border-bottom: 1px solid #260E78;
 }
+.group {
+}
+.grouptitle {
+	position: relative;
+	top: 15px;
+	left: 20px;
+	background: #fff;
+	border: 1px solid #000;
+	border-width: 0px 1px;
+	border-radius: 5px;
+	margin: px 0px 10px;
+	padding: 0px 10px;
+	line-height: 100%;
+	display: inline-block;
+}
+.groupcontent {
+	border: 1px solid #000;
+	border-radius: 10px;
+	padding: 20px 10px 10px;
+}
 .edit {
 	color: #00f;
 	font-size: inherit;
 	font-family: inherit;
-	border: 1px solid;
-	border-width: 0px 1px;
-	margin: 0px -1px;
-	border-radius: 20%;
+	border: 5px solid;
+	border-width: 0px 2px;
+	margin: 0px -2px;
+	border-radius: 15%;
+}
+
+#admineditfull {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	background: #fff;
+	margin: 0px;
+	padding: 10px;
+	display: none;
+}
+#admineditfull form {
+	height: 84%;
+	height: calc(100% - 100px);
+}
+#admineditfull textarea {
+	width: 95%;
+	width: calc(100% - 30px);
+	height: 100%;
+	border-radius: 10px 10px 0px 0px;
+	clear: both;
+	resize: none;
+	overflow: auto;
+	padding: 5px;
+}
+#admineditfull input[type="submit"] {
+	width: 95%;
+	width: calc(100% - 18px);
 }
 #adminedit {
 	position: fixed;
@@ -182,7 +245,7 @@ table {
 	display: none;
 }
 #adminedit div {
-	border: 1px solid;
+	border: 1px solid #000;
 	border-radius: 10px 10px 0px;
 	background: #fff;
 	padding: 5px;
@@ -191,9 +254,15 @@ table {
 	top: -100px;
 	overflow: hidden;
 }
+#adminedit input[type="submit"], #admineditfull input[type="submit"] {
+	border-radius: 0px 0px 10px 10px;
+}
 #adminedit input[type="submit"] {
 	width: 100%;
-	border-radius: 0px 0px 10px 10px;
+}
+#admineditfull input[type="submit"] {
+	width: 100%;
+	width: calc(100% - 18px);
 }
 #adminedit textarea {
 	min-width: 300px;
@@ -201,21 +270,31 @@ table {
 	border-radius: 10px 10px 0px 0px;
 	clear: both;
 	width: 100%;
+	width: calc(100% - 10px);
 	height: 100%;
 	resize: both;
-	-moz-box-sizing: border-box;   /* Firefox 1, probably can drop this */
-	-webkit-box-sizing: border-box;   /* Safari 3-4, also probably droppable */
-	box-sizing: border-box;
 	overflow: auto;
 	padding: 5px;
 }
 #adminedit * {
 	display: block;
 }
-#adminedit a img {
+#adminedit a img{
 	float: right;
 	margin: 0px 2px 5px;
 }
+#admineditfull > div {
+	float: right;
+	margin: 0px 20px 0px;
+	clear: both;
+}
 #admineditmoveable {
 	cursor: move;
+}
+.edit {
+	color: #D22F4F;
+	border-color: #4B9417;
+}
+.edit:hover {
+	color: #EE5573;
 }
