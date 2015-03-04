@@ -9,12 +9,14 @@ class Config {
 		self::$db["dsn"] = "mysql:host=localhost;dbname=modiweb";
 		self::$db["user"] = "root";
 		self::$db["pass"] = "";
+		//self::$db["dsn"] = "mysql:host=localhost;dbname=etqwxiwh_db";self::$db["user"] = "etqwxiwh_admin";self::$db["pass"] = "=0211dave";
 		
 		//self::$css["theme"] = "theme.css";
 		
 		self::$menu["orientation"] = "horizontal";
 		
 		// Other modules
+		//array_push(self::$modules, "base");
 		array_push(self::$modules, "msg");
 		array_push(self::$modules, "browsercheck");
 		array_push(self::$modules, "sql");

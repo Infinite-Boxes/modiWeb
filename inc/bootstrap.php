@@ -1,15 +1,25 @@
 <?php
 session_start();
-$sitePath = "/modiWeb/";
+$sitePath = "/modiweb/";
+define("SITEPATH", $sitePath);
 $currentPath = str_replace(substr(strrchr($_SERVER["SCRIPT_NAME"], "/"), 1), "", $_SERVER["SCRIPT_NAME"]);
-$currentPath = str_replace($sitePath, "", $currentPath);
+if($sitePath != "/") {
+	$currentPath = str_replace($sitePath, "", strtolower($currentPath));
+} else {
+	$currentPath = substr($currentPath, 1);
+}
 $rootPath = "";
 for($c = 0; $c < substr_count($currentPath, "/"); $c++) {
 	$rootPath .= "../";
 }
-define("PAGE", str_replace($sitePath, "", $_SERVER["REQUEST_URI"]));
+$tempstr = str_replace($sitePath, "", strtolower($_SERVER["REQUEST_URI"]));
+if(strpos($tempstr, "?") !== false) {
+	define("PAGE", substr($tempstr, 0, strpos($tempstr, "?")));
+} else {
+	define("PAGE", $tempstr);
+}
 if($_SERVER["SERVER_NAME"] != "localhost") {
-	define("ROOT", $_SERVER["DOCUMENT_ROOT"]."/modiWeb/");
+	define("ROOT", $rootPath);
 } else {
 	define("ROOT", $rootPath);
 }

@@ -5,6 +5,21 @@ if(!isset($_SESSION["user"])) {
 <a href="admin">Gå tillbaka</a>
 <?php
 } else {
-	echo(elements::write("h1", "Redigerar sida"));
+	echo("<script>
+var loadedVar = '".$_GET["_page"]."';
+</script>
+");
+	page::menu();
+	echo("<script>
+pageeditcontent = \"".page::editorContent(page::getCode($_GET["id"]))."
+tools_cid = ".page::editorContentLines(page::getCode($_GET["id"])).";
+");
+for($c = 0; $c < page::editorContentLines(page::getCode($_GET["id"])); $c++) {
+	echo("tools_objects.push(\"el\"+".$c.");
+");
+}
+echo("</script>
+<div id=\"pageeditor\">
+</div>");
 }
 ?>

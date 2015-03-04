@@ -27,7 +27,7 @@ if($prid === $srid) {
 	$user["country"] = "Sweden";
 	users::add($user);
 	msg::notice("Användaren har registrerats");
-	header("Location: ".ROOT."admin");
+	header("Location: ".ROOT."hem");
 } else {
 	trigger_error("Uppgifterna blev inte korrekt mottagna. <a href=\"../admin\">Försök igen</a>.");
 }

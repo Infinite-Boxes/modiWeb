@@ -19,9 +19,9 @@ class elements {
 		}
 		foreach($texts as $k => $v) {
 			if(isset($_SESSION["user"])) {
-				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"]."</a>", $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
 			} else {
-				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"], $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"], $id);
 			}
 		}
 		if($type != "") {
@@ -41,9 +41,9 @@ class elements {
 		}
 		foreach($texts as $k => $v) {
 			if(isset($_SESSION["user"])) {
-				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"]."</a>", $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
 			} else {
-				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v["name"]."';")["text"], $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"], $id);
 			}
 		}
 		if($type != "") {
@@ -52,7 +52,37 @@ class elements {
 			return $id;
 		}
 	}
-	public static function writeTable($content, $type = "horizontal", $withKeys = true) {
+	public static function editReplace($text, $linked = true) {
+		$t = sql::get("SELECT name,id FROM texts");
+		$texts = [];
+		foreach($t as $k => $v) {
+			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
+		}
+		$idtext = "";
+		$idc = 0;
+		foreach($texts as $k => $v) {
+			if($linked === true) {
+				$link1 = "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">";
+				$link2 = "</a>";
+			} else {
+				$link1 = "";
+				$link2 = "";
+			}
+			$idtext .= "var el".$idc." = '".$v["name"]."';
+";
+			$idc++;
+			$text = str_ireplace("!:!".$v["name"]."!:!", $link1.sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"].$link2, $text);
+		}
+		$replace1 = [];
+		$replace2 = [];
+		array_push($replace1, "!b!");array_push($replace2, "<div>");
+		array_push($replace1, "!e!");array_push($replace2, "</div>");
+		$text = str_ireplace($replace1, $replace2, $text);
+		$text .= "\";
+".$idtext;
+		return $text;
+	}
+	public static function writeTable($content, $type = "horizontal", $attr = "", $withKeys = true) {
 		$ret = "";
 		/*
 		$t = sql::get("SELECT name FROM texts");
@@ -61,9 +91,12 @@ class elements {
 			array_push($texts, $v["name"]);
 		}
 		foreach($texts as $k => $v) {
-			$id = str_ireplace("!:!".$v."!:!", sql::get("SELECT text FROM texts WHERE name = '".$v."';")[0], $id);
+			$id = str_ireplace("!:!".$v."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v."';")[0], $id);
 		}
 		echo("<".$type.$parameters.">".$id."</".$type.">");*/
+		if($attr !== "") {
+			$attr = " ";
+		}
 		$multiDim = false;
 		foreach($content as $v) {
 			if(is_array($v)){
@@ -71,37 +104,29 @@ class elements {
 			}
 		}
 		if($type == "horizontal") {
-			$ret .= "<table class=\"tablehorizontal\">
+			$ret .= "<table class=\"tablehorizontal\"".$attr.">
 ";
-			if($multiDim == false) {
-				foreach($content as $k => $v) {
-					if(substr($k, 0, 4) == "null") {
-						$k = "";
-					}
-					$ret .= "	<tr>";
-					if($withKeys == true) {
-						$ret .= "<td><p class=\"bold\">".$k."<p /></td>";
-					}
-					$ret .= "<td>".$v."</td>
-		</tr>
-	";
+			foreach($content as $k => $v) {
+				if(count($v) > 1) {
+					$line = $content[$k]["text"];
+					$rowAtt = " ".$content[$k]["attr"];
+				} else {
+					$line = $v;
+					$rowAtt = "";
 				}
-			} else {
-				foreach($content as $k => $v) {
-					$ret .= "	<tr>";
-					if($withKeys == true) {
-						$ret .= "<th><p class=\"bold\">".$k."<p /></th>";
-					}
-					foreach($v as $v2) {
-						$ret .= "		<td>".$v2."</td>
-	";
-					}
-					$ret .= "	</tr>
-	";
+				if(substr($k, 0, 4) == "null") {
+					$k = "";
 				}
+				$ret .= "	<tr>";
+				if($withKeys == true) {
+					$ret .= "<td".$rowAtt."><p class=\"bold\">".$k."<p /></td>";
+				}
+				$ret .= "<td".$rowAtt."><p>".$line."</p></td>
+	</tr>
+";
 			}
 		} else {
-			$ret .= "<table class=\"tablevertical\">";
+			$ret .= "<table class=\"tablevertical\"".$attr.">";
 			if($withKeys == true) {
 				$ret .= "<tr>";
 				foreach($content[0] as $k => $v) {
@@ -126,12 +151,33 @@ class elements {
 ";
 		return $ret;
 	}
-	public static function group($content, $title = false) {
+	public static function group($content, $title = false, $id = false) {
+		if($id !== false) {
+			$idt = " id=\"".$id."\"";
+		} else {
+			$idt = "";
+		}
 		if($title != false) {
-			return "<div class=\"group\"><div class=\"grouptitle\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>";
+			return "<div class=\"group\"".$idt."><div class=\"grouptitle\" onclick=\"groupMinimize(this);\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>";
 		}
 	}
 	public static function link($content, $href) {
 		return "<a href=\"".$href."\">".$content."</a>";
+	}
+	public static function button($img, $link, $class = "", $attr = "", $attr2 = "") {
+		if($attr !== "") {
+			$attr = " ".$attr;
+		}
+		if($attr2 !== "") {
+			$attr2 = " ".$attr2;
+		}
+		if($class !== "") {
+			$class = " ".$class;
+		}
+		if($link[0] == "a") {
+			return "<a href=\"".$link[1]."\"".$attr2." class=\"".$class."\"><img src=\"img/".$img."\"".$attr." /></a>";
+		} elseif($link[0] == "js") {
+			return "<img src=\"img/".$img."\" class=\"imgbutton".$class."\" onclick=\"".$link[1]."\"".$attr." />";
+		}
 	}
 }

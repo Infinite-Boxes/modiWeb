@@ -1,13 +1,16 @@
-﻿Options +FollowSymLinks -Multiviews
+﻿<IfModule mod_rewrite.c>
 RewriteEngine On
 
 RewriteBase /modiWeb/
+Options +FollowSymLinks -Multiviews
 
-DirectoryIndex page.php?_page=index sitedown.php
+DirectoryIndex page.php?_page=hem sitedown.php
 
 RewriteRule		^error([0-9]+)$				error.php?e=$1					[NC]
 RewriteRule		^headermaker$				headermaker.php					[NC]
-RewriteRule		^([a-z_]+)$					page.php?_page=$1				[NC,L]
+RewriteRule		^([a-z_]+)$					page.php?_page=$1				[QSA,NC,L]
+RewriteRule		^shop/(.+)$					page.php?_page=shop&id=$1		[QSA,NC,L]
+
 
 RewriteCond 	%{ENV:REDIRECT_STATUS} 200
 RewriteRule 	.* 							- 								[L]
@@ -17,7 +20,6 @@ ErrorDocument 401 /modiWeb/error.php?e=401
 ErrorDocument 403 /modiWeb/error.php?e=403
 ErrorDocument 404 /modiWeb/error404
 ErrorDocument 408 /modiWeb/error.php?e=408
-ErrorDocument 429 /modiWeb/error.php?e=429
 ErrorDocument 500 /modiWeb/error.php?e=500
 ErrorDocument 501 /modiWeb/error.php?e=501
 ErrorDocument 502 /modiWeb/error.php?e=502

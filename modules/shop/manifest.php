@@ -1,4 +1,4 @@
 <?php
 $menu = "Shop";
-$menuLink = "shop";
+$menuLink = "shop/";
 ?>

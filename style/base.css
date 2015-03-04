@@ -35,17 +35,18 @@ a:hover {
 }
 h1,h2,h3 {
 	font-family: theano, Times New Roman, serif;
-	margin: 5px;
 	line-height: 100%;
+	margin: 5px;
 }
 h1 *,h2 *,h3 * {
 	font-family: inherit;
 }
 h1 {
 	font-size: 2.4em;
+	margin-bottom: 10px;
 }
 h2 {
-	font-size: 2em;
+	font-size: 1.8em;
 }
 h3 {
 	font-size: 1.4em;
@@ -58,6 +59,7 @@ img {
 #header {
 }
 #headerContent {
+	background: #4B9417;
 	border-bottom: 1px solid;
 	border-color: #260E78;
 	padding: 10px;
@@ -81,7 +83,7 @@ img {
 	border: 4px solid;
 	border-color: #FFB577 #E28233 #E28233 #FFB577;
 	text-align: center;
-	width: 200px;
+	width: 150px;
 	height: 30px;
 	float: left;
 	transition: border 200ms;
@@ -110,12 +112,13 @@ img {
 	bottom: 0px;
 	left: 0px;
 	border-top: 1px solid #260E78;
-	background: #fff;
+	background: #4B9417;
 	width: 100%;
 }
 #footer p {
 	margin: 2px;
 	text-align: center;
+	color: #fff;
 }
 
 table p {
@@ -168,6 +171,11 @@ table {
 .bold {
 	font-weight: bold;
 }
+.only {
+	margin: 0px;
+	padding: 0px;
+	display: inline;
+}
 .tablehorizontal tr th {
 	padding-right: 20px;
 }
@@ -178,6 +186,8 @@ table {
 	border-bottom: 1px solid #260E78;
 }
 .group {
+	height: initial;
+	transition: height 200ms;
 }
 .grouptitle {
 	position: relative;
@@ -206,7 +216,48 @@ table {
 	margin: 0px -2px;
 	border-radius: 15%;
 }
+.imgbutton {
+	border: 1px solid #fff;
+	border-radius: 22px;
+	background: #fff;
+	transition: border 200ms, background 200ms;
+}
+.imgbutton:hover {
+	border: 1px solid #000;
+	background: #000;
+}
 
+#popup {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	opacity: 0;
+	display: none;
+	background: #fff;
+	border: 1px solid #000;
+	border-radius: 10px;
+	padding: 5px 10px;
+	margin: 0px;
+	text-align: center;
+	text-indent: 0px;
+	cursor: default;
+	z-index: 5;
+	transition: opacity 500ms, top 100ms, left 100ms;
+}
+
+.admineditable {
+	position: fixed;
+	top: 5px;
+	left: 5px;
+	border: 1px solid #000;
+	border-radius: 20px;
+	padding: 20px;
+	background: #FCE5E9;
+	transition: background 200ms;
+}
+.admineditable:hover {
+	background: #FCD1D9;
+}
 #admineditfull {
 	position: fixed;
 	top: 0px;
@@ -297,4 +348,57 @@ table {
 }
 .edit:hover {
 	color: #EE5573;
+}
+#pageeditor {
+	margin: 0px;
+	padding: 0px;
+}
+#pageeditor div > *{
+	background: inherit;
+	transition: background 200ms;
+}
+#pageeditor div > *:hover {
+	background: #FCD1D9;
+}
+.pageeditmenu {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	padding: 10px;
+	border: 1px solid #000;
+	background: #fff;
+	border-radius: 5px;
+	height: 80%;
+	height: calc(100% - 70px);
+	overflow-y: auto;
+	transition: height 500ms;
+}
+.pageeditmenu textarea {
+	width: 100%;
+}
+.pageeditmenu h2 {
+	transition: color 100ms;
+}
+.pageeditmenu h2:hover {
+	color: #6DC72D;
+}
+#pageeditor div img {
+	margin: 5px;
+}
+#content div:not("pageeditmenu") img {
+	margin: 5px;
+}
+.pageeditmenu .tool {
+	opacity: 1;
+	visibility: visible;
+	margin: initial;
+	transition: opacity 200ms linear;
+}
+.pageeditmenu .tool.disabledTool {
+	visibility: hidden;
+	opacity: 0;
+	width: 0px;
+	height: 0px;
+	margin: 0px;
+	transition: visibility 0s 200ms, opacity 200ms linear, width 0s 200ms, height 0s 200ms, margin 0s 200ms;
 }

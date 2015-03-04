@@ -5,7 +5,7 @@ class menu {
 		self::$items["base"] = [];
 		self::$items["user"] = [];
 		self::$items["module"] = [];
-		self::add("Hem", "index", "base");
+		self::add("Hem", "hem", "base");
 		if(isset($_SESSION["user"])) {
 			self::add("Admin", "admin", "base");
 		}
@@ -25,7 +25,8 @@ class menu {
 				self::add($pages["name"], $pages["url"], "user");
 			} else {
 				foreach($pages as $k => $v) {
-					echo($k.": ".$v."<br />");
+					self::add($v["name"], $v["url"], "user");
+					//echo($k.": ".$v."<br />");
 				}
 			}
 		}
