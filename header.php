@@ -12,9 +12,15 @@ if(Config::getCSS("theme") !== false) {
 }
 ?>
 <script src="js/base.js"></script>
+<?php
+if(file_exists("js/".$_GET["_page"].".js")) {
+	echo("<script src=\"js/".$_GET["_page"].".js\"></script>
+");
+}
+?>
 </head>
 <body>
-<p id="popup">Info</p>
+<p id="popup" onmouseover="hidePopup();">Info</p>
 <?php
 if(isset($_SESSION["user"])) {
 	if(PAGE != "pages") {

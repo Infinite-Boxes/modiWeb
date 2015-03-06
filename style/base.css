@@ -2,12 +2,14 @@
     font-family: theano;
     src: url('../fonts/theano.ttf') format('truetype');
 }
+html {
+ margin: 0px 0px 20px;
+}
 body {
 	background: #fff;
 	font-size: 100%;
 	padding: 0px;
 	margin: 0px;
-	padding-bottom: 25px;
 }
 * {
 	font-family: Verdana, Geneva, sans-serif;
@@ -54,6 +56,7 @@ h3 {
 img {
 	max-width: 100%;
 	max-height: 100%;
+	margin: 2px;
 }
 
 #header {
@@ -102,9 +105,8 @@ img {
 }
 
 #content {
-	height: 60%;
 	display: block;
-	padding: 10px;
+	padding: 10px 10px 0px;
 }
 
 #footer {
@@ -124,6 +126,9 @@ img {
 table p {
 	display: inline;
 }
+table {
+	border-collapse: collapse;
+}
 input {
 	border: 1px solid #A75A1A;
 	border-radius: 10px;
@@ -135,6 +140,18 @@ input[type="text"],input[type="password"] {
 }
 input[type="button"],input[type="submit"] {
 	padding: 2px 10px; 
+	background: linear-gradient(180deg, #fff, #ddd);
+}
+input[type="file"] {
+	padding: 0px 10px 0px 0px;
+	border-radius: 0px 10px 10px 0px;
+	color: #116F50;
+	background: linear-gradient(180deg, #fff, #ddd);
+}
+select {
+	padding: 2px 10px;
+	border-radius: 10px;
+	color: #116F50;
 	background: linear-gradient(180deg, #fff, #ddd);
 }
 
@@ -177,6 +194,7 @@ table {
 	display: inline;
 }
 .tablehorizontal tr th {
+	padding: 5px 0px;
 	padding-right: 20px;
 }
 .tablevertical tr  td {
@@ -186,8 +204,7 @@ table {
 	border-bottom: 1px solid #260E78;
 }
 .group {
-	height: initial;
-	transition: height 200ms;
+	margin: 5px;
 }
 .grouptitle {
 	position: relative;
@@ -206,6 +223,20 @@ table {
 	border: 1px solid #000;
 	border-radius: 10px;
 	padding: 20px 10px 10px;
+	min-width: 100px;
+}
+.group div:not(.groupcontentDisabled):not(.grouptitle) {
+	height: initial;
+}
+.group .groupcontentDisabled {
+	height: 0px;
+	overflow: hidden;
+}
+.group p {
+	text-indent: 0px;
+}
+.tabcell{
+	display: table-cell;
 }
 .edit {
 	color: #00f;
@@ -343,12 +374,13 @@ table {
 	cursor: move;
 }
 .edit {
-	color: #D22F4F;
+	color: #E28233;
 	border-color: #4B9417;
 }
 .edit:hover {
-	color: #EE5573;
+	color: #FFA55B;
 }
+
 #pageeditor {
 	margin: 0px;
 	padding: 0px;
@@ -370,11 +402,17 @@ table {
 	border-radius: 5px;
 	height: 80%;
 	height: calc(100% - 70px);
+	width: 340px;
 	overflow-y: auto;
-	transition: height 500ms;
+	transition: height 500ms, width 1s;
+}
+.pageeditmenu * {
+	width: initial;
+	transition: width 1s;
 }
 .pageeditmenu textarea {
 	width: 100%;
+	overflow: hidden;
 }
 .pageeditmenu h2 {
 	transition: color 100ms;
@@ -382,23 +420,38 @@ table {
 .pageeditmenu h2:hover {
 	color: #6DC72D;
 }
-#pageeditor div img {
-	margin: 5px;
+.thumb50 {
+	max-width: 80px;
+	max-height: 80px;
 }
-#content div:not("pageeditmenu") img {
-	margin: 5px;
+.pageeditmenu img {
+	margin: 1px;
 }
 .pageeditmenu .tool {
 	opacity: 1;
 	visibility: visible;
-	margin: initial;
 	transition: opacity 200ms linear;
 }
-.pageeditmenu .tool.disabledTool {
+.pageeditmenu .disabledTool {
 	visibility: hidden;
 	opacity: 0;
-	width: 0px;
-	height: 0px;
-	margin: 0px;
-	transition: visibility 0s 200ms, opacity 200ms linear, width 0s 200ms, height 0s 200ms, margin 0s 200ms;
+	transition: visibility 0s 200ms, opacity 200ms linear;
+}
+.pageeditmenu select {
+	width: 100%;
+}
+
+#content img:not(.imgbutton) {
+	border: 1px solid #bbb;
+}
+.req:after {
+	content: "*";
+	color: #f00;
+}
+.subtext {
+	margin: 0px 0px 5px;
+	padding: 0px;
+	text-align: center;
+	font-style: italic;
+	text-indent: 0px;
 }

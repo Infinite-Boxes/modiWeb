@@ -95,7 +95,7 @@ class elements {
 		}
 		echo("<".$type.$parameters.">".$id."</".$type.">");*/
 		if($attr !== "") {
-			$attr = " ";
+			$attr = " ".$attr;
 		}
 		$multiDim = false;
 		foreach($content as $v) {
@@ -117,11 +117,21 @@ class elements {
 				if(substr($k, 0, 4) == "null") {
 					$k = "";
 				}
-				$ret .= "	<tr>";
-				if($withKeys == true) {
-					$ret .= "<td".$rowAtt."><p class=\"bold\">".$k."<p /></td>";
+				if($v != "") {
+					$ret .= "	<tr>";
+					if($withKeys == true) {
+						if(substr($k, 0, 5) == "!REQ!") {
+							$k = substr($k, 5);
+							$req = " req";
+						}else {
+							$req = "";
+						}
+						$ret .= "<td".$rowAtt."><p class=\"bold".$req."\">".$k."</p></td>";
+					}
+					$ret .= "<td".$rowAtt."><p>".$line."</p></td>
+";
 				}
-				$ret .= "<td".$rowAtt."><p>".$line."</p></td>
+				$ret .= "
 	</tr>
 ";
 			}
@@ -130,7 +140,13 @@ class elements {
 			if($withKeys == true) {
 				$ret .= "<tr>";
 				foreach($content[0] as $k => $v) {
-					$ret .= "<th><p class=\"bold\">".$k."</p></th>
+					if(substr($k, 0, 5) == "!REQ!") {
+						$k = substr($k, 5);
+						$req = " req";
+					}else {
+						$req = "";
+					}
+					$ret .= "<th><p class=\"bold".$req."\">".$k."</p></th>
 ";
 				}
 				$ret .= "</tr>
@@ -151,14 +167,24 @@ class elements {
 ";
 		return $ret;
 	}
-	public static function group($content, $title = false, $id = false) {
+	public static function group($content, $title = false, $id = false, $attr = false, $class = false) {
 		if($id !== false) {
 			$idt = " id=\"".$id."\"";
 		} else {
 			$idt = "";
 		}
+		if($attr !== false) {
+			$attr = " ".$attr;
+		} else {
+			$attr = "";
+		}
+		if($class !== false) {
+			$class = " ".$class;
+		} else {
+			$class = "";
+		}
 		if($title != false) {
-			return "<div class=\"group\"".$idt."><div class=\"grouptitle\" onclick=\"groupMinimize(this);\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>";
+			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\" onclick=\"groupMinimize(this);\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>";
 		}
 	}
 	public static function link($content, $href) {
@@ -175,7 +201,7 @@ class elements {
 			$class = " ".$class;
 		}
 		if($link[0] == "a") {
-			return "<a href=\"".$link[1]."\"".$attr2." class=\"".$class."\"><img src=\"img/".$img."\"".$attr." /></a>";
+			return "<a href=\"".$link[1]."\"".$attr2." class=\"".$class."\"><img src=\"img/".$img."\" class=\"imgbutton\"".$attr." /></a>";
 		} elseif($link[0] == "js") {
 			return "<img src=\"img/".$img."\" class=\"imgbutton".$class."\" onclick=\"".$link[1]."\"".$attr." />";
 		}
