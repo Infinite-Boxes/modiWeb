@@ -22,3 +22,4 @@ echo("</script>
 <div id=\"pageeditor\">
 </div>");
 }
+?>

@@ -65,7 +65,7 @@ class page {
 			$mainbuttons .= elements::button($v[0], [$v[1], $v[2]], $v[3], $v[4]);
 		}
 		echo(elements::group("<p id=\"tools_current\" class=\"only\" style=\"margin-left: 5px;\">Välj ett element</p><br />".$mainbuttons."<br />
-		".elements::button("tool_add_text.png", ["js", "tools_create('P');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till text');\"").elements::button("tool_add_image.png", ["js", "tools_create('IMG');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till bild');\"").elements::button("tool_add_table.png", ["js", "tools_create('TABLE');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till tabell');\"").elements::button("tool_add_list.png", ["js", "tools_create('UL');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till lista');\"").elements::button("tool_add_link.png", ["js", "tools_create('A');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till länk');\""), "Huvudverktyg", "tools_mainTools"));
+		".elements::button("tool_add_text.png", ["js", "tools_create('P');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till text');\"").elements::button("tool_add_image.png", ["js", "tools_create('IMG');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till bild');\"").elements::button("tool_add_table.png", ["js", "tools_create('TABLE');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till tabell');\"").elements::button("tool_add_list.png", ["js", "tools_create('UL');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till lista');\"").elements::button("tool_add_link.png", ["js", "tools_create('A');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till länk');\"")."<br />".elements::button("tool_edit.png", ["js", "tools_detailEdit();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Redigera');\"").elements::button("tool_edit_save.png", ["js", "tools_detailEditSave();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Spara element');\""), "Huvudverktyg", "tools_mainTools"));
 		
 		$images = sql::get("SELECT * FROM images");
 		if(isset($images["url"])) {
@@ -114,6 +114,12 @@ class page {
 			"Bild" => "<form onsubmit=\"return false;\" id=\"tools_urlDiv\"><script>tools_loadTool(obj('tools_urlDiv').parentNode.parentNode, 'IMG'); obj('tools_urlDiv').parentNode.parentNode.classList.add('tool'); </script>
 				".$imgText."
 			</form>",
+			"Storlek" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_size\"><script>tools_loadTool(obj('tools_size').parentNode.parentNode, 'P H1 H2 H3'); obj('tools_size').parentNode.parentNode.classList.add('tool'); </script>
+				".elements::button("tool_h1.png", ["js", "tools_textSize('H1');"], "", "onmouseover=\"popup('Störst titel');\"")."
+				".elements::button("tool_h2.png", ["js", "tools_textSize('H2');"], "", "onmouseover=\"popup('Mellanstor titel');\"")."
+				".elements::button("tool_h3.png", ["js", "tools_textSize('H3');"], "", "onmouseover=\"popup('Liten titel');\"")."
+				".elements::button("tool_p.png", ["js", "tools_textSize('P');"], "", "onmouseover=\"popup('Vanlig text');\"")."
+			</form>", "attr" => " class=\"tool\""],
 			"Max bredd" => "<form onsubmit=\"return false;\" id=\"tools_maxwidthDiv\"><script>tools_loadTool(obj('tools_maxwidthDiv').parentNode.parentNode, 'IMG'); obj('tools_maxwidthDiv').parentNode.parentNode.classList.add('tool'); </script>
 				<input type=\"text\" id=\"toolsImageMaxwidth\" placeholder=\"Bredd i pixlar\" onkeyup=\"tools_maxWidth();\" />
 			</form>",

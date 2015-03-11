@@ -17,6 +17,7 @@ var tools_tools = {
 	"TABLE": [],
 	"UL": []
 };
+var tools_link2follow = "";
 function tools_save() {
 	alert("save");
 }
@@ -81,17 +82,18 @@ function tools_undisable(object) {
 				object.classList.remove("disabledTool");
 			}, 1);
 		} else {
-			object.classList.remove("disabledTool");
+			object.style.display = "inline";
+			setTimeout(function() {
+				object.classList.remove("disabledTool");
+			}, 1);
 		}
 	}
 }
 function tools_disable(object) {
 	if(object.classList.contains("disabledTool") != true) {
-		if(object.tagName == "TR") {
 			setTimeout(function(){
 				object.style.display = "none";
 			}, 210);
-		}
 		object.classList.add("disabledTool");
 	}
 }
@@ -126,7 +128,7 @@ function tools_create(type) {
 		object.innerHTML = "Nytt text-element";
 	} else if(type == "A") {
 		object.innerHTML = "Ny länk";
-		vars.followLink = false;
+		object.target = "_blank";
 	} else if(type == "IMG") {
 		vars.obj = "child";
 		frame = document.createElement("DIV");
@@ -139,8 +141,10 @@ function tools_create(type) {
 		vars.border = false;
 		vars.borderColor = "#000";
 		vars.borderWidth = "1";
+		vars.editMode = false;
 	} else if(type == "UL") {
 		object.innerHTML = "<li><p>Ny lista</p></li>";
+		vars.editMode = false;
 	}
 	if(type != "IMG") {
 		object.vars = vars;
@@ -168,6 +172,7 @@ function tools_editType(type, object) {
 	} else if(type == "A") {
 		text = object.innerHTML;
 		obj("toolsContent").value = text;
+		obj("toolsLink").value = object.href;
 	} else if(type == "H1") {
 		text = object.innerHTML;
 		obj("toolsContent").value = text;
@@ -199,6 +204,52 @@ function tools_change() {
 		}
 	}
 }
+function tools_detailEdit() {
+	if(tools_marked.vars.editMode == false) {
+		if(tools_marked.vars.type == "TABLE") {
+			for(var r = 0; r < tools_marked.rows.length; r++) {
+				for(var c = 0; c < tools_marked.rows[r].cells.length; c++) {
+					var str = tools_marked.rows[r].cells[c].innerHTML;
+					str = str.replace("<p>", "");
+					str = str.replace("</p>", "");
+					tools_marked.rows[r].cells[c].innerHTML = "<input type='text' value='"+str+"' />";
+					tools_marked.rows[r].cells[c].children[0].size = str.length;
+				}
+			}
+			tools_marked.vars.editMode = true;
+		} else if(tools_marked.vars.type == "UL") {
+			for(var c = 0; c < tools_marked.children.length; c++) {
+				var str = tools_marked.children[c].innerHTML;
+				str = str.replace("<p>", "");
+				str = str.replace("</p>", "");
+				tools_marked.children[c].innerHTML = "<input type='text' value='"+str+"' />";
+				tools_marked.children[c].size = str.length;
+			}
+			tools_marked.vars.editMode = true;
+		}
+	} else {
+		popup("Redigerar redan objektet");
+	}
+}
+function tools_detailEditSave() {
+	if(tools_marked.vars.editMode == true) {
+		if(tools_marked.vars.type == "TABLE") {
+			for(var r = 0; r < tools_marked.rows.length; r++) {
+				for(var c = 0; c < tools_marked.rows[r].cells.length; c++) {
+					var str = tools_marked.rows[r].cells[c].children[0].value;
+					tools_marked.rows[r].cells[c].innerHTML = "<p>"+str+"</p>";
+				}
+			}
+			tools_marked.vars.editMode = false;
+		} else if(tools_marked.vars.type == "UL") {
+			for(var c = 0; c < tools_marked.children.length; c++) {
+				var str = tools_marked.children[c].children[0].value;
+				tools_marked.children[c].innerHTML = "<p>"+str+"</p>";
+			}
+			tools_marked.vars.editMode = false;
+		}
+	}
+}
 function tools_changeLink() {
 	if(tools_marked !== -1) {
 		if(obj("toolsLink").value != "") {
@@ -221,11 +272,11 @@ function tools_changeLink() {
 function tools_followLink() {
 	if(tools_marked.vars.type == "A") {
 		if(tools_marked.href != "") {
-			if(tools_marked.vars.followLink == true) {
-				tools_marked.vars.followLink = false;
+			if(tools_link2follow == tools_marked) {
+				tools_link2follow = "";
 			} else {
 				popup("Är du säker på att du vill följa denna länken? Klicka igen.");
-				tools_marked.vars.followLink = true;
+				tools_link2follow = tools_marked;
 				event.preventDefault();
 				return false;
 			}
@@ -316,6 +367,32 @@ function tools_align(align) {
 		tools_marked.style.textAlign = align;
 	}
 }
+function tools_textSize(size) {
+	if(tools_marked != -1) {
+		var str = tools_marked.innerHTML;
+		
+		var main = obj("pageeditor");
+		var object = document.createElement(size);
+		var id = tools_marked.id//"el"+tools_cid;
+		//tools_objects.push(id);
+		var ev = document.createAttribute("onclick");
+		ev.value = "tools_mark(this);";
+		var vars = {
+			type: size,
+			obj: "this"
+		};
+		object.innerHTML = str;
+		object.vars = vars;
+		object.setAttributeNode(ev);
+		object.id = id;
+		object.style.textAlign = tools_marked.style.textAlign;
+		object.style.float = tools_marked.style.float;
+		object.style.display = tools_marked.style.display;
+		main.appendChild(object);
+		obj("pageeditor").replaceChild(object, tools_marked);
+		tools_mark(object);
+	}
+}
 function tools_displayType(display) {
 	if(tools_marked != -1) {
 		tools_marked.style.display = display;
@@ -350,10 +427,20 @@ function tools_tableRow(type) {
 	if(type == "add") {
 		var row = tools_marked.insertRow(-1);
 		var fcell = row.insertCell(-1);
-		fcell.innerHTML = "<p>Ny cell</p>";
+		if(tools_marked.vars.editMode == true) {
+			fcell.innerHTML = "<input type='text' value='Ny cell' />";
+			fcell.children[0].size = 7;
+		} else {
+			fcell.innerHTML = "<p>Ny cell</p>";
+		}
 		for(var c = 1; c < tools_marked.rows[0].cells.length; c++) {
 			var cell = row.insertCell(-1);
-			cell.innerHTML = "<p>Ny cell</p>";
+			if(tools_marked.vars.editMode == true) {
+				cell.innerHTML = "<input type='text' value='Ny cell' />";
+				cell.children[0].size = 7;
+			} else {
+				cell.innerHTML = "<p>Ny cell</p>";
+			}
 		}
 	} else {
 		tools_marked.deleteRow(-1);
@@ -369,7 +456,12 @@ function tools_tableCell(type) {
 			if((v != "length") && (v != "item") && (v != "namedItem")) {
 				var row = tools_marked.rows[v];
 				var cell = row.insertCell(-1);
-				cell.innerHTML = "<p>Ny cell</p>";
+				if(tools_marked.vars.editMode == true) {
+					cell.innerHTML = "<input type='text' value='Ny cell' />";
+					cell.children[0].size = 7;
+				} else {
+					cell.innerHTML = "<p>Ny cell</p>";
+				}
 			}
 		}
 	} else {

@@ -29,7 +29,6 @@ a:not(img) {
 	text-decoration: none;
 	font-size: 0.8em;
 	color: #D22F4F;
-	white-space: pre;
 }
 a img {
 	border: none;

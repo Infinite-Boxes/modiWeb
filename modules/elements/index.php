@@ -18,7 +18,7 @@ class elements {
 			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
 		}
 		foreach($texts as $k => $v) {
-			if(isset($_SESSION["user"])) {
+			if((isset($_SESSION["user"])) && (PAGE != "pages")) {
 				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
 			} else {
 				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"], $id);
