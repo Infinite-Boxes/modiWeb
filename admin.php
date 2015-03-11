@@ -26,6 +26,25 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
 	}
 	echo(elements::group(elements::writeTable($configOut), "Sidans konfiguration", "", "style=\"float: left;\"", "tabcell"));
+	
+	$images = sql::get("SELECT * FROM images");
+	if(isset($images["url"])) {
+		$temp = $images;
+		unset($images);
+		$images[0] = $temp;
+	}
+	$imgText = [];
+	$imgText["Lägg till"] = elements::button("tool_add_image.png", ["a", "admin_addimage"], "addImage", "style=\"float: right;\"");
+	if($images !== false) {
+		foreach($images as $k => $v) {
+			$imgText[$v["name"]] = "<img src=\"".$v["url"]."\" class=\"thumb50\" />";
+		}
+		echo(elements::group(elements::writeTable($imgText), "Bilder", "", "style=\"float: left;\"", "tabcell"));
+	} else {
+		$imgText = $imgText["Lägg till"]."<p>Inga bilder i databasen</p>";
+		echo(elements::group($imgText, "Bilder", "", "style=\"float: left;\"", "tabcell"));
+	}
+	
 	// Pages
 	$pageslist = sql::get("SELECT * FROM pages");
 	$pages = [];
@@ -46,23 +65,6 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 	}
 	if(count($pages) > 0) {
 		echo(elements::group($pagesText, "Sidor", "", "style=\"float: left; min-width: 100px;\"", "tabcell"));
-	}
-	$images = sql::get("SELECT * FROM images");
-	if(isset($images["url"])) {
-		$temp = $images;
-		unset($images);
-		$images[0] = $temp;
-	}
-	$imgText = [];
-	$imgText["Lägg till"] = elements::button("tool_add_image.png", ["a", "admin_addimage"], "addImage", "style=\"float: right;\"");
-	if($images !== false) {
-		foreach($images as $k => $v) {
-			$imgText[$v["name"]] = "<img src=\"".$v["url"]."\" class=\"thumb50\" />";
-		}
-		echo(elements::group(elements::writeTable($imgText), "Bilder", "", "style=\"float: left;\"", "tabcell"));
-	} else {
-		$imgText = $imgText["Lägg till"]."<p>Inga bilder i databasen</p>";
-		echo(elements::group($imgText, "Bilder", "", "style=\"float: left;\"", "tabcell"));
 	}
 }
 

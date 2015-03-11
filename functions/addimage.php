@@ -5,9 +5,8 @@ if(file_exists(ROOT.$_GET["file"])) {
 	if($_GET["name"] != "") {
 		if($_GET["alt"] != "") {
 			$name = $_GET["name"];
-			$alt = $_GET["alt"];
-			$sub = $_GET["sub"];
-			if(sql::insert("INSERT INTO images(name, url, alt, subtext) values('".$name."', '".$url."', '".$alt."', '".$sub."')")) {
+			$alt = addslashes($_GET["alt"]);
+			if(sql::insert("INSERT INTO images(name, url, alt) values('".$name."', '".$url."', '".$alt."')")) {
 				echo("ok");
 			} else {
 				echo("ERROR_Något gick fel");
@@ -21,10 +20,9 @@ if(file_exists(ROOT.$_GET["file"])) {
 } else {
 	$url = $_GET["file"];
 	$name = $_GET["name"];
-	$alt = $_GET["alt"];
-	$sub = $_GET["sub"];
+	$alt = addslashes($_GET["alt"]);
 	if(substr($url, 0, 7) === "http://") {
-		if(sql::insert("INSERT INTO images(name, url, alt, subtext) values('".$name."', '".$url."', '".$alt."', '".$sub."')")) {
+		if(sql::insert("INSERT INTO images(name, url, altt) values('".$name."', '".$url."', '".$alt."')")) {
 			echo("ok");
 		} else {
 			echo("ERROR_Något gick fel");

@@ -22,12 +22,14 @@ p {
 }
 p,h1,h2,h3 {
 	color: #116F50;
+	white-space: pre;
 }
 a:not(img) {
 	font-family: Verdana, Geneva, sans-serif;
 	text-decoration: none;
 	font-size: 0.8em;
 	color: #D22F4F;
+	white-space: pre;
 }
 a img {
 	border: none;
@@ -56,7 +58,11 @@ h3 {
 img {
 	max-width: 100%;
 	max-height: 100%;
-	margin: 2px;
+}
+ul {
+	margin: 2px 0px;
+	padding: 0px;
+	list-style-position: inside;
 }
 
 #header {
@@ -185,6 +191,9 @@ pre {
 table {
 	margin: 5px 0px;
 }
+table tr td {
+	padding: 5px;
+}
 .bold {
 	font-weight: bold;
 }
@@ -225,12 +234,15 @@ table {
 	padding: 20px 10px 10px;
 	min-width: 100px;
 }
-.group div:not(.groupcontentDisabled):not(.grouptitle) {
+.group .groupcontent:not(.groupcontentDisabled) {
 	height: initial;
+	overflow: hidden;
+	transition: height 1s;
 }
 .group .groupcontentDisabled {
 	height: 0px;
 	overflow: hidden;
+	transition: height 1s;
 }
 .group p {
 	text-indent: 0px;
@@ -251,7 +263,7 @@ table {
 	border: 1px solid #fff;
 	border-radius: 22px;
 	background: #fff;
-	transition: border 200ms, background 200ms;
+	transition: border 500ms, background 500ms;
 }
 .imgbutton:hover {
 	border: 1px solid #000;
@@ -299,6 +311,7 @@ table {
 	margin: 0px;
 	padding: 10px;
 	display: none;
+	z-index: 10;
 }
 #admineditfull form {
 	height: 84%;
@@ -325,6 +338,7 @@ table {
 	width: auto;
 	height: auto;
 	display: none;
+	z-index: 9;
 }
 #adminedit div {
 	border: 1px solid #000;
@@ -385,11 +399,11 @@ table {
 	margin: 0px;
 	padding: 0px;
 }
-#pageeditor div > *{
+#pageeditor div, #pageeditor p, #pageeditor a, #pageeditor h1, #pageeditor h2, #pageeditor h3, #pageeditor table, #pageeditor ul {
 	background: inherit;
 	transition: background 200ms;
 }
-#pageeditor div > *:hover {
+#pageeditor div:hover, #pageeditor p:hover, #pageeditor a:hover, #pageeditor h1:hover, #pageeditor h2:hover, #pageeditor h3:hover, #pageeditor table:hover, #pageeditor ul:hover {
 	background: #FCD1D9;
 }
 .pageeditmenu {
@@ -410,9 +424,17 @@ table {
 	width: initial;
 	transition: width 1s;
 }
+.pageeditmenu table tr td {
+	padding: 2px;
+}
 .pageeditmenu textarea {
 	width: 100%;
 	overflow: hidden;
+	border: 1px solid #A75A1A;
+	border-radius: 10px 10px 0px 10px;
+	color: #116F50;
+	padding: 3px 10px;
+	background: linear-gradient(180deg, #ddd, #fff);
 }
 .pageeditmenu h2 {
 	transition: color 100ms;
@@ -441,17 +463,32 @@ table {
 	width: 100%;
 }
 
-#content img:not(.imgbutton) {
-	border: 1px solid #bbb;
-}
 .req:after {
 	content: "*";
 	color: #f00;
 }
 .subtext {
-	margin: 0px 0px 5px;
-	padding: 0px;
+	margin: 0px;
+	padding: 2px;
+	max-width: initial;
 	text-align: center;
 	font-style: italic;
 	text-indent: 0px;
+	overflow: hidden;
+	word-wrap: break-word;
+}
+.img {
+	border: 1px solid #bbb;
+	background: #fff;
+	padding: 5px;
+	margin: 5px;
+}
+.img img {
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	display: block;
+}
+.subtext:empty {
+	display: none;
 }

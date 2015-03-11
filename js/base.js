@@ -67,6 +67,26 @@ function popup(txt) {
 			obj("popup").style.left = "50%";
 		}, 1);
 	}
+	setTimeout(function(){
+		var y = obj("popup").style.top.substr(0, obj("popup").style.top.length-2);
+		var x = obj("popup").style.left.substr(0, obj("popup").style.left.length-2);
+		if(x < 0) {
+			obj("popup").style.left = "0px";
+		}
+		if(y < 0) {
+			obj("popup").style.top = "0px";
+		}
+	}, 60);
+	setTimeout(function(){
+		var y = obj("popup").style.top.substr(0, obj("popup").style.top.length-2);
+		var x = obj("popup").style.left.substr(0, obj("popup").style.left.length-2);
+		if(x < 0) {
+			obj("popup").style.left = "0px";
+		}
+		if(y < 0) {
+			obj("popup").style.top = "0px";
+		}
+	}, 110);
 }
 function hidePopup() {
 	clearTimeout(popupTimer1);

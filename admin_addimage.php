@@ -27,7 +27,7 @@ foreach($fileList as $k => $v) {
 	$v = str_replace($rootPath."\\", "", $v);
 	if(array_search($url, $regList) === false) {
 		if($sw === false) {
-		echo("<div id=\"uploader\" style=\"float: left; margin: 5px; border: 1px solid #aaa;\"><img src=\"".$url."\" id=\"currentImage\" style=\"max-width: 200px; border: none;\" onerror=\"addImage_errorUrl();\" /><p id=\"subText\" class=\"subtext\" style=\"display: none;\"></p></div>
+		echo("<div id=\"uploader\" class=\"img\" style=\"float: left; max-width: 200px;\"><img src=\"".$url."\" id=\"currentImage\" onerror=\"addImage_errorUrl();\" /><p id=\"subText\" class=\"subtext\"></p></div>
 ");
 			$sw = true;
 		}
@@ -36,7 +36,7 @@ foreach($fileList as $k => $v) {
 	}
 }
 if($tc == 0) {
-	echo("<div id=\"uploader\" style=\"float: left; margin: 5px; border: 1px solid #aaa;\"><img src=\"img/tools_emptyimage.png\" id=\"currentImage\" style=\"max-width: 200px; border: none;\" onerror=\"addImage_errorUrl();\"><p id=\"subText\" style=\"display: none;\"></p></div>
+	echo("<div id=\"uploader\" class=\"img\" style=\"float: left; max-width: 200px;\"><img src=\"img/tools_emptyimage.png\" id=\"currentImage\" onerror=\"addImage_errorUrl();\"><p id=\"subText\" class=\"subtext\"></p></div>
 ");
 }
 $tab = [
@@ -47,8 +47,7 @@ $tab = [
 	<input type=\"submit\" value=\"Ladda upp bild\" name=\"submit\">
 </form>",
 	"!REQ!Namn" => "<input type=\"text\" id=\"imagename\" />",
-	"!REQ!Alternativ text" => "<input type=\"text\" id=\"imagealt\" />",
-	"Text under bild" => "<input type=\"text\" id=\"imagetextunder\" onkeyup=\"addImage_updSubtext();\" />"
+	"!REQ!Alternativ text" => "<input type=\"text\" id=\"imagealt\" onkeyup=\"addImage_updSubtext();\" />"
 ];
 echo(elements::writeTable($tab, "horizontal"));
 ?>

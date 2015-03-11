@@ -13,12 +13,7 @@ function addImage_updateChosen(typ) {
 	}
 }
 function addImage_updSubtext() {
-	if(obj("imagetextunder").value != "") {
-		obj("subText").style.display = "block";
-		obj("subText").innerHTML = obj("imagetextunder").value;
-	} else {
-		obj("subText").style.display = "none";
-	}
+	obj("subText").innerHTML = obj("imagealt").value;
 }
 function addImage_errorUrl() {
 	obj("customUrl").value = "";
@@ -71,7 +66,7 @@ function addImage_add() {
 	} else if(obj("imagealt").value.length < 3) {
 		popup("För kort alternativ text");
 	} else {
-		ajax("functions/addimage.php?file="+obj("currentUrl").value+"&name="+obj("imagename").value+"&alt="+obj("imagealt").value+"&sub="+obj("imagetextunder").value, "GET", "addImage_added");
+		ajax("functions/addimage.php?file="+obj("currentUrl").value+"&name="+obj("imagename").value+"&alt="+obj("imagealt").value, "GET", "addImage_added");
 	}
 }
 function addImage_added(txt) {
