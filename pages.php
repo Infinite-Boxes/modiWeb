@@ -11,15 +11,11 @@ var loadedVar = '".$_GET["_page"]."';
 ");
 	page::menu();
 	echo("<script>
-pageeditcontent = \"".page::editorContent(page::getCode($_GET["id"]))."
+var pageId = \"".$_GET["id"]."\";
+pageeditcontent = \"\";
 tools_cid = ".page::editorContentLines(page::getCode($_GET["id"])).";
-");
-for($c = 0; $c < page::editorContentLines(page::getCode($_GET["id"])); $c++) {
-	echo("tools_objects.push(\"el\"+".$c.");
-");
-}
-echo("</script>
+</script>
 <div id=\"pageeditor\">
-</div>");
+".page::editorContent(page::getCode($_GET["id"]))."</div>");
 }
 ?>

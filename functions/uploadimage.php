@@ -11,24 +11,35 @@ if(isset($_POST["submit"])) {
     if($check !== false) {
         $uploadOk = 1;
     } else {
-        echo "ERROR_File is not an image.";
+        echo "ERROR_Filen är inte en bild.";
         $uploadOk = 0;
     }
 }
 // Check if file already exists
 if (file_exists($target_file)) {
-    echo "ERROR_Sorry, file already exists.";
+    echo "ERROR_Tyvärr, en fil med detta namnet finns redan.";
     $uploadOk = 0;
 }
 // Check file size
 if ($_FILES["uploadFile"]["size"] > 500000) {
-    echo "ERROR_Sorry, your file is too large.";
+    echo "ERROR_Tyvärr, filen är för stor.";
     $uploadOk = 0;
 }
 // Allow certain file formats
-if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-&& $imageFileType != "gif" ) {
-    echo "ERROR_Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+$ff = [
+	"jpg",
+	"gif",
+	"jpeg",
+	"png"
+];
+$errFile = true;
+foreach($ff as $k => $v) {
+	if(strtolower($imageFileType) == $v) {
+		$errFile = false;
+	}
+}
+if($errFile === true) {
+    echo "ERROR_Tyvärr. Filformatet '".$imageFileType."' stöds ej.";
     $uploadOk = 0;
 }
 // Check if $uploadOk is set to 0 by an error
@@ -36,7 +47,7 @@ if ($uploadOk != 0) {
     if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
         echo $returnName.":::".$_FILES["uploadFile"]["name"];
     } else {
-        echo "ERROR_Sorry, there was an error uploading your file.";
+        echo "ERROR_Det har inträffat ett fel när vi försökte ladda upp din bild. Försök igen.";
     }
 }
 ?>

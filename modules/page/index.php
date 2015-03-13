@@ -3,6 +3,8 @@ class page {
 	static private $keys = [];
 	static private $vals = [];
 	static private $temp = 0;
+	static private $headers = [];
+	static private $tools = [];
 	static public function write($page = "") {
 		$out = sql::get("SELECT * FROM pages WHERE url = '".$page."';");
 		if($out != false) {
@@ -30,7 +32,7 @@ class page {
 		return "el".self::$temp;
 	}
 	static public function editorContent($content) {
-		$r1 = [
+		/*$r1 = [
 			"!_p!",
 			"!__p!"
 		];
@@ -45,11 +47,15 @@ class page {
 		}
 		array_push($r1, "!__p!");array_push($r2, "</p>");
 		$content = str_replace($r1, $r2, $content);
-		$content = elements::editReplace($content, false);
+		$content = elements::editReplace($content, false);*/
 		return $content;
 	}
 	static public function editorContentLines($content) {
 		return substr_count($content, "!_p!");
+	}
+	static private function tool($tool) {
+		array_push(self::$headers, "<p>".$tool["header"]."</p>");
+		array_push(self::$tools, $tool["content"]);
 	}
 	static public function menu() {
 		echo("<div class=\"pageeditmenu\" id=\"pageeditmenu\">");
@@ -100,57 +106,64 @@ class page {
 		}
 		echo("</script>
 ");
-		$tools = [
-			"Text" => "<form onsubmit=\"return false;\" id=\"tools_textDiv\"><script>tools_loadTool(obj('tools_textDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_textDiv').parentNode.parentNode.classList.add('tool'); </script>
+		self::tool(["header" => "Text", "content" => "<form onsubmit=\"return false;\" id=\"tools_textDiv\"><script>tools_loadTool(obj('tools_textDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_textDiv').parentNode.parentNode.classList.add('tool'); </script>
 				<textarea id=\"toolsContent\" style=\"resize: vertical;\" onkeyup=\"tools_change();\"></textarea>
-			</form>",
-			"Länk" => "<form onsubmit=\"return false;\" id=\"tools_linkDiv\"><script>tools_loadTool(obj('tools_linkDiv').parentNode.parentNode, 'A'); obj('tools_linkDiv').parentNode.parentNode.classList.add('tool'); </script>
+			</form>"]);
+		self::tool(["header" => "Länk", "content" => "<form onsubmit=\"return false;\" id=\"tools_linkDiv\"><script>tools_loadTool(obj('tools_linkDiv').parentNode.parentNode, 'A'); obj('tools_linkDiv').parentNode.parentNode.classList.add('tool'); </script>
 				<input type=\"text\" id=\"toolsLink\" onkeyup=\"tools_changeLink();\" />
-			</form>",
-			"Visa" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_displayDiv\"><script>tools_loadTool(obj('tools_displayDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_displayDiv').parentNode.parentNode.classList.add('tool'); </script> 
+			</form>"]);
+		self::tool(["header" => "Visa", "content" => "<form onsubmit=\"return false;\" id=\"tools_displayDiv\"><script>tools_loadTool(obj('tools_displayDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_displayDiv').parentNode.parentNode.classList.add('tool'); </script> 
 				".elements::button("tool_display_inline.png", ["js", "tools_displayType('inline');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Dela rad med andra objekt');\"")."
 				".elements::button("tool_display_block.png", ["js", "tools_displayType('block');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Visa ensam på rad');\"")."
-			</form>", "attr" => " class=\"tool\""],
-			"Bild" => "<form onsubmit=\"return false;\" id=\"tools_urlDiv\"><script>tools_loadTool(obj('tools_urlDiv').parentNode.parentNode, 'IMG'); obj('tools_urlDiv').parentNode.parentNode.classList.add('tool'); </script>
+			</form>", "attr" => " class=\"tool\""]);
+		self::tool(["header" => "Bild", "content" => "<form onsubmit=\"return false;\" id=\"tools_urlDiv\"><script>tools_loadTool(obj('tools_urlDiv').parentNode.parentNode, 'IMG'); obj('tools_urlDiv').parentNode.parentNode.classList.add('tool'); </script>
 				".$imgText."
-			</form>",
-			"Storlek" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_size\"><script>tools_loadTool(obj('tools_size').parentNode.parentNode, 'P H1 H2 H3'); obj('tools_size').parentNode.parentNode.classList.add('tool'); </script>
+			</form>"]);
+		self::tool(["header" => "Storlek", "content" => "<form onsubmit=\"return false;\" id=\"tools_size\"><script>tools_loadTool(obj('tools_size').parentNode.parentNode, 'P H1 H2 H3'); obj('tools_size').parentNode.parentNode.classList.add('tool'); </script>
 				".elements::button("tool_h1.png", ["js", "tools_textSize('H1');"], "", "onmouseover=\"popup('Störst titel');\"")."
 				".elements::button("tool_h2.png", ["js", "tools_textSize('H2');"], "", "onmouseover=\"popup('Mellanstor titel');\"")."
 				".elements::button("tool_h3.png", ["js", "tools_textSize('H3');"], "", "onmouseover=\"popup('Liten titel');\"")."
 				".elements::button("tool_p.png", ["js", "tools_textSize('P');"], "", "onmouseover=\"popup('Vanlig text');\"")."
-			</form>", "attr" => " class=\"tool\""],
-			"Max bredd" => "<form onsubmit=\"return false;\" id=\"tools_maxwidthDiv\"><script>tools_loadTool(obj('tools_maxwidthDiv').parentNode.parentNode, 'IMG'); obj('tools_maxwidthDiv').parentNode.parentNode.classList.add('tool'); </script>
+			</form>", "attr" => " class=\"tool\""]);
+		self::tool(["header" => "Max bredd", "content" => "<form onsubmit=\"return false;\" id=\"tools_maxwidthDiv\"><script>tools_loadTool(obj('tools_maxwidthDiv').parentNode.parentNode, 'IMG'); obj('tools_maxwidthDiv').parentNode.parentNode.classList.add('tool'); </script>
 				<input type=\"text\" id=\"toolsImageMaxwidth\" placeholder=\"Bredd i pixlar\" onkeyup=\"tools_maxWidth();\" />
-			</form>",
-			"Justera" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_alignDiv\"><script>tools_loadTool(obj('tools_alignDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_alignDiv').parentNode.parentNode.classList.add('tool'); </script> 
+			</form>"]);
+		self::tool(["header" => "Justera", "content" => "<form onsubmit=\"return false;\" id=\"tools_alignDiv\"><script>tools_loadTool(obj('tools_alignDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_alignDiv').parentNode.parentNode.classList.add('tool'); </script> 
 				".elements::button("tool_align_left.png", ["js", "tools_align('left');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Justera till vänster');\"")."
 				".elements::button("tool_align_center.png", ["js", "tools_align('center');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Justera till mitten');\"")."
 				".elements::button("tool_align_right.png", ["js", "tools_align('right');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Justera till höger');\"")."
 				".elements::button("tool_align_justify.png", ["js", "tools_align('justify');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Justera till full bredd');\"")."
-			</form>", "attr" => " class=\"tool\""],
-			"Flyt" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_floatDiv\"><script>tools_loadTool(obj('tools_floatDiv').parentNode.parentNode, 'IMG TABLE UL P H1 H2 H3 A'); obj('tools_floatDiv').parentNode.parentNode.classList.add('tool'); </script>
+			</form>", "attr" => " class=\"tool\""]);
+		self::tool(["header" => "Flyt", "content" => "<form onsubmit=\"return false;\" id=\"tools_floatDiv\"><script>tools_loadTool(obj('tools_floatDiv').parentNode.parentNode, 'IMG TABLE UL P H1 H2 H3 A'); obj('tools_floatDiv').parentNode.parentNode.classList.add('tool'); </script>
 				".elements::button("tool_float_left.png", ["js", "tools_float('left');"], "", "onmouseover=\"popup('Flyt till vänster');\"")."
 				".elements::button("tool_float_right.png", ["js", "tools_float('right');"], "", "onmouseover=\"popup('Flyt till höger');\"")."
 				".elements::button("tool_float_none.png", ["js", "tools_float('none');"], "", "onmouseover=\"popup('Flyt inte');\"")."
-			</form>", "attr" => " class=\"tool\""],
-			"Celler" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_tableRows\"><script>tools_loadTool(obj('tools_tableRows').parentNode.parentNode, 'TABLE'); obj('tools_tableRows').parentNode.parentNode.classList.add('tool'); </script>
+			</form>", "attr" => " class=\"tool\""]);
+		self::tool(["header" => "Celler", "content" => "<form onsubmit=\"return false;\" id=\"tools_tableRows\"><script>tools_loadTool(obj('tools_tableRows').parentNode.parentNode, 'TABLE'); obj('tools_tableRows').parentNode.parentNode.classList.add('tool'); </script>
 				".elements::button("tool_row_add.png", ["js", "tools_tableRow('add');"], "", "onmouseover=\"popup('Lägg till rad');\"")."
 				".elements::button("tool_row_remove.png", ["js", "tools_tableRow('remove');"], "", "onmouseover=\"popup('Ta bort rad');\"")."
 				".elements::button("tool_cell_add.png", ["js", "tools_tableCell('add');"], "", "onmouseover=\"popup('Lägg till kolumn');\"")."
 				".elements::button("tool_cell_remove.png", ["js", "tools_tableCell('remove');"], "", "onmouseover=\"popup('Ta bort kolumn');\"")."
-			</form>", "attr" => " class=\"tool\""],
-			"Punkter" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_list\"><script>tools_loadTool(obj('tools_list').parentNode.parentNode, 'UL'); obj('tools_list').parentNode.parentNode.classList.add('tool'); </script>
+			</form>", "attr" => " class=\"tool\""]);
+		self::tool(["header" => "Punkter", "content" => "<form onsubmit=\"return false;\" id=\"tools_list\"><script>tools_loadTool(obj('tools_list').parentNode.parentNode, 'UL'); obj('tools_list').parentNode.parentNode.classList.add('tool'); </script>
 				".elements::button("tool_list_add.png", ["js", "tools_list('add');"], "", "onmouseover=\"popup('Lägg till rad');\"")."
 				".elements::button("tool_list_remove.png", ["js", "tools_list('remove');"], "", "onmouseover=\"popup('Ta bort rad');\"")."
-			</form>", "attr" => " class=\"tool\""],
-			"Detaljer" => ["text" => "<form onsubmit=\"return false;\" id=\"tools_tableDetails\"><script>tools_loadTool(obj('tools_tableDetails').parentNode.parentNode, 'TABLE'); obj('tools_tableDetails').parentNode.parentNode.classList.add('tool');
+			</form>", "attr" => " class=\"tool\""]);
+		self::tool(["header" => "Detaljer", "content" => "<form onsubmit=\"return false;\" id=\"tools_tableDetails\"><script>tools_loadTool(obj('tools_tableDetails').parentNode.parentNode, 'TABLE'); obj('tools_tableDetails').parentNode.parentNode.classList.add('tool');
 			</script>
 				".elements::button("tool_tableborder_add.png", ["js", "tools_tableBorder('add');"], "", "id=\"tools_tableAddBorder\" onmouseover=\"popup('Lägg till kant');\" onload=\"tools_loadTool(this, 'TABLE');\"")."
 				".elements::button("tool_tableborder_remove.png", ["js", "tools_tableBorder('remove');"], "", "id=\"tools_tableRemoveBorder\" onmouseover=\"popup('Ta bort kant');\" onload=\"tools_loadTool(this, 'TABLE');\"")."
-			</form>", "attr" => "class=\"tool\""]
-		];
-		echo(elements::group(elements::writeTable($tools), "Redigera", "tools_editTools"));
+			</form>", "attr" => "class=\"tool\""]);
+		$tools = [];
+		$tools["header"] = [];
+		foreach(self::$headers as $v) {
+			array_push($tools["header"], $v);
+		}
+		foreach(self::$tools as $v) {
+			array_push($tools, $v);
+		}
+		
+		echo(elements::group(elements::writeTable($tools, "v"), "Redigera", "tools_editTools", "", "tool"));
 		echo("</div>");
 	}
 }

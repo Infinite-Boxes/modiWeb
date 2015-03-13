@@ -82,89 +82,134 @@ class elements {
 ".$idtext;
 		return $text;
 	}
-	public static function writeTable($content, $type = "horizontal", $attr = "", $withKeys = true) {
+	public static function writeTable($content, $type = "h", $tAtt = "") {
 		$ret = "";
 		/*
-		$t = sql::get("SELECT name FROM texts");
-		$texts = [];
-		foreach($t as $k => $v) {
-			array_push($texts, $v["name"]);
-		}
-		foreach($texts as $k => $v) {
-			$id = str_ireplace("!:!".$v."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v."';")[0], $id);
-		}
-		echo("<".$type.$parameters.">".$id."</".$type.">");*/
-		if($attr !== "") {
-			$attr = " ".$attr;
-		}
-		$multiDim = false;
-		foreach($content as $v) {
-			if(is_array($v)){
-				$multiDim = true;
-			}
-		}
-		if($type == "horizontal") {
-			$ret .= "<table class=\"tablehorizontal\"".$attr.">
-";
-			foreach($content as $k => $v) {
-				if(count($v) > 1) {
-					$line = $content[$k]["text"];
-					$rowAtt = " ".$content[$k]["attr"];
-				} else {
-					$line = $v;
-					$rowAtt = "";
-				}
-				if(substr($k, 0, 4) == "null") {
-					$k = "";
-				}
-				if($v != "") {
-					$ret .= "	<tr>";
-					if($withKeys == true) {
-						if(substr($k, 0, 5) == "!REQ!") {
-							$k = substr($k, 5);
-							$req = " req";
-						}else {
-							$req = "";
-						}
-						$ret .= "<td".$rowAtt."><p class=\"bold".$req."\">".$k."</p></td>";
-					}
-					$ret .= "<td".$rowAtt."><p>".$line."</p></td>
-";
-				}
-				$ret .= "
-	</tr>
-";
+		table[
+			cont[
+				header[],
+				content[
+					text,
+					cAtt
+				]
+			],
+			type,
+			tAtt
+		]
+		*/
+		if($tAtt !== "") {
+			if(isset($tAtt["class"])) {
+				$tClass = " ".$tAtt["class"];
+				$tAtt = " ".$tAtt["att"];
+			} else {
+				$tClass = "";
+				$tAtt = " ".$tAtt;
 			}
 		} else {
-			$ret .= "<table class=\"tablevertical\"".$attr.">";
-			if($withKeys == true) {
-				$ret .= "<tr>";
-				foreach($content[0] as $k => $v) {
-					if(substr($k, 0, 5) == "!REQ!") {
-						$k = substr($k, 5);
-						$req = " req";
-					}else {
-						$req = "";
-					}
-					$ret .= "<th><p class=\"bold".$req."\">".$k."</p></th>
-";
-				}
-				$ret .= "</tr>
-";
-			}
-			foreach($content as $k => $v) {
-				$ret .= "<tr>
-";
-				foreach($v as $k2 => $v2) {
-					$ret .= "<td><p>".$v2."</p></td>
-";
-				}
-				$ret .= "</tr>
-";
-			}
+			$tAtt = "";
+			$tClass = "";
 		}
-		$ret .= "</table>
-";
+		if($type == "h") {
+			$ret .= "<table class=\"tablehorizontal".$tClass."\"".$tAtt.">";
+			if(isset($content["header"])) {
+				$ret .= "<tr>";
+				if(!isset(current($content["header"])["text"])) {
+					foreach($content["header"] as $k => $v) {
+						$ret .= "<th>".$v."</th>";
+					}
+				} else {
+					foreach($content["header"] as $k => $v) {
+						if($v["att"] != "") {
+							$hAtt = " ".$v["att"];
+						} else {
+							$hAtt = "";
+						}
+						$ret .= "<th".$hAtt.">".$v["text"]."</th>";
+					}
+				}
+				$ret .= "</tr>";
+			}
+			unset($content["header"]);
+			foreach($content as $rowKey => $row) {
+				$ret .= "<tr>";
+				if(!is_array($row)) {
+					$ret .= "<td>".$row."</td>";
+				} else {
+					foreach($row as $cellKey => $cell) {
+						if(is_array($cell)) {
+							if($cell["att"] != "") {
+								$cAtt = " ".$cell["att"];
+							} else {
+								$cAtt = "";
+							}
+							$out = $cell["text"];
+						} else {
+							$cAtt = "";
+							$out = $cell;
+						}
+						$ret .= "<td".$cAtt.">".$out."</td>";
+					}
+				}
+				$ret .= "</tr>";
+			}
+			$ret .= "</table>";
+		} else {
+			$ret .= "<table class=\"tablevertical".$tClass."\"".$tAtt.">";
+			if(isset($content["header"])) {
+				$header = $content["header"];
+				$theContent = $content;
+				unset($theContent["header"]);
+				if(is_array($theContent[0])) {
+					foreach($header as $key => $row) {
+						$ret .= "<tr>";
+						if(is_array($row)) {
+							if($row["att"] != "") {
+								$thAtt = " ".$row["att"];
+							} else {
+								$thAtt = " ".$row["att"];
+							}
+							$ret .= "<th".$thAtt.">".$row["content"]."</th>";
+						} else {
+							$ret .= "<th>".$row."</th>";
+						}
+						foreach($theContent[$key] as $key2 => $text) {
+							if(is_array($text)) {
+								if($text["att"] != "") {
+									$cAtt = " ".$text["att"];
+								} else {
+									$cAtt = "";
+								}
+								$ret .= "<td".$cAtt.">".$text["content"]."</td>";
+							} else {
+								$ret .= "<td>".$text."</td>";
+							}
+						}
+						$ret .= "</tr>";
+					}
+				} else {
+					foreach($header as $key => $row) {
+						$ret .= "<tr>";
+						$ret .= "<th>".$row."</th>";
+						$ret .= "<td>".$theContent[$key]."</td>";
+						$ret .= "</tr>";
+					}
+				}
+			} else {
+				foreach($content as $k => $v) {
+					$ret .= "<tr>";
+					if(is_array($v)) {
+						foreach($row as $key => $text) {
+							$ret .= "<td>".$text."</td>";
+						}
+					}
+					$ret .= "</tr>";
+				}
+				foreach($out as $key => $row) {
+				}
+			}
+			$ret .= "</table>";
+		}
+		
 		return $ret;
 	}
 	public static function group($content, $title = false, $id = false, $attr = false, $class = false) {

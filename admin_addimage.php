@@ -36,21 +36,21 @@ foreach($fileList as $k => $v) {
 	}
 }
 if($tc == 0) {
-	echo("<div id=\"uploader\" class=\"img\" style=\"float: left; max-width: 200px;\"><img src=\"img/tools_emptyimage.png\" id=\"currentImage\" onerror=\"addImage_errorUrl();\"><p id=\"subText\" class=\"subtext\"></p></div>
+	echo("<div id=\"uploader\" class=\"img\" style=\"float: left; max-width: 200px;\"><img src=\"img/tools_emptyimage.png\" id=\"currentImage\" onerror=\"addImage_errorUrl();\"><p id=\"subText\" class=\"subtext\">a</p></div>
 ");
 }
-$tab = [
-	"!REQ!Uppladdade" => $fileText."</select>",
-	"Annan" => "<input type=\"text\" id=\"customUrl\" style=\"width: 300px; margin-right: 10px;\"><input type=\"button\" value=\"Visa miniatyr\" onclick=\"addImage_updateChosen('custom');\">",
-	"Ladda upp" => "<form action=\"function/uploadimage.php\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"uploadImage();\" id=\"uploadForm\">
+$tab = [];
+$tab["header"] = ["<p class=\"req\">Uppladdade<p>", "<p>Internetbild</p>", "<p>Ladda upp</p>", "<p class=\"req\">Namn</p>", "<p class=\"req\">Alternativ text</p>"];
+array_push($tab, 
+	$fileText."</select>",
+	"<input type=\"text\" id=\"customUrl\" style=\"width: 300px; margin-right: 10px;\"><input type=\"button\" value=\"Visa miniatyr\" onclick=\"addImage_updateChosen('custom');\">",
+	"<form action=\"function/uploadimage.php\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"uploadImage();\" id=\"uploadForm\">
 	<input type=\"file\" name=\"uploadfile\" id=\"uploadFile\">
 	<input type=\"submit\" value=\"Ladda upp bild\" name=\"submit\">
 </form>",
-	"!REQ!Namn" => "<input type=\"text\" id=\"imagename\" />",
-	"!REQ!Alternativ text" => "<input type=\"text\" id=\"imagealt\" onkeyup=\"addImage_updSubtext();\" />"
-];
-echo(elements::writeTable($tab, "horizontal"));
-?>
-<p id="uploadWindow"></p>
-<?php
-echo(elements::button("tool_save.png", ["js", "addImage_add();"], "saveImage"));
+	"<input type=\"text\" id=\"imagename\" />",
+	"<input type=\"text\" id=\"imagealt\" onkeyup=\"addImage_updSubtext();\" />"
+);
+echo(elements::writeTable($tab, "v"));
+echo("<p id=\"uploadWindow\"></p>");
+echo(elements::button("tool_save.png", ["js", "addImage_add();"], "saveImage", "onmouseover=\"popup('Spara bild');\""));

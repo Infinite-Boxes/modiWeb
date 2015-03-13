@@ -20,6 +20,11 @@ if(file_exists("js/".$_GET["_page"].".js")) {
 ?>
 </head>
 <body>
+<?php
+echo("<script>
+var statVar = \"".statistics::rec()."\";
+</script>");
+?>
 <p id="popup" onmouseover="hidePopup();">Info</p>
 <?php
 if(isset($_SESSION["user"])) {

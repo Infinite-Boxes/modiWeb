@@ -1,12 +1,8 @@
 <?php
 function customError($errno, $errstr) {
 	log::add("error", $errno.": ".$errstr);
-	if($errno == 2) {
-		header("Location: error404");
-	} else {
-		echo "<b>Fel: [$errno]</b> $errstr<br>";
-		die();
-	}
+	echo "<b>Fel: [$errno]</b> $errstr<br>";
+	die();
 }
 function customException($exception) {
 	log::add("exception", $exception->getCode());

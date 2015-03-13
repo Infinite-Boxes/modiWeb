@@ -9,7 +9,6 @@ class menu {
 		if(isset($_SESSION["user"])) {
 			self::add("Admin", "admin", "base");
 		}
-		//self::add("Test", "test", "user");
 		$items = scandir(ROOT."modules");
 		foreach($items as $k => $v) {
 			if(file_exists(ROOT."modules/".$v."/manifest.php")) {
@@ -26,7 +25,6 @@ class menu {
 			} else {
 				foreach($pages as $k => $v) {
 					self::add($v["name"], $v["url"], "user");
-					//echo($k.": ".$v."<br />");
 				}
 			}
 		}

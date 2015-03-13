@@ -6,9 +6,10 @@ if(!isset($_SESSION["user"])) {
 <form action="functions/login.php" method="POST">
 <?php
 $form = [];
-$form["Användarnamn"] = "<input type=\"text\" name=\"username\" />";
-$form["Lösenord"] = "<input type=\"password\" name=\"password\" />";
-$form["null0"] = "<input type=\"submit\" value=\"Logga in\" />";
+$form["header"] = ["Användarnamn", "Lösenord", ""];
+$form[0] = "<input type=\"text\" name=\"username\" />";
+$form[1] = "<input type=\"password\" name=\"password\" />";
+$form[2] = "<input type=\"submit\" value=\"Logga in\" />";
 echo(elements::group(elements::writeTable($form), "Logga in"));
 ?>
 <input type="hidden" name="rid" value="<?php echo($_SESSION["rid"]); ?>" />
@@ -25,7 +26,7 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 	foreach($configs as $k => $v) {
 		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
 	}
-	echo(elements::group(elements::writeTable($configOut), "Sidans konfiguration", "", "style=\"float: left;\"", "tabcell"));
+	echo(elements::group(elements::writeTable($configOut), "Sidans konfiguration", "", "style=\"float: left; width: 300px;\"", "tabcell"));
 	
 	$images = sql::get("SELECT * FROM images");
 	if(isset($images["url"])) {
@@ -48,14 +49,16 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 	// Pages
 	$pageslist = sql::get("SELECT * FROM pages");
 	$pages = [];
-	if(!isset($pageslist["url"])) {
-		foreach($pageslist as $k => $v) {
-			array_push($pages, elements::link($v["name"], "pages?id=".$v["id"]));
+	if($pageslist != false) {
+		if(!isset($pageslist["url"])) {
+			foreach($pageslist as $k => $v) {
+				array_push($pages, elements::link($v["name"], "pages?id=".$v["id"]));
+			}
+		} else {
+			array_push($pages, elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
 		}
-	} else {
-		array_push($pages, elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
 	}
-	$pagesText = "";
+	$pagesText = elements::button("new_doc.png", ["a", "createnewpage"], "newDoc", "style=\"float: right;\"");
 	foreach($pages as $k => $v) {
 		if($pagesText == "") {
 			$pagesText .= $v;
@@ -63,9 +66,7 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 			$pagesText .= "<br />".$v;
 		}
 	}
-	if(count($pages) > 0) {
-		echo(elements::group($pagesText, "Sidor", "", "style=\"float: left; min-width: 100px;\"", "tabcell"));
-	}
+	echo(elements::group($pagesText, "Sidor", "", "style=\"float: left; min-width: 100px;\"", "tabcell"));
 }
 
 /*
