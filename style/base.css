@@ -22,7 +22,7 @@ p {
 }
 p,h1,h2,h3 {
 	color: #116F50;
-	white-space: pre;
+	white-space: pre-line;
 }
 a:not(img) {
 	font-family: Verdana, Geneva, sans-serif;
@@ -32,6 +32,19 @@ a:not(img) {
 }
 a img {
 	border: none;
+}
+#content a img:not(.imgbutton) {
+	border: initial;
+	border-bottom: 2px solid #EE5573;
+	border-width: 0px;
+	margin-bottom: initial;
+	transition: border-width 200ms, border-radius 200ms, margin-bottom 200ms;
+}
+#content a img:not(.imgbutton):hover {
+	border-radius: 0px 0px 10px 10px;
+	margin-bottom: -5px;
+	border-width: 5px;
+	transition: border-width 200ms, border-radius 200ms, margin-bottom 200ms;
 }
 a:hover {
 	color: #EE5573;
@@ -74,7 +87,7 @@ ul {
 }
 #menu {
 	margin: 0px;
-	overflow: auto;
+	overflow-x: disabled;
 }
 #menu ul {
     list-style-type: none;
@@ -82,25 +95,63 @@ ul {
 	padding: 0px;
 	width: 100%;
 }
-#menu li {
+.menu li {
 	line-height: 20pt;
 	font-size: 1.4em;
 }
+.submenu li {
+	line-height: 16pt;
+	font-size: 1.2em;
+}
+.submenu {
+	height: 33px;
+	opacity: initial;
+	visibility: visible;
+	transition-delay: 200ms;
+	transition: visibility 200ms, opacity 200ms, height 200ms;
+}
+.disabledMenu {
+	visibility: hidden;
+	height: 0px;
+	opacity: 0;
+}
 #menu .link {
 	background: #FFA55B;
-	border: 4px solid;
-	border-color: #FFB577 #E28233 #E28233 #FFB577;
+	border-color: #FFA55B;
 	text-align: center;
-	width: 150px;
-	height: 30px;
-	float: left;
-	transition: border 200ms;
-	border-radius: 0px 0px 10px 10px;
+	display: inline-block;
+	transition: border-color 200ms;
+}
+.menu .link:last-child {
+	border-radius: 0px 0px 10px 0px;
+}
+.submenu .link:last-child {
+	border-radius: 0px 0px 10px 0px;
 }
 #menu .link:hover {
-	background: #FFA55B;
-	border-color: #E28233 #FFB577 #FFB577 #E28233;
-	transition: border 20ms;
+	border-color: #FFCBA0 #FFA55B #FFA55B #FFA55B;
+}
+#menu .menuActive {
+	border-color: #FFA55B #FFA55B #E28233 #FFA55B;
+}
+#menu .menuActive a:before,#menu .menuActive a:after {
+	content: " - ";
+}
+#menu .menuActive:hover {
+	border-color: #FFCBA0 #FFA55B #E28233 #FFA55B;
+}
+.menu .link {
+	border: 5px solid;
+	width: 150px;
+	height: 30px;
+	transition: height 200ms;
+
+}
+.submenu .link {
+	border-color: #FFA55B #E28233 #E28233 #FFB577;
+	border: 4px solid;
+	width: 150px;
+	height: 25px;
 }
 #menu .link a {
 	color: #fff;
@@ -223,7 +274,7 @@ table tr th {
 	padding: 0px 5px;
 }
 .group {
-	margin: 5px;
+	margin: -5px 5px 5px;
 }
 .grouptitle {
 	position: relative;
@@ -236,6 +287,7 @@ table tr th {
 	margin: px 0px 10px;
 	padding: 0px 10px;
 	line-height: 100%;
+	cursor: default;
 	display: inline-block;
 }
 .groupcontent {
@@ -273,6 +325,7 @@ table tr th {
 	border: 1px solid #fff;
 	border-radius: 22px;
 	background: #fff;
+	cursor: pointer;
 	transition: border 500ms, background 500ms;
 }
 .imgbutton:hover {
@@ -412,6 +465,7 @@ table tr th {
 }
 #pageeditor div, #pageeditor p, #pageeditor a, #pageeditor h1, #pageeditor h2, #pageeditor h3, #pageeditor table, #pageeditor ul {
 	background: inherit;
+	cursor: pointer;
 	transition: background 200ms;
 }
 #pageeditor div:hover, #pageeditor p:hover, #pageeditor a:hover, #pageeditor h1:hover, #pageeditor h2:hover, #pageeditor h3:hover, #pageeditor table:hover, #pageeditor ul:hover {
@@ -435,6 +489,9 @@ table tr th {
 	width: initial;
 	transition: width 1s;
 }
+.pageeditmenu p {
+	cursor: default;
+}
 .pageeditmenu table tr td {
 	padding: 2px;
 }
@@ -448,14 +505,15 @@ table tr th {
 	background: linear-gradient(180deg, #ddd, #fff);
 }
 .pageeditmenu h2 {
+	cursor: pointer;
 	transition: color 100ms;
 }
 .pageeditmenu h2:hover {
 	color: #6DC72D;
 }
 .thumb50 {
-	max-width: 80px;
-	max-height: 80px;
+	max-width: 50px;
+	max-height: 50px;
 }
 .pageeditmenu img {
 	margin: 1px;
@@ -465,12 +523,21 @@ table tr th {
 	visibility: visible;
 	transition: opacity 200ms linear;
 }
+.pageeditmenu .grouptitle h3 {
+	cursor: pointer;
+	color: #116F50;
+	transition: color 200ms;
+}
+.pageeditmenu .grouptitle:hover h3 {
+	color: #3DAC87;
+}
 .pageeditmenu .disabledTool {
 	visibility: hidden;
 	opacity: 0;
 	transition: visibility 0s 200ms, opacity 200ms linear;
 }
 .pageeditmenu select {
+	cursor: pointer;
 	width: 100%;
 }
 

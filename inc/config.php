@@ -25,7 +25,7 @@ class Config {
 		array_push(self::$modules, "elements");
 		array_push(self::$modules, "page");
 		array_push(self::$modules, "users");
-		
+		array_push(self::$modules, "dates");
 		self::loadModules();
 	}
 	private static function loadModules() {

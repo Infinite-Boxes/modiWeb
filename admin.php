@@ -27,46 +27,6 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
 	}
 	echo(elements::group(elements::writeTable($configOut), "Sidans konfiguration", "", "style=\"float: left; width: 300px;\"", "tabcell"));
-	
-	$images = sql::get("SELECT * FROM images");
-	if(isset($images["url"])) {
-		$temp = $images;
-		unset($images);
-		$images[0] = $temp;
-	}
-	$imgText = [];
-	$imgText["Lägg till"] = elements::button("tool_add_image.png", ["a", "admin_addimage"], "addImage", "style=\"float: right;\"");
-	if($images !== false) {
-		foreach($images as $k => $v) {
-			$imgText[$v["name"]] = "<img src=\"".$v["url"]."\" class=\"thumb50\" />";
-		}
-		echo(elements::group(elements::writeTable($imgText), "Bilder", "", "style=\"float: left;\"", "tabcell"));
-	} else {
-		$imgText = $imgText["Lägg till"]."<p>Inga bilder i databasen</p>";
-		echo(elements::group($imgText, "Bilder", "", "style=\"float: left;\"", "tabcell"));
-	}
-	
-	// Pages
-	$pageslist = sql::get("SELECT * FROM pages");
-	$pages = [];
-	if($pageslist != false) {
-		if(!isset($pageslist["url"])) {
-			foreach($pageslist as $k => $v) {
-				array_push($pages, elements::link($v["name"], "pages?id=".$v["id"]));
-			}
-		} else {
-			array_push($pages, elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
-		}
-	}
-	$pagesText = elements::button("new_doc.png", ["a", "createnewpage"], "newDoc", "style=\"float: right;\"");
-	foreach($pages as $k => $v) {
-		if($pagesText == "") {
-			$pagesText .= $v;
-		} else {
-			$pagesText .= "<br />".$v;
-		}
-	}
-	echo(elements::group($pagesText, "Sidor", "", "style=\"float: left; min-width: 100px;\"", "tabcell"));
 }
 
 /*

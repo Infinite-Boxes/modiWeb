@@ -1,11 +1,13 @@
 window.innerHeight = window.innerHeight || document.documentElement.clientHeight;
 function o(ut) {
-	//document.getElementById("output").innerHTML = document.getElementById("output").innerHTML+"<br />"+ut;
-	alert(ut);
+	document.getElementById("out").innerHTML = document.getElementById("out").innerHTML+"<br />"+ut;
+	//alert(ut);
 }
 function obj(object) {
-	if(typeof document.getElementById(object) !== "undefined") {
+	if(document.getElementById(object) != null) {
 		return document.getElementById(object);
+	} else {
+		return false;
 	}
 }
 function groupMinimize(object) {
@@ -172,7 +174,50 @@ function moving(event) {
 	mousey = event.clientY;
 	mousex = event.clientX;
 }
-
+var menuList = [];
+var menuTimer;
+var menuCurrentPage = "";
+function submenu(id) {
+	if((id != "none") && (id != "reset")) {
+		for(var c = 0; c < obj("menu").children.length; c++) {
+			if(obj("menu").children[c].id != "main") {
+				obj("menu").children[c].classList.add("disabledMenu");
+			}
+		}
+		obj("sub"+id).classList.remove("disabledMenu");
+	} else if(id == "reset") {
+	} else {
+		for(var c = 0; c < obj("menu").children.length; c++) {
+			if(obj("menu").children[c].id != "main") {
+				obj("menu").children[c].classList.add("disabledMenu");
+			}
+		}
+	}
+	clearTimeout(menuTimer);
+	menuTimer = setTimeout(function() {
+		submenuReset(id);
+	}, 2000);
+}
+function submenuReset(id) {
+	var subMenuName = "";
+	if(obj("sub"+menuCurrentPage) == false) {
+		for(var v in menuList) {
+			for(var v2 in menuList[v]) {
+				if(menuCurrentPage == menuList[v][v2]) {
+					menuCurrentPage = v;
+				}
+			}
+		}
+	}
+	for(var c = 0; c < obj("menu").children.length; c++) {
+		if((obj("menu").children[c].id != "main") && (obj("menu").children[c].id != "sub"+menuCurrentPage)) {
+			obj("menu").children[c].classList.add("disabledMenu");
+		}
+	}
+	if(obj("sub"+menuCurrentPage) !== false) {
+		obj("sub"+menuCurrentPage).classList.remove("disabledMenu");
+	}
+}
 
 function str_replace(find, replace, str) {
 	while(str.indexOf(find) != -1) {

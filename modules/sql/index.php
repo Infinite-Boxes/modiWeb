@@ -36,6 +36,15 @@ class sql {
 			return false;
 		}
 	}
+	public static function del($q) {
+		$todo = self::$pdo->prepare($q.";");
+		$ret = $todo->execute();
+		if($ret !== 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 sql::init();
 ?>

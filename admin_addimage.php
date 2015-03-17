@@ -46,10 +46,10 @@ array_push($tab,
 	"<input type=\"text\" id=\"customUrl\" style=\"width: 300px; margin-right: 10px;\"><input type=\"button\" value=\"Visa miniatyr\" onclick=\"addImage_updateChosen('custom');\">",
 	"<form action=\"function/uploadimage.php\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"uploadImage();\" id=\"uploadForm\">
 	<input type=\"file\" name=\"uploadfile\" id=\"uploadFile\">
-	<input type=\"submit\" value=\"Ladda upp bild\" name=\"submit\">
-</form>",
+	<input type=\"submit\" value=\"Ladda upp bild\" name=\"submit\">",
 	"<input type=\"text\" id=\"imagename\" />",
-	"<input type=\"text\" id=\"imagealt\" onkeyup=\"addImage_updSubtext();\" />"
+	"<input type=\"text\" id=\"imagealt\" onkeyup=\"addImage_updSubtext();\" />
+</form>"
 );
 echo(elements::writeTable($tab, "v"));
 echo("<p id=\"uploadWindow\"></p>");

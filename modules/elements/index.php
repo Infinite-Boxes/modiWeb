@@ -18,7 +18,7 @@ class elements {
 			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
 		}
 		foreach($texts as $k => $v) {
-			if((isset($_SESSION["user"])) && (PAGE != "pages")) {
+			if((isset($_SESSION["user"])) && (page::isEditable() === true)) {
 				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
 			} else {
 				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"], $id);
@@ -168,7 +168,7 @@ class elements {
 							} else {
 								$thAtt = " ".$row["att"];
 							}
-							$ret .= "<th".$thAtt.">".$row["content"]."</th>";
+							$ret .= "<th".$thAtt.">".$row["text"]."</th>";
 						} else {
 							$ret .= "<th>".$row."</th>";
 						}
@@ -179,7 +179,7 @@ class elements {
 								} else {
 									$cAtt = "";
 								}
-								$ret .= "<td".$cAtt.">".$text["content"]."</td>";
+								$ret .= "<td".$cAtt.">".$text["text"]."</td>";
 							} else {
 								$ret .= "<td>".$text."</td>";
 							}
@@ -195,17 +195,17 @@ class elements {
 					}
 				}
 			} else {
+				$ret .= "<tr>";
 				foreach($content as $k => $v) {
-					$ret .= "<tr>";
 					if(is_array($v)) {
 						foreach($row as $key => $text) {
 							$ret .= "<td>".$text."</td>";
 						}
+					} else {
+						$ret .= "<td>".$v."</td>";
 					}
-					$ret .= "</tr>";
 				}
-				foreach($out as $key => $row) {
-				}
+				$ret .= "</tr>";
 			}
 			$ret .= "</table>";
 		}
@@ -229,7 +229,8 @@ class elements {
 			$class = "";
 		}
 		if($title != false) {
-			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\" onclick=\"groupMinimize(this);\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>";
+			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\" onclick=\"groupMinimize(this);\" onmouseover=\"popup('Minimera');\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>
+";
 		}
 	}
 	public static function link($content, $href) {

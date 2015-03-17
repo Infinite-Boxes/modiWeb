@@ -18,6 +18,9 @@ if(strpos($tempstr, "?") !== false) {
 } else {
 	define("PAGE", $tempstr);
 }
+if(isset($_GET["_page"])) {
+	$_SESSION["page"] = $_GET["_page"];
+}
 if($_SERVER["SERVER_NAME"] != "localhost") {
 	define("ROOT", $rootPath);
 } else {

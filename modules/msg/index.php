@@ -16,8 +16,8 @@ class msg {
 	}
 	public static function get() {
 		$ret = ["warnings" => $_SESSION["warning"], "notices" => $_SESSION["notice"]];
-		unset($_SESSION["warning"]);
-		unset($_SESSION["notice"]);
+		$_SESSION["warning"] = [];
+		$_SESSION["notice"] = [];
 		return $ret;
 	}
 }

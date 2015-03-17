@@ -5,6 +5,12 @@ class page {
 	static private $temp = 0;
 	static private $headers = [];
 	static private $tools = [];
+	static private $adminPages = [
+		"admin", 
+		"admin_editimage", 
+		"admin_addimage", 
+		"admin_config"
+	];
 	static public function write($page = "") {
 		$out = sql::get("SELECT * FROM pages WHERE url = '".$page."';");
 		if($out != false) {
@@ -165,5 +171,17 @@ class page {
 		
 		echo(elements::group(elements::writeTable($tools, "v"), "Redigera", "tools_editTools", "", "tool"));
 		echo("</div>");
+	}
+	static public function isEditable() {
+		$page = sql::get("SELECT * FROM pages WHERE url = '".$_SESSION["page"]."'");
+		if($page === false) {
+			if(!in_array($_SESSION["page"], self::$adminPages)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
 	}
 }

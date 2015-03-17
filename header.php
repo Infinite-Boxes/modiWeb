@@ -54,7 +54,7 @@ if(isset($_SESSION["user"])) {
 	<div>
 <a href=\"#\" onclick=\"show('adminedit');\"><img src=\"img/close.png\" alt=\"Stäng\" /></a>
 <a href=\"#\" onclick=\"show('adminedit', false);show('admineditfull', true);\"><img src=\"img/full.png\" alt=\"Förstora\" /></a>
-<img src=\"img/admineditmovable.png\" id=\"admineditmoveable\" onmousedown=\"startDrag(event, 'adminedit');\" ondragstart=\"event.preventDefault();\" alt=\"Flytta\" />
+<img src=\"img/admineditmovable.png\" class=\"imgbutton\" id=\"admineditmoveable\" onmousedown=\"startDrag(event, 'adminedit');\" ondragstart=\"event.preventDefault();\" alt=\"Flytta\" />
 <form action=\"modules/elements/updtexts.php\" method=\"POST\">
 <textarea name=\"txt\" id=\"adminedittextarea\">
 </textarea>
@@ -65,9 +65,11 @@ if(isset($_SESSION["user"])) {
 </div>
 </div>");
 }
+echo("
+<div id=\"header\">
+<div id=\"headerContent\">
+");
 ?>
-<div id="header">
-<div id="headerContent">
 <img src="<?php echo(ROOT); ?>img/logo.png" alt="Banner" />
 </div>
 <?php
@@ -75,8 +77,9 @@ menu::write();
 ?>
 </div>
 <div id="content">
+<div id="out"></div>
 <noscript>
-<p class="warning">Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.</p>
+Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.
 </noscript>
 <?php
 $msgs = msg::get();
