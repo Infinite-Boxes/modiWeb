@@ -18,6 +18,9 @@ if(strpos($tempstr, "?") !== false) {
 } else {
 	define("PAGE", $tempstr);
 }
+if(isset($_SESSION["previous_page"])) {
+	define("PREPAGE", $_SESSION["previous_page"]);
+}
 if(isset($_GET["_page"])) {
 	$_SESSION["page"] = $_GET["_page"];
 }

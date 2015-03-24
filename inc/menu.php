@@ -2,34 +2,48 @@
 class menu {
 	static private $items;
 	static public function init() {
+		// STANDARD
 		self::add("Hem", "hem");
 		if(isset($_SESSION["user"])) {
 			self::add("Admin", "admin");
 			self::add("Sidor", "admin_pages", "admin");
 			self::add("Bilder", "admin_images", "admin");
 		}
-		$items = scandir(ROOT."modules");
-		foreach($items as $k => $v) {
-			if(file_exists(ROOT."modules/".$v."/manifest.php")) {
-				include(ROOT."modules/".$v."/manifest.php");
-				if(isset($menu)) {
-					self::add($menu, $menuLink);
+		// MODULES
+		foreach(moduleManifest::getMenu() as $k => $v) {
+			if(isset($v["name"])) {
+				self::add($v["name"], $v["link"], $v["parent"]);
+			} elseif(isset($v[0]["name"])) {
+				foreach($v as $key => $val) {
+					self::add($v[$key]["name"], $v[$key]["link"], $v[$key]["parent"]);
 				}
 			}
 		}
+		// PAGES
 		$pages = sql::get("SELECT * FROM pages");
 		if($pages != false) {
 			if(isset($pages["name"])){
-				self::add($pages["name"], $pages["url"]);
+				if($pages["parent"] == null) {
+					self::add($pages["name"], $pages["url"]);
+				} else {
+					self::add($pages["name"], $pages["url"], $pages["parent"]);
+				}
 			} else {
 				foreach($pages as $k => $v) {
-					self::add($v["name"], $v["url"]);
+					if($v["parent"] == null) {
+						self::add($v["name"], $v["url"]);
+					} else {
+						self::add($v["name"], $v["url"], $v["parent"]);
+					}
 				}
 			}
 		}
 	}
-	static private function add($name, $url, $parent = "main") {
+	static public function add($name, $url, $parent = "main") {
 		$toPush = ["name" => $name, "url" => $url];
+		if($parent == "") {
+			$parent = "main";
+		}
 		if(!isset(self::$items[$parent])) {
 			self::$items[$parent] = [];
 		}
@@ -47,6 +61,7 @@ class menu {
 		return $ret;
 	}
 	static public function write() {
+		self::init();
 		$conf = Config::getMenu();
 		echo("<script>
 ");
@@ -106,12 +121,16 @@ menuCurrentPage = '".$_SESSION["page"]."';
 							$link = "";
 						}
 					}
+					$active = "";
+					if(isset($_GET["cat"])) {
+						if($v2["url"] == "c_".$_GET["cat"]) {
+							$active = " menuActive";
+						}
+					}
 					if($_SESSION["page"] == $v2["url"]) {
 						$active = " menuActive";
-					} else {
-						$active = "";
 					}
-					echo("<li class=\"td link".$active."\"".$link."><a href=\"".$v2["url"]."\">".$v2["name"]."</a></li>");
+					echo("<li class=\"td link".$active."\"".$link."><a href=\"".urlencode($v2["url"])."\">".$v2["name"]."</a></li>");
 				}
 				echo("</ul></div>");
 				if($sw == false) {
@@ -130,4 +149,3 @@ menuCurrentPage = '".$_SESSION["page"]."';
 		}
 	}
 }
-menu::init();

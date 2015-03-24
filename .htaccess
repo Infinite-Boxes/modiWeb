@@ -6,10 +6,11 @@ Options +FollowSymLinks -Multiviews
 
 DirectoryIndex page.php?_page=hem sitedown.php
 
-RewriteRule		^error([0-9]+)$				error.php?e=$1					[NC]
-RewriteRule		^headermaker$				headermaker.php					[NC]
-RewriteRule		^([a-z0-9_]+)$					page.php?_page=$1				[QSA,NC,L]
-RewriteRule		^shop/(.+)$					page.php?_page=shop&id=$1		[QSA,NC,L]
+RewriteRule		^error([0-9]+)$			error.php?e=$1						[NC]
+RewriteRule		^headermaker$			headermaker.php						[NC]
+RewriteRule		^p_([a-z0-9%_]+)$		page.php?_page=product&product=$1	[QSA,NC,L]
+RewriteRule		^c_([a-z0-9%_]+)$		page.php?_page=shop&cat=$1			[QSA,NC,L]
+RewriteRule		^([a-z0-9%_]+)$			page.php?_page=$1					[QSA,NC,L]
 
 
 RewriteCond 	%{ENV:REDIRECT_STATUS} 200

@@ -6,10 +6,12 @@ class page {
 	static private $headers = [];
 	static private $tools = [];
 	static private $adminPages = [
-		"admin", 
-		"admin_editimage", 
-		"admin_addimage", 
-		"admin_config"
+		"admin",
+		"admin_editimage",
+		"admin_addimage",
+		"admin_pages",
+		"admin_images",
+		"admin_createnewpage"
 	];
 	static public function write($page = "") {
 		$out = sql::get("SELECT * FROM pages WHERE url = '".$page."';");

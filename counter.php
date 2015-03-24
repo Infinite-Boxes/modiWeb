@@ -1,4 +1,5 @@
 <?php
+echo("<a href=\"".PAGE."\">Tecken</a> <a href=\"".PAGE."?t=word\">Ord</a> <a href=\"".PAGE."?t=row\">Rader</a>");
 $rootpath = '.';
 $fileinfos = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($rootpath)

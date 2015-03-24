@@ -10,6 +10,23 @@ function obj(object) {
 		return false;
 	}
 }
+function fader(state) {
+	if(typeof state == "undefined") {
+		if(obj("grey").classList.contains("off")) {
+			obj("grey").classList.remove("off");
+		obj("grey").style.display = "none";
+		} else {
+		obj("grey").style.display = "block";
+			obj("grey").classList.add("off");
+		}
+	} else if(state == "on") {
+		obj("grey").style.display = "block";
+		obj("grey").classList.remove("off");
+	} else {
+		obj("grey").classList.add("off");
+		obj("grey").style.display = "none";
+	}
+}
 function groupMinimize(object) {
 	if(object.parentNode.id != "") {
 		if(object.parentNode.children[1].classList.contains("groupcontentDisabled")) {
@@ -177,6 +194,7 @@ function moving(event) {
 var menuList = [];
 var menuTimer;
 var menuCurrentPage = "";
+var prePage = "";
 function submenu(id) {
 	if((id != "none") && (id != "reset")) {
 		for(var c = 0; c < obj("menu").children.length; c++) {
@@ -185,8 +203,7 @@ function submenu(id) {
 			}
 		}
 		obj("sub"+id).classList.remove("disabledMenu");
-	} else if(id == "reset") {
-	} else {
+	} else if(id != "reset") {
 		for(var c = 0; c < obj("menu").children.length; c++) {
 			if(obj("menu").children[c].id != "main") {
 				obj("menu").children[c].classList.add("disabledMenu");
@@ -197,6 +214,7 @@ function submenu(id) {
 	menuTimer = setTimeout(function() {
 		submenuReset(id);
 	}, 2000);
+	prePage = id;
 }
 function submenuReset(id) {
 	var subMenuName = "";

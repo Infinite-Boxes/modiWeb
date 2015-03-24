@@ -28,7 +28,7 @@ class statistics {
 				$parts = sql::get("SELECT MAX(time) AS lastTime, COUNT(page) AS pages FROM statistics WHERE ip = '".$ipList["ip"]."' LIMIT 0,50");
 				$ret[$ipList["ip"]]["time"] = $parts["lastTime"];
 				$ret[$ipList["ip"]]["pages"] = count(sql::get("SELECT page FROM statistics WHERE ip = '".$ipList["ip"]."' GROUP BY page LIMIT 0,50"));
-				$lp = sql::get("SELECT page FROM statistics WHERE ip = '".$ipList["ip"]."' GROUP BY page ORDER BY time ASC LIMIT 0,50");
+				$lp = sql::get("SELECT page FROM statistics WHERE ip = '".$ipList["ip"]."' AND page != '' GROUP BY page ORDER BY time ASC LIMIT 0,50");
 				if(isset($lp["page"])) {
 					$ret[$ipList["ip"]]["lastPage"] = $lp["page"];
 				} else {

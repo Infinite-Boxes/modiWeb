@@ -29,21 +29,17 @@ class sql {
 	}
 	public static function upd($q) {
 		$todo = self::$pdo->prepare($q.";");
-		$todo->execute();
-		if($todo->rowCount() == 1) {
+		$ret = $todo->execute();
+		if($ret === true) {
 			return true;
 		} else {
-			return false;
+			return $todo->errorInfo();
 		}
 	}
 	public static function del($q) {
 		$todo = self::$pdo->prepare($q.";");
 		$ret = $todo->execute();
-		if($ret !== 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return $ret;
 	}
 }
 sql::init();

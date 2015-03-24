@@ -20,6 +20,7 @@ if(file_exists("js/".$_GET["_page"].".js")) {
 ?>
 </head>
 <body>
+<div id="grey" class="off" style="display: none;"></div>
 <?php
 echo("<script>
 var statVar = \"".statistics::rec()."\";

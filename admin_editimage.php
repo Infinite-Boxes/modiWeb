@@ -2,7 +2,7 @@
 elements::write("h1", "Redigera bild");
 $img = sql::get("SELECT * FROM images WHERE id = '".$_GET["id"]."';");
 if($img !== false) {
-	echo(elements::link("Tillbaka", "admin")."<br />");
+	echo(elements::link("Tillbaka", "admin_images")."<br />");
 	
 } else {
 	msg::warning("Ett fel har inträffat. Försök igen senare.");
@@ -19,4 +19,4 @@ array_push($tab,
 );
 echo(elements::writeTable($tab, "v"));
 echo("<p id=\"uploadWindow\"></p>");
-echo(elements::button("tool_save.png", ["js", "addImage_add();"], "saveImage", "onmouseover=\"popup('Spara bild');\""));
+echo(elements::button("tool_ok.png", ["js", "editImage_save(".$_GET["id"].");"], "saveImage", "onmouseover=\"popup('Spara bild');\""));

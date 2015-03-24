@@ -4,7 +4,7 @@ class Config {
 	private static $db = [];
 	private static $css = [];
 	private static $menu = [];
-	static function init() {
+	static public function init() {
 		// Required modules
 		self::$db["dsn"] = "mysql:host=localhost;dbname=modiweb";
 		self::$db["user"] = "root";
@@ -16,7 +16,7 @@ class Config {
 		self::$menu["orientation"] = "horizontal";
 		
 		// Other modules
-		//array_push(self::$modules, "base");
+		array_push(self::$modules, "base");
 		array_push(self::$modules, "msg");
 		array_push(self::$modules, "browsercheck");
 		array_push(self::$modules, "sql");
@@ -25,8 +25,19 @@ class Config {
 		array_push(self::$modules, "elements");
 		array_push(self::$modules, "page");
 		array_push(self::$modules, "users");
+		array_push(self::$modules, "lang");
 		array_push(self::$modules, "dates");
+		
+		array_push(self::$modules, "shop");
+		
 		self::loadModules();
+		
+		// SET SESSIONS
+		if(!isset($_SESSION["lang"])) {
+			$_SESSION["lang"] = self::getConfig("default_lang");
+		} else {
+			$_SESSION["lang"] = self::getConfig("default_lang");
+		}
 	}
 	private static function loadModules() {
 		foreach(self::$modules as $k => $v) {
@@ -47,7 +58,11 @@ class Config {
 		return self::$menu;
 	}
 	public static function getConfig($key = "all") {
-		return sql::get("SELECT val FROM config_site WHERE name = '".$key."'")["val"];
+		if($key == "all") {
+			return sql::get("SELECT name,val FROM config_site");
+		} else {
+			return sql::get("SELECT val FROM config_site WHERE name = '".$key."'")["val"];
+		}
 	}
 }
 Config::init();

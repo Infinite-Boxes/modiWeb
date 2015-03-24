@@ -1,6 +1,6 @@
 <?php
 elements::write("h1", "Lägg till bild");
-echo(elements::link("Tillbaka", "admin")."<br />");
+echo(elements::link("Tillbaka", "admin_images")."<br />");
 $rootPath = 'img/user';
 $fileList = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($rootPath)
