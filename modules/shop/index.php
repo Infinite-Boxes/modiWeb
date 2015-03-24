@@ -142,8 +142,63 @@ class shop {
 		}
 		return $depth;
 	}
+	static private function catChildren($id) {
+		$depth = 0;
+		$pid = $cat;
+		$err = 0;
+		while($pid !== "") {
+			foreach($cats as $k => $v) {
+				if($k == $pid) {
+					$pid = $v;
+				}
+			}
+			if($pid != "") {
+				$depth++;
+			}
+			$err ++;
+			if($err == 20) {
+				$pid = "";
+			}
+		}
+		return $depth;
+	}
 	static public function orderQuery() {
 		
+	}
+	static public function subProductsCount($id = false) {
+		if($id !== false) {
+			if($_SESSION["filterCatInclude"] == "true") {
+				$cats = sql::get("SELECT id,parent FROM products_categories");
+				$toSearch = [];
+				foreach($cats as $k => $v) {
+					if($v["parent"] == $id) {
+						array_push($toSearch, $v);
+					}
+				}
+				$c = 0;
+				$count = 0;
+				while(count($toSearch) > 0) {
+					$toFind = array_shift($toSearch);
+					$count = $count+sql::get("SELECT COUNT(*) as c FROM products WHERE cat = ".$toFind["id"])["c"];
+					foreach($cats as $k => $v) {
+						if($v["parent"] == $toFind["id"]) {
+							array_push($toSearch, $v);
+						}
+					}
+					
+					if($c > 50) {
+						$toSearch = [];
+					}
+					$c++;
+				}
+			} else {
+				$count = 0;
+			}
+			$base = sql::get("SELECT COUNT(*) AS c FROM products WHERE cat = ".$id)["c"];
+			return $base+$count;
+		} else {
+			return false;
+		}
 	}
 	static public function emptyShop() {
 		return "<p>Inga produkter</p>";
@@ -175,7 +230,7 @@ if($cats != false) {
 			} else {
 				$sel = "";
 			}
-			$select .= "<option value=\"".$v["url"]."\"".$sel.">".str_repeat(".&nbsp;", self::catDepth($theCats, $v["id"])).$v["name"]."</option>";
+			$select .= "<option value=\"".$v["url"]."\"".$sel.">".str_repeat("-&nbsp;", self::catDepth($theCats, $v["id"])).$v["name"]." (".self::subProductsCount($v["id"]).")</option>";
 		}
 	}
 	$select .= "</select></p>
