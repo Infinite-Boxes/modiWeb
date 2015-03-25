@@ -10,6 +10,10 @@ if(Config::getCSS("theme") !== false) {
 	echo("<link rel=\"stylesheet\" type=\"text/css\" href=\"".ROOT."style/".Config::getCSS()["theme"]."\">
 ");
 }
+foreach(moduleManifest::getCSS() as $k => $v) {
+	echo("<link rel=\"stylesheet\" type=\"text/css\" href=\"".$v."\">
+");
+}
 ?>
 <script src="js/base.js"></script>
 <?php

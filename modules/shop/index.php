@@ -210,7 +210,7 @@ EOD;
 $cats = sql::get("SELECT * FROM products_categories ORDER BY parent ASC, id ASC");
 if($cats != false) {
 	$form = "<form action=\"functions/shop_redir.php\" method=\"POST\">";
-	$select = $form."<p>".lang::getText("category")."<select name=\"filterCat\" id=\"filterCat\" style=\"margin-left: 5px;\" onchange=\"submit();\">";
+	$select = $form."<p>".lang::getText("category")."<select name=\"filterCat\" id=\"filterCat\" style=\"margin: 0px 5px;\" onchange=\"submit();\">";
 	if($cat !== null) {
 		$select .= "<option value=\"__all__\" selected>".lang::getText("everything")."</option>";
 	} else {
@@ -234,10 +234,10 @@ if($cats != false) {
 		}
 	}
 	$select .= "</select></p>
-	</form>";
+</form>";
 	$includes = $form;
 	$filterCatInclude_yes = "<input type=\"hidden\" name=\"filterCatInclude\" value=\"true\"><input type=\"submit\" value=\"".lang::getText("incl_subcategories")."\" />";
-	$filterCatInclude_no = "<input type=\"hidden\" name=\"filterCatInclude\" value=\"false\"><input type=\"submit\" value=\"".lang::getText("excl_subcategories")."\" style=\"color: #f00;\" />";
+	$filterCatInclude_no = "<input type=\"hidden\" name=\"filterCatInclude\" value=\"false\"><input type=\"submit\" value=\"".lang::getText("excl_subcategories")."\" />";
 	if(isset($_SESSION["filterCatInclude"])) {
 		if($_SESSION["filterCatInclude"] == "true") {
 			$includes .= $filterCatInclude_no;
@@ -248,9 +248,47 @@ if($cats != false) {
 		$includes .= $filterCatInclude_no;
 	}
 	$includes .= "
-	</form>";
+</form>";
+	$sortBy = $form."<p>Sortera efter <select id=\"shopSortBy\" name=\"sortby\" onchange=\"submit();\">
+";
+	foreach(moduleManifest::getModVal("shopSortBy") as $k => $v) {
+		if(isset($_SESSION["shopSortBy"])) {
+			if($_SESSION["shopSortBy"] == $v["var"]) {
+				$selected = " selected";
+			} else {
+				$selected = "";
+			}
+		} else {
+			$selected = "";
+		}
+		$sortBy .= "<option value=\"".$v["var"]."\"".$selected.">".lang::getText($v["name"])."</option>
+";
+	}
+	$sortBy .= "
+</select></p>";
+	
+	$sortBy .= "</form>";
+	$sortDir = $form."<p>";
+	$sortDesc = "<input type=\"hidden\" name=\"sortdirection\" value=\"DESC\"><input type=\"submit\" value=\"".lang::getText("asc")."\" id=\"shopSortDir\" />";
+	$sortAsc = "<input type=\"hidden\" name=\"sortdirection\" value=\"ASC\"><input type=\"submit\" value=\"".lang::getText("desc")."\" id=\"shopSortDir\" />";
+	if(isset($_SESSION["sortDirection"])) {
+		if($_SESSION["sortDirection"] == "ASC") {
+			$sortDir .= $sortDesc;
+		} else {
+			$sortDir .= $sortAsc;
+		}
+	} else {
+		$sortDir .= $sortAsc;
+	}
+	$sortDir .= "</p></form>";
+	$view = $form;
+	
+	$view .= "</form>";
 	$str .= $select;
 	$str .= $includes;
+	$str .= $sortBy;
+	$str .= $sortDir;
+	$str .= $view;
 }
 $str .= "</div>
 ";

@@ -599,6 +599,7 @@ table tr th {
 }
 #filterMenu form {
 	display: table-cell;
+	margin: 0px 5px;
 }
 
 .product {

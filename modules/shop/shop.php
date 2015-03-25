@@ -28,7 +28,12 @@ if(count($filter) > 0) {
 } else {
 	$filterTxt = "";
 }
-$sql = "SELECT id,name,price,img,flags FROM products".$filterTxt.shop::orderQuery();
+if((isset($_SESSION["sortDirection"])) && (isset($_SESSION["shopSortBy"]))) {
+	$sortStr = " ORDER BY ".$_SESSION["shopSortBy"]." ".$_SESSION["sortDirection"];
+} else {
+	$sortStr = "";
+}
+$sql = "SELECT id,name,price,img,flags FROM products".$filterTxt.$sortStr;
 $sqlList = sql::get($sql);
 if($sqlList !== false) {
 	$products = [];

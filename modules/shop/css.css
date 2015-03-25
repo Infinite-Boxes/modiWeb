@@ -1,0 +1,10 @@
+#shopSortBy {
+	border-radius: 10px 0px 0px 10px;
+	height: 25px;
+}
+#shopSortDir {
+	border-radius: 0px 10px 10px 0px;
+	height: 25px;
+	position: relative;
+	left: -10px;
+}
