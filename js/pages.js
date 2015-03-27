@@ -27,6 +27,7 @@ function tools_save() {
 		o.style.background = "";
 		onclicks[o.id] = o.onclick;
 		o.removeAttribute("onclick");
+		o.removeAttribute("id");
 	}
 	var toSend = obj("pageeditor").innerHTML;
 	ajax("functions/savepage.php?id="+pageId+"&content="+toSend, "GET", "popup");
@@ -34,6 +35,7 @@ function tools_save() {
 		var o = obj("pageeditor").children[c];
 		o.onclick = onclicks[o.id];
 	}
+	tools_load();
 }
 function tools_load() {
 	for(var c = 0; c < obj("pageeditor").children.length; c++) {

@@ -10,6 +10,7 @@ function ok($var){
 	if(substr($var, -4) == ".ttf") { $ret = false; }
 	if(substr($var, -4) == ".png") { $ret = false; }
 	if(substr($var, -4) == ".jpg") { $ret = false; }
+	if(substr($var, -4) == ".sql") { $ret = false; }
 	if(substr($var, 0, 12) == "projectfiles") { $ret = false; }
 	if($var == ".htaccess") { $ret = false; }
 	if($var == ".project") { $ret = false; }

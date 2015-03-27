@@ -19,8 +19,127 @@ class page {
 			$out["content"] = elements::keyReplace("", $out["content"], "");
 			self::ak("!b!", "<div>");
 			self::ak("!e!", "</div>");
-			echo(str_replace(self::$keys, self::$vals, $out["content"]));
+			$txt = str_replace(self::$keys, self::$vals, $out["content"]);
+			$txt = self::replaceVariables($txt);
+			$txt = self::replaceDbQueries($txt);
+			echo($txt);
 		}
+	}
+	static private function replaceVariables($txt) {
+		$c = 0;
+		while($pos = stripos($txt, "!V!")) {
+			$pos2 = stripos($txt, "!:!", $pos);
+			if($pos2 == false) {
+				$pos2 = strlen($txt);
+			}
+			$var = substr($txt, $pos+3, ($pos2-$pos)-3);
+			$txt = substr_replace($txt, $_GET[$var], $pos, ($pos2-$pos)+3);
+			if($c == 500) {
+				echo(lang::getText("limit_exceeded_variables"));
+				break;
+			}
+			$c++;
+		}
+		return $txt;
+	}
+	static private function replaceDbQueries($txt) {
+		$c = 0;
+		while($pos = stripos($txt, "!GET!")) {
+			$pos2 = stripos($txt, "!ENDGET!", $pos);
+			if($pos2 === false) {
+				$txt = substr_replace($txt, "", $pos, 4);
+				break;
+			} else {
+				$sqlQuery = substr($txt, $pos+6, ($pos2-$pos)-7);
+				$endQuery = "SELECT ";
+				$keys = [];
+				$c2 = 0;
+				$keyBegin = 0;
+				while(($tpos = stripos($sqlQuery, "KEY_")) !== false) {
+					$type = "res";
+					$typeStr1 = "";
+					$typeStr2 = "";
+					$diff = 0;
+					if(substr($sqlQuery, $tpos+4, 4) == "SUM_") {
+						$typeStr1 = "SUM(";
+						$typeStr2 = ")";
+						$diff = 4;
+					}
+					if(substr($sqlQuery, $tpos+4+$diff, 1) == "\"") {
+						$tpos2 = stripos($sqlQuery, "\"", 5)+1;
+						//$sqlQuery = substr_replace($sqlQuery, "", $tpos+4, 1);
+					} else {
+						$tpos2 = stripos($sqlQuery, " ");
+					}
+					array_push($keys, $typeStr1.substr($sqlQuery, $tpos+4+$diff, $tpos2-($tpos+4)-$diff).$typeStr2);
+					$sqlQuery = substr_replace($sqlQuery, "", $tpos, ($tpos2-$tpos)+1);
+					if($c2 == 20) {
+						echo(lang::getText("unknown_error"));
+						break;
+					}
+					$c2++;
+				}
+				$val = 0;
+				foreach($keys as $k => $v) {
+					if($endQuery != "SELECT ") {
+						$endQuery .= ",".$v." AS val".$val;
+					} else {
+						$endQuery .= $v." AS val".$val;
+					}
+					$val++;
+				}
+				$table = "!:!:!ERROR!:!:!";
+				while(($tpos = stripos($sqlQuery, "FROM_")) !== false) {
+					if(substr($sqlQuery, $tpos+5, 1) == "\"") {
+						$sqlQuery = substr_replace($sqlQuery, "", $tpos+6, 1);
+						$tpos2 = stripos($sqlQuery, "\"");
+					} else {
+						$tpos2 = stripos($sqlQuery, " ");
+					}
+					$table = substr($sqlQuery, $tpos+5, $tpos2-($tpos+5));
+					$sqlQuery = substr_replace($sqlQuery, "", $tpos, ($tpos2-$tpos)+1);
+					if($c2 == 20) {
+						echo(lang::getText("unknown_error"));
+						break;
+					}
+					$c2++;
+				}
+				$endQuery .= " FROM ".$table;
+				if(stripos($sqlQuery, "WHERE ") !== false) {
+					$sqlQuery = str_replace("WHERE ", " WHERE ", $sqlQuery);
+					$endQuery .= str_replace("IS", "=", $sqlQuery);
+				} else {
+					$endQuery = "!:!:!ERROR!:!:!";
+				}
+				if(stripos($endQuery, "!:!:!ERROR!:!:!") === false) {
+					$value = sql::get($endQuery);
+					$ret = "";
+					if(is_array($value)) {
+						foreach($value as $k => $v) {
+							if(is_array($v)) {
+								foreach($v as $k2 => $v2) {
+									$ret .= $v2."<br />";
+								}
+							} else {
+								$ret .= $v."<br />";
+							}
+						}
+					} else {
+						$ret = $value;
+					}
+					$txt = substr_replace($txt, $ret, $pos, ($pos2-$pos)+8);
+				} else {
+					echo(lang::getText("unknown_error"));
+					break;
+				}
+			}
+			if($c == 500) {
+				echo(lang::getText("limit_exceeded_variables"));
+				break;
+			}
+			$c++;
+		}
+		return $txt;
 	}
 	static public function editable($url) {
 		$out = sql::get("SELECT * FROM pages WHERE url = '".$url."' OR name = '".$url."';");
