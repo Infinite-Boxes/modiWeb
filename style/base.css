@@ -20,7 +20,7 @@ p {
 	font-size: 0.8em;
 	text-indent: 10px;
 }
-p,h1,h2,h3 {
+p,h1,h2,h3,pre {
 	color: #116F50;
 	white-space: pre-line;
 }
@@ -33,14 +33,14 @@ a:not(img) {
 a img {
 	border: none;
 }
-#content a img:not(.imgbutton) {
+#content a img:not(.imgbutton):not(.imgNotLinked) {
 	border: initial;
 	border-bottom: 2px solid #EE5573;
 	border-width: 0px;
 	margin-bottom: initial;
 	transition: border-width 200ms, border-radius 200ms, margin-bottom 200ms;
 }
-#content a img:not(.imgbutton):hover {
+#content a img:not(.imgbutton):not(.imgNotLinked):hover {
 	border-radius: 0px 0px 10px 10px;
 	margin-bottom: -5px;
 	border-width: 5px;
@@ -262,6 +262,9 @@ select:hover {
 pre {
 	display: block;
 	font-family: Monospace;
+	border: 1px solid #aaa;
+	border-radius: 10px;
+	padding: 5px;
 }
 table {
 	margin: 5px 0px;
@@ -452,6 +455,7 @@ table tr th {
 	overflow: auto;
 	padding: 5px;
 }
+
 #adminedit * {
 	display: block;
 }
@@ -508,17 +512,21 @@ table tr th {
 .pageeditmenu p {
 	cursor: default;
 }
-.pageeditmenu table tr td {
+.pageeditmenu table tr td:nth-child(2) {
 	padding: 2px;
+	width: 100%;
 }
 .pageeditmenu textarea {
-	width: 100%;
+	width: 90%;
 	overflow: hidden;
 	border: 1px solid #A75A1A;
 	border-radius: 10px 10px 0px 10px;
 	color: #116F50;
 	padding: 3px 10px;
 	background: linear-gradient(180deg, #ddd, #fff);
+}
+.pageeditmenu #toolsDatabase {
+	width: 80%;
 }
 .pageeditmenu h2 {
 	cursor: pointer;
@@ -635,4 +643,11 @@ table tr th {
 	border: 1px solid #aaa;
 	max-width: 100px;
 	max-height: 100px;
+}
+
+.documentationtable td {
+	vertical-align: top;
+}
+.documentationtable td:first-child {
+	width: 100px;
 }

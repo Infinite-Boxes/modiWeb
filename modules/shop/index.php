@@ -12,9 +12,9 @@ class shop {
 			$priceFlags = "";
 		}
 		$price = $obj["price"];
-		return "<div class=\"product\"><p class=\"name\">".$obj["name"]."</p>
-<img src=\"".$img."\" />
-<p class=\"price".$priceFlags."\">".$price." ".lang::getText("currency")."</p></div>";
+		return "<a href=\"p_".$obj["url"]."\"><div class=\"product\"><p class=\"name\">".$obj["name"]."</p>
+<img src=\"".$img."\" class=\"imgNotLinked\" />
+<p class=\"price".$priceFlags."\">".$price." ".lang::getText("currency")."</p></div></a>";
 	}
 	public static function getCats($prod) {
 		$cat = [];
@@ -293,6 +293,10 @@ if($cats != false) {
 $str .= "</div>
 ";
 		return $str;
+	}
+	static public function getProduct($url) {
+		$ret = sql::get("SELECT * FROM products WHERE url = '".$url."'");
+		return $ret;
 	}
 }
 ?>

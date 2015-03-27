@@ -69,6 +69,7 @@ function tools_load() {
 		}
 		o.setAttributeNode(ev);
 	}
+	tools_disable(obj("tools_code"));
 }
 function tools_loadTool(object, cat) {
 	if(cat.search(" ") !== -1) {
@@ -142,9 +143,9 @@ function tools_undisable(object) {
 }
 function tools_disable(object) {
 	if(object.classList.contains("disabledTool") != true) {
-			setTimeout(function(){
-				object.style.display = "none";
-			}, 210);
+		setTimeout(function(){
+			object.style.display = "none";
+		}, 210);
 		object.classList.add("disabledTool");
 	}
 }
@@ -254,6 +255,7 @@ function tools_change() {
 		} else {
 			popup("Du måste fylla i text");
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_detailEdit() {
@@ -304,6 +306,7 @@ function tools_detailEditSave() {
 				tools_marked.vars.editMode = false;
 			}
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_changeLink() {
@@ -323,6 +326,7 @@ function tools_changeLink() {
 			tools_marked.removeAttribute("href");
 			popup("Länken är tom");
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_followLink() {
@@ -360,11 +364,13 @@ function tools_mark(object) {
 		tools_editType("none", "");
 	}
 	tools_changeTools();
+	tools_updateCodearea();
 }
 function tools_del() {
 	if(tools_marked !== -1) {
 		obj("pageeditor").removeChild(tools_marked);
 		tools_mark("none");
+		tools_editCode(false);
 	} else {
 		popup("Inget markerat");
 	}
@@ -399,6 +405,7 @@ function tools_move(dir) {
 function tools_align(align) {
 	if(tools_marked != -1) {
 		tools_marked.style.textAlign = align;
+		tools_updateCodearea();
 	}
 }
 function tools_textSize(size) {
@@ -425,11 +432,13 @@ function tools_textSize(size) {
 		main.appendChild(object);
 		obj("pageeditor").replaceChild(object, tools_marked);
 		tools_mark(object);
+		tools_updateCodearea();
 	}
 }
 function tools_displayType(display) {
 	if(tools_marked != -1) {
 		tools_marked.style.display = display;
+		tools_updateCodearea();
 	}
 }
 function tools_float(floatTo) {
@@ -448,6 +457,7 @@ function tools_float(floatTo) {
 				tools_marked.style.float = "none";
 			}
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_maxWidth() {
@@ -457,6 +467,7 @@ function tools_maxWidth() {
 		} else {
 			tools_marked.style.maxWidth = "";
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_tableRow(type) {
@@ -488,6 +499,7 @@ function tools_tableRow(type) {
 				tools_updTableBorders();
 			}
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_tableCell(type) {
@@ -516,6 +528,7 @@ function tools_tableCell(type) {
 				tools_updTableBorders();
 			}
 		}
+		tools_updateCodearea();
 	}
 }
 function tools_updTableBorders() {
@@ -553,6 +566,7 @@ function tools_tableBorder(type) {
 			}
 		}
 		tools_updTableBorders();
+		tools_updateCodearea();
 	}
 }
 function tools_list(todo) {
@@ -568,6 +582,7 @@ function tools_list(todo) {
 				tools_marked.removeChild(tools_marked.children[tools_marked.children.length-1]);
 			}
 		}
+		tools_updateCodearea();
 	}
 }
 
@@ -599,5 +614,30 @@ function tools_updateImage() {
 		} else {
 			tools_marked.children[0].src = "img/tools_emptyimage.png";
 		}
+		tools_updateCodearea();
 	}
+}
+function tools_updateCodearea() {
+	obj("codearea").value = tools_marked.innerHTML;
+	obj("codearea").rows = Math.ceil((obj("codearea").value.length)/35);
+}
+function tools_editCode(set) {
+	if(typeof set == "undefined") {
+		if(obj("tools_code").classList.contains("disabledTool")) {
+			tools_undisable(obj("tools_code"));
+			tools_updateCodearea();
+		} else {
+			tools_disable(obj("tools_code"));
+		}
+	}
+	if(set == true) {
+		tools_undisable(obj("tools_code"));
+		tools_updateCodearea();
+	} else {
+		tools_disable(obj("tools_code"));
+	}
+}
+function tools_updateCode() {
+	tools_marked.innerHTML = obj("codearea").value;
+	tools_mark(tools_marked);
 }

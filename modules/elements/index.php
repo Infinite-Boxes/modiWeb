@@ -212,7 +212,7 @@ class elements {
 		
 		return $ret;
 	}
-	public static function group($content, $title = false, $id = false, $attr = false, $class = false) {
+	public static function group($content, $minimizable = false, $title = false, $id = false, $attr = false, $class = false) {
 		if($id !== false) {
 			$idt = " id=\"".$id."\"";
 		} else {
@@ -228,8 +228,13 @@ class elements {
 		} else {
 			$class = "";
 		}
+		if($minimizable === true) {
+			$minimize = " onclick=\"groupMinimize(this);\" onmouseover=\"popup('Minimera');\"";
+		} else {
+			$minimize = "";
+		}
 		if($title != false) {
-			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\" onclick=\"groupMinimize(this);\" onmouseover=\"popup('Minimera');\"><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>
+			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\"".$minimize."><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>
 ";
 		}
 	}

@@ -10,7 +10,7 @@ $form["header"] = ["Användarnamn", "Lösenord", ""];
 $form[0] = "<input type=\"text\" name=\"username\" />";
 $form[1] = "<input type=\"password\" name=\"password\" />";
 $form[2] = "<input type=\"submit\" value=\"Logga in\" />";
-echo(elements::group(elements::writeTable($form), "Logga in"));
+echo(elements::group(elements::writeTable($form), false, "Logga in"));
 ?>
 <input type="hidden" name="rid" value="<?php echo($_SESSION["rid"]); ?>" />
 </form>
@@ -26,7 +26,7 @@ echo(elements::group(elements::writeTable($form), "Logga in"));
 	foreach($configs as $k => $v) {
 		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
 	}
-	echo(elements::group(elements::writeTable($configOut), "Sidans konfiguration", "", "style=\"float: left; width: 300px;\"", "tabcell"));
+	echo(elements::group(elements::writeTable($configOut), false, "Sidans konfiguration", "", "style=\"float: left; width: 300px;\"", "tabcell"));
 }
 
 /*
@@ -50,6 +50,6 @@ if($users != "Tomt") {
 		];
 		array_push($userlist, $user);
 	}
-	echo(elements::group(elements::writeTable($userlist, "vertical"), "Användare"));
+	echo(elements::group(elements::writeTable($userlist, "vertical"), false, "Användare"));
 }
 */

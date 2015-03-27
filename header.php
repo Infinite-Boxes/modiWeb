@@ -17,9 +17,11 @@ foreach(moduleManifest::getCSS() as $k => $v) {
 ?>
 <script src="js/base.js"></script>
 <?php
-if(file_exists("js/".$_GET["_page"].".js")) {
-	echo("<script src=\"js/".$_GET["_page"].".js\"></script>
-");
+if(!config::isProtectedPage($_GET["_page"])) {
+	if(file_exists("js/".$_GET["_page"].".js")) {
+		echo("<script src=\"js/".$_GET["_page"].".js\"></script>
+	");
+	}
 }
 ?>
 </head>
@@ -34,9 +36,9 @@ var statVar = \"".statistics::rec()."\";
 <?php
 if(isset($_SESSION["user"])) {
 	if(PAGE != "pages") {
-		$cPage = sql::get("SELECT url,id FROM pages WHERE url = '".PAGE."';");
-		if($cPage["url"] == PAGE) {
-			echo("<a href=\"pages?id=".$cPage["id"]."\" class=\"admineditable\">Redigera sidan</a>");
+		$editable = page::editable($_GET["_page"]);
+		if($editable !== false) {
+			echo("<a href=\"pages?id=".$editable."\" class=\"admineditable\">Redigera sidan</a>");
 		}
 	}
 }
@@ -84,7 +86,11 @@ menu::write();
 <div id="content">
 <div id="out"></div>
 <noscript>
-Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.
+<p style="background: #fff; color: #f00; border: 1px solid #f00; border-radius: 10px; padding: 10px; margin: 0px;">Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.<?php
+if(PAGE == "pages") {
+	echo("<br />Just denna sidan kan inte användas alls utan Javascript. Aktivera det för att kunna redigera sidor.");
+}
+?></p>
 </noscript>
 <?php
 $msgs = msg::get();

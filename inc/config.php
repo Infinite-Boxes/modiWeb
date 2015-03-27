@@ -4,6 +4,7 @@ class Config {
 	private static $db = [];
 	private static $css = [];
 	private static $menu = [];
+	private static $protectedPages = [];
 	static public function init() {
 		// Required modules
 		self::$db["dsn"] = "mysql:host=localhost;dbname=modiweb";
@@ -38,11 +39,26 @@ class Config {
 		} else {
 			$_SESSION["lang"] = self::getConfig("default_lang");
 		}
+		
+		// PROTECTED PAGES
+		array_push(self::$protectedPages, "pages");
 	}
 	private static function loadModules() {
 		foreach(self::$modules as $k => $v) {
 			ModuleManifest::load($v);
 		}
+	}
+	public static function isProtectedPage($page) {
+		$ret = false;
+		foreach(self::$protectedPages as $v) {
+			if($page == $v) {
+				$ret = true;
+			}
+		}
+		if(isset($_SESSION["user"])) {
+			$ret = false;
+		}
+		return $ret;
 	}
 	public static function getDB() {
 		return self::$db;

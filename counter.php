@@ -18,9 +18,13 @@ function ok($var){
 	if($var == "README.md") { $ret = false; }
 	return $ret;
 }
+function type($var) {
+	return strtoupper(substr($var, strrpos($var, ".")+1));
+}
 $paths = [];
 $tot = 0;
 $typ = "tecken";
+$typeCount = [];
 if(isset($_GET["t"])) {
 	if($_GET["t"] == "word") {
 		$typ = "ord";
@@ -46,10 +50,46 @@ foreach($fileinfos as $pathname => $fileinfo) {
 		} else{
 			$size = strlen($file);
 		}
+		if(!isset($typeCount[type($path)])) {
+			$typeCount[type($path)] = 0;
+		}
+		$typeCount[type($path)] = $typeCount[type($path)]+$size;
 		$tot += $size;
 		array_push($paths, ["file" => $path, "size" => $size]);
 	}
 }
+$startDate = mktime(12, 0, 0, 2, 7, 2015);
+$now = time();
+$difference = $now-$startDate;
+$speed = $difference/$tot;
+$speedStr = "sekunder";
+if($speed > 3600) {
+	$speed = round($speed/60/60);
+	$speedStr = "timmar";
+} elseif($speed > 60) {
+	$speed = round($speed/60);
+	$speedStr = "minuter";
+} else {
+	$speed = round($speed, 2);
+}
+echo("<p>".$speed." ".$speedStr." mellan varje ".$typ."</p>");
+echo("<br />");
+foreach($typeCount as $k => $v) {
+	$typeCount[$k] = ($v/$tot)*100;
+}
+arsort($typeCount);
+$col["PHP"] = "#0A0";
+$col["JS"] = "#00F";
+$col["CSS"] = "#F00";
+foreach($typeCount as $k => $v) {
+	if(isset($col[$k])) {
+		$color = $col[$k];
+	} else {
+		$color = "rgb(".rand(0,255).",".rand(0,255).",".rand(0,255).")";
+	}
+	echo("<div style=\"display: inline-block; width: ".($v*9)."px; background: ".$color."; text-align: center;\"><p style=\"text-indent: 0px; color: #fff;\"><b>".$k."</b><br />".round($v)."%</p></div>");
+}
+
 usort($paths, function($a, $b) {
     return $b['size'] - $a['size'];
 });

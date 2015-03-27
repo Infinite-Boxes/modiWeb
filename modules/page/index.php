@@ -14,15 +14,28 @@ class page {
 		"admin_createnewpage"
 	];
 	static public function write($page = "") {
-		$out = sql::get("SELECT * FROM pages WHERE url = '".$page."';");
-		if($out != false) {
+		$out = sql::get("SELECT * FROM pages WHERE url = '".$page."' OR name = '".$page."';");
+		if($out !== false) {
 			$out["content"] = elements::keyReplace("", $out["content"], "");
 			self::ak("!b!", "<div>");
 			self::ak("!e!", "</div>");
 			echo(str_replace(self::$keys, self::$vals, $out["content"]));
-		} else {
-			echo("tom");
 		}
+	}
+	static public function editable($url) {
+		$out = sql::get("SELECT * FROM pages WHERE url = '".$url."' OR name = '".$url."';");
+		$pageType = moduleManifest::menuType($url);
+		if($out !== false) {
+			return $out["id"]; //moduleManifest::menuModule($url)["file"];
+		} elseif($pageType == "page") {;
+			return page::pagenameToId(moduleManifest::menuModule($url)["file"]);
+		} else {
+			return false;
+		}
+	}
+	static private function pagenameToId($name) {
+		$ret = sql::get("SELECT id FROM pages WHERE name = '".$name."'");
+		return $ret["id"];
 	}
 	static private function ak($kn, $val) {
 		array_push(self::$keys, $kn);
@@ -67,11 +80,14 @@ class page {
 	}
 	static public function menu() {
 		echo("<div class=\"pageeditmenu\" id=\"pageeditmenu\">");
+		$help = elements::button("tool_help.png", ["a", "documentation_editor"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Hjälp!');\"", "target=\"_blank\"");
+		echo("<div style=\"float: right;\">".$help."</div>");
 		echo(elements::write("h2", "Redigerar sida", "onclick=\"tools_minmax();\" onmouseover=\"popup('Minimera/maximera verktygslådan');\""));
 		$buttons = [
 			["tool_del.png", "js", "tools_del();", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Radera element');\""],
 			["tool_moveup.png", "js", "tools_move('up');", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Flytta upp');\""],
 			["tool_movedown.png", "js", "tools_move('down');", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Flytta ner');\""],
+			["tool_editcode.png", "js", "tools_editCode();", "tool", "onload=\"tools_loadTool(this, 'P H1 H2 H3 A IMG TABLE UL');\" onmouseover=\"popup('Redigera koden');\""],
 			["tool_save.png", "js", "tools_save();", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Spara sidan');\""]
 		];
 		$mainbuttons = "";
@@ -79,7 +95,7 @@ class page {
 			$mainbuttons .= elements::button($v[0], [$v[1], $v[2]], $v[3], $v[4]);
 		}
 		echo(elements::group("<p id=\"tools_current\" class=\"only\" style=\"margin-left: 5px;\">Välj ett element</p><br />".$mainbuttons."<br />
-		".elements::button("tool_add_text.png", ["js", "tools_create('P');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till text');\"").elements::button("tool_add_image.png", ["js", "tools_create('IMG');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till bild');\"").elements::button("tool_add_table.png", ["js", "tools_create('TABLE');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till tabell');\"").elements::button("tool_add_list.png", ["js", "tools_create('UL');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till lista');\"").elements::button("tool_add_link.png", ["js", "tools_create('A');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till länk');\"")."<br />".elements::button("tool_edit.png", ["js", "tools_detailEdit();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Redigera');\"").elements::button("tool_edit_save.png", ["js", "tools_detailEditSave();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Spara element');\""), "Huvudverktyg", "tools_mainTools"));
+		".elements::button("tool_add_text.png", ["js", "tools_create('P');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till text');\"").elements::button("tool_add_image.png", ["js", "tools_create('IMG');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till bild');\"").elements::button("tool_add_table.png", ["js", "tools_create('TABLE');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till tabell');\"").elements::button("tool_add_list.png", ["js", "tools_create('UL');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till lista');\"").elements::button("tool_add_link.png", ["js", "tools_create('A');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till länk');\"")."<br />".elements::button("tool_edit.png", ["js", "tools_detailEdit();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Redigera');\"").elements::button("tool_edit_save.png", ["js", "tools_detailEditSave();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Spara element');\""), true, "Huvudverktyg", "tools_mainTools"));
 		
 		$images = sql::get("SELECT * FROM images");
 		if(isset($images["url"])) {
@@ -171,7 +187,10 @@ class page {
 			array_push($tools, $v);
 		}
 		
-		echo(elements::group(elements::writeTable($tools, "v"), "Redigera", "tools_editTools", "", "tool"));
+		echo(elements::group(elements::writeTable($tools, "v"), true, "Redigera", "tools_editTools", "", "tool"));
+		$codeTools = ["header" => ["<p><b>Kod</b></p>"], 
+		"<textarea id=\"codearea\" style=\"resize: vertical;\"></textarea><br /><input type=\"button\" onclick=\"tools_updateCode();\" value=\"Uppdatera\" />"];
+		echo(elements::group(elements::writeTable($codeTools, "v"), true, "Kod", "tools_code", "onload=\"tools_disable(this);\"", "tool"));
 		echo("</div>");
 	}
 	static public function isEditable() {

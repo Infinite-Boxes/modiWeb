@@ -8,3 +8,6 @@
 	position: relative;
 	left: -10px;
 }
+.product * {
+	font-size: 1em;
+}

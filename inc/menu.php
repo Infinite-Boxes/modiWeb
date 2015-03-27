@@ -12,15 +12,19 @@ class menu {
 		// MODULES
 		foreach(moduleManifest::getMenu() as $k => $v) {
 			if(isset($v["name"])) {
-				self::add($v["name"], $v["link"], $v["parent"]);
+				if($v["visible"] !== false) {
+					self::add($v["name"], $v["link"], $v["parent"]);
+				}
 			} elseif(isset($v[0]["name"])) {
 				foreach($v as $key => $val) {
-					self::add($v[$key]["name"], $v[$key]["link"], $v[$key]["parent"]);
+					if($val["visible"] !== false) {
+						self::add($v[$key]["name"], $v[$key]["link"], $v[$key]["parent"]);
+					}
 				}
 			}
 		}
 		// PAGES
-		$pages = sql::get("SELECT * FROM pages");
+		$pages = sql::get("SELECT * FROM pages WHERE url IS NOT NULL");
 		if($pages != false) {
 			if(isset($pages["name"])){
 				if($pages["parent"] == null) {
