@@ -1,27 +1,27 @@
 <?php
 class elements {
 	public static function keyName($id) {
-		$t = sql::get("SELECT * FROM texts WHERE name = '".$id."'");
+		$t = sql::get("SELECT * FROM ".Config::dbPrefix()."texts WHERE name = '".$id."'");
 		return $t;
 	}
 	public static function keyId($id) {
-		$t = sql::get("SELECT * FROM texts WHERE id = '".$id."'");
+		$t = sql::get("SELECT * FROM ".Config::dbPrefix()."texts WHERE id = '".$id."'");
 		return $t;
 	}
 	public static function write($type = "", $id = "", $parameters = "") {
 		if($parameters != "") {
 			$parameters = " ".$parameters;
 		}
-		$t = sql::get("SELECT name,id FROM texts");
+		$t = sql::get("SELECT name,id FROM ".Config::dbPrefix()."texts");
 		$texts = [];
 		foreach($t as $k => $v) {
 			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
 		}
 		foreach($texts as $k => $v) {
 			if((isset($_SESSION["user"])) && (page::isEditable() === true)) {
-				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM ".Config::dbPrefix()."texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
 			} else {
-				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"], $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM ".Config::dbPrefix()."texts WHERE name = '".$v["name"]."';")["content"], $id);
 			}
 		}
 		if($type != "") {
@@ -34,16 +34,16 @@ class elements {
 		if($parameters != "") {
 			$parameters = " ".$parameters;
 		}
-		$t = sql::get("SELECT name,id FROM texts");
+		$t = sql::get("SELECT name,id FROM ".Config::dbPrefix()."texts");
 		$texts = [];
 		foreach($t as $k => $v) {
 			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
 		}
 		foreach($texts as $k => $v) {
 			if(isset($_SESSION["user"])) {
-				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", "<a href=\"#\" class=\"edit\" onclick=\"edit(".$v["id"].");\">".sql::get("SELECT content FROM ".Config::dbPrefix()."texts WHERE name = '".$v["name"]."';")["content"]."</a>", $id);
 			} else {
-				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"], $id);
+				$id = str_ireplace("!:!".$v["name"]."!:!", sql::get("SELECT content FROM ".Config::dbPrefix()."texts WHERE name = '".$v["name"]."';")["content"], $id);
 			}
 		}
 		if($type != "") {
@@ -53,7 +53,7 @@ class elements {
 		}
 	}
 	public static function editReplace($text, $linked = true) {
-		$t = sql::get("SELECT name,id FROM texts");
+		$t = sql::get("SELECT name,id FROM ".Config::dbPrefix()."texts");
 		$texts = [];
 		foreach($t as $k => $v) {
 			array_push($texts, ["name" => $v["name"], "id" => $v["id"]]);
@@ -71,7 +71,7 @@ class elements {
 			$idtext .= "var el".$idc." = '".$v["name"]."';
 ";
 			$idc++;
-			$text = str_ireplace("!:!".$v["name"]."!:!", $link1.sql::get("SELECT content FROM texts WHERE name = '".$v["name"]."';")["content"].$link2, $text);
+			$text = str_ireplace("!:!".$v["name"]."!:!", $link1.sql::get("SELECT content FROM ".Config::dbPrefix()."texts WHERE name = '".$v["name"]."';")["content"].$link2, $text);
 		}
 		$replace1 = [];
 		$replace2 = [];

@@ -7,7 +7,7 @@ $fileList = new RecursiveIteratorIterator(
 );
 $fileText = "<select name=\"url\" id=\"currentUrl\" style=\"margin: 5px;\" onchange=\"addImage_updateChosen(false);\">";
 $sw = false;
-$registered = sql::get("SELECT * FROM images");
+$registered = sql::get("SELECT * FROM ".Config::dbPrefix()."images");
 $regList = [];
 if($registered !== false) {
 	if(isset($registered["url"])) {

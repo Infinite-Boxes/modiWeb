@@ -5,7 +5,7 @@ if(!isset($_SESSION["user"])) {
 	header("Location: admin.php");
 } else {
 	// Pages
-	$pageslist = sql::get("SELECT * FROM pages");
+	$pageslist = sql::get("SELECT * FROM ".Config::dbPrefix()."pages");
 	$pages = [];
 	if($pageslist != false) {
 		if(!isset($pageslist["url"])) {

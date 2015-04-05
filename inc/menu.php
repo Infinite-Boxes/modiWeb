@@ -24,7 +24,7 @@ class menu {
 			}
 		}
 		// PAGES
-		$pages = sql::get("SELECT * FROM pages WHERE url IS NOT NULL");
+		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL");
 		if($pages != false) {
 			if(isset($pages["name"])){
 				if($pages["parent"] == null) {
@@ -134,7 +134,8 @@ menuCurrentPage = '".$_SESSION["page"]."';
 					if($_SESSION["page"] == $v2["url"]) {
 						$active = " menuActive";
 					}
-					echo("<li class=\"td link".$active."\"".$link."><a href=\"".urlencode($v2["url"])."\">".$v2["name"]."</a></li>");
+					$tabDisable = " tabindex=\"-1\"";
+					echo("<li class=\"td link".$active."\"".$link."><a".$tabDisable." href=\"".urlencode($v2["url"])."\">".$v2["name"]."</a></li>");
 				}
 				echo("</ul></div>");
 				if($sw == false) {
@@ -145,7 +146,7 @@ menuCurrentPage = '".$_SESSION["page"]."';
 		}
 	}
 	static public function isUser($url) {
-		$pages = sql::get("SELECT * FROM pages WHERE url = '".$url."'");
+		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url = '".$url."'");
 		if($pages === false) {
 			return false;
 		} else {

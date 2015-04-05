@@ -2,7 +2,7 @@
 $vars["menu"] = [];
 array_push($vars["menu"], ["name" => "Shop", "link" => "shop", "file" => "shop.php"]);
 array_push($vars["menu"], ["name" => "Product", "link" => "product", "file" => "productPage", "visible" => false, "type" => "page"]);
-$cats = sql::get("SELECT name,url,parent FROM products_categories WHERE parent IS NULL");
+$cats = sql::get("SELECT name,url,parent FROM ".Config::dbPrefix()."products_categories WHERE parent IS NULL");
 foreach($cats as $k => $v) {
 	array_push($vars["menu"], ["name" => $v["name"], "link" => "c_".$v["url"], "parent" => "shop"]);
 }

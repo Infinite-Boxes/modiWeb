@@ -5,7 +5,7 @@ if(!isset($_SESSION["user"])) {
 	header("Location: admin.php");
 } else {
 	// Config-variables
-	$images = sql::get("SELECT * FROM images");
+	$images = sql::get("SELECT * FROM ".Config::dbPrefix()."images");
 	if(isset($images["url"])) {
 		$temp = $images;
 		unset($images);

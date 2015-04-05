@@ -8,7 +8,7 @@ $tab[1] = "<input type=\"text\" name=\"desc\">";
 $tab[2] = "<input type=\"text\" name=\"url\">";
 $tab[3] = "<select name=\"parent\">
 <option value=\"null\" default>Ingen</option>";
-$pages = sql::get("SELECT name, url FROM pages WHERE parent IS NULL");
+$pages = sql::get("SELECT name, url FROM ".Config::dbPrefix()."pages WHERE parent IS NULL");
 if($pages !== false) {
 	if(isset($pages["name"])) {
 		$tab[3] .= "<option value=\"".$pages["url"]."\">".$pages["name"]."</option>";

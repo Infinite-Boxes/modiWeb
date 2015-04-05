@@ -1,5 +1,42 @@
 <?php
 class shop {
+	public static function init() {
+		// Create userfunction. Arg1 = callName. Arg2 = arguments. For multiple arguments, use Array
+		Config::addUserFunction("productCategories", "catTree");
+		// Add keynames to use in the editor.
+		Config::addKeyname("[currency]", lang::getText("currency"));
+		// Create snippets
+		Config::addSnippet("Produktbild", "productimage");
+		Config::addSnippet("ProduktKategoriTräd", "productCategories");
+		Config::addSnippet("Köpruta", "buyWindow");
+	}
+	public static function productimage() {
+		$src = sql::get("SELECT img FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."'")["img"];
+		if($src == "") {
+			$src = "none.png";
+		}
+		return "<img style=\"margin: 0px 10px 0px 0px; border: 1px solid #bbb; width: 100px; height: 150px; float: left;\" src=\"img/products/".$src."\" />";
+	}
+	public static function buyWindow() {
+		$all = "";
+		$price = sql::get("SELECT price FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."'")["price"];
+		$curr = lang::getText("currency");
+		if($price == "") {
+			$priceStr = "<p>Pris saknas</p>";
+		} else {
+			$priceStr = "<p>".$price.$curr."</p>";
+		}
+		$buyStr = "<div class=\"buyButton\">Köp</div>";
+		$all = "<div class=\"buyWindow\">".$priceStr.$buyStr."</div>";
+		return $all;
+	}
+	public static function productCategories() {
+		if(isset($_GET["product"])) {
+			return "<p>".self::catTree($_GET["product"])."</p>";
+		} else {
+			return "<p>ProductCategories</p>";
+		}
+	}
 	public static function productObject($obj) {
 		if($obj["img"] != null) {
 			$img = "img/products/".$obj["img"];
@@ -18,11 +55,11 @@ class shop {
 	}
 	public static function getCats($prod) {
 		$cat = [];
-		$id = sql::get("SELECT cat FROM products WHERE id = ".$prod)["cat"];
+		$id = sql::get("SELECT cat FROM ".Config::dbPrefix()."products WHERE id = ".$prod)["cat"];
 		$pid = $id;
 		$err = 0;
 		while($pid !== "") {
-			$parent = sql::get("SELECT parent,name FROM products_categories WHERE id = ".$pid);
+			$parent = sql::get("SELECT parent,name FROM ".Config::dbPrefix()."products_categories WHERE id = ".$pid);
 			$pid = $parent["parent"];
 			if($pid != "") {
 				array_push($cat, $parent["name"]);
@@ -36,11 +73,11 @@ class shop {
 	}
 	public static function catTree($prod) {
 		$cat = [];
-		$id = sql::get("SELECT cat FROM products WHERE id = ".$prod)["cat"];
+		$id = sql::get("SELECT cat FROM ".Config::dbPrefix()."products WHERE url = '".$prod."'")["cat"];
 		$pid = $id;
 		$err = 0;
 		while($pid !== "") {
-			$parent = sql::get("SELECT parent,name,url FROM products_categories WHERE id = ".$pid);
+			$parent = sql::get("SELECT parent,name,url FROM ".Config::dbPrefix()."products_categories WHERE id = ".$pid);
 			$pid = $parent["parent"];
 			if($pid != "") {
 				array_push($cat, ["name" => $parent["name"], "link" => $parent["url"]]);
@@ -52,18 +89,19 @@ class shop {
 		}
 		$str = "";
 		$sw = false;
+		$cat = array_reverse($cat);
 		foreach($cat as $k => $v) {
 			if($sw == false) {
 				$sw = true;
-				$str .= "<a href=\"c_".$v["link"]."\">".$v["name"]."</a>";
+				$str .= "<a href=\"c_".$v["link"]."\" style=\"font-size: 1em;\">".$v["name"]."</a>";
 			} else {
-				$str .= "<p style=\"display: inline;\"> - </p><a href=\"c_".$v["link"]."\">".$v["name"]."</a>";
+				$str .= " - <a href=\"c_".$v["link"]."\" style=\"font-size: 1em;\">".$v["name"]."</a>";
 			}
 		}
 		return $str;
 	}
 	static public function filterCat($category) {
-		$id = sql::get("SELECT id FROM products_categories WHERE url = '".$category."'")["id"];
+		$id = sql::get("SELECT id FROM ".Config::dbPrefix()."products_categories WHERE url = '".$category."'")["id"];
 		$cat = [];
 		$pid = $id;
 		$err = 0;
@@ -72,7 +110,7 @@ class shop {
 		while(count($id2check) > 0) {
 			$id = array_pop($id2check);
 			array_push($cat, $id);
-			$pid = sql::get("SELECT id FROM products_categories WHERE parent = ".$id);
+			$pid = sql::get("SELECT id FROM ".Config::dbPrefix()."products_categories WHERE parent = ".$id);
 			if(isset($pid["id"])) {
 				array_push($id2check, $pid["id"]);
 			} elseif(isset($pid[0]["id"])) {
@@ -168,7 +206,7 @@ class shop {
 	static public function subProductsCount($id = false) {
 		if($id !== false) {
 			if($_SESSION["filterCatInclude"] == "true") {
-				$cats = sql::get("SELECT id,parent FROM products_categories");
+				$cats = sql::get("SELECT id,parent FROM ".Config::dbPrefix()."products_categories");
 				$toSearch = [];
 				foreach($cats as $k => $v) {
 					if($v["parent"] == $id) {
@@ -179,7 +217,7 @@ class shop {
 				$count = 0;
 				while(count($toSearch) > 0) {
 					$toFind = array_shift($toSearch);
-					$count = $count+sql::get("SELECT COUNT(*) as c FROM products WHERE cat = ".$toFind["id"])["c"];
+					$count = $count+sql::get("SELECT COUNT(*) as c FROM ".Config::dbPrefix()."products WHERE cat = ".$toFind["id"])["c"];
 					foreach($cats as $k => $v) {
 						if($v["parent"] == $toFind["id"]) {
 							array_push($toSearch, $v);
@@ -194,7 +232,7 @@ class shop {
 			} else {
 				$count = 0;
 			}
-			$base = sql::get("SELECT COUNT(*) AS c FROM products WHERE cat = ".$id)["c"];
+			$base = sql::get("SELECT COUNT(*) AS c FROM ".Config::dbPrefix()."products WHERE cat = ".$id)["c"];
 			return $base+$count;
 		} else {
 			return false;
@@ -207,7 +245,7 @@ class shop {
 		$str = <<<EOD
 <div id="filterMenu">
 EOD;
-$cats = sql::get("SELECT * FROM products_categories ORDER BY parent ASC, id ASC");
+$cats = sql::get("SELECT * FROM ".Config::dbPrefix()."products_categories ORDER BY parent ASC, id ASC");
 if($cats != false) {
 	$form = "<form action=\"functions/shop_redir.php\" method=\"POST\">";
 	$select = $form."<p>".lang::getText("category")."<select name=\"filterCat\" id=\"filterCat\" style=\"margin: 0px 5px;\" onchange=\"submit();\">";
@@ -249,7 +287,7 @@ if($cats != false) {
 	}
 	$includes .= "
 </form>";
-	$sortBy = $form."<p>Sortera efter <select id=\"shopSortBy\" name=\"sortby\" onchange=\"submit();\">
+	$sortBy = $form."<p>Sorterar efter <select id=\"shopSortBy\" name=\"sortby\" onchange=\"submit();\">
 ";
 	foreach(moduleManifest::getModVal("shopSortBy") as $k => $v) {
 		if(isset($_SESSION["shopSortBy"])) {
@@ -269,13 +307,13 @@ if($cats != false) {
 	
 	$sortBy .= "</form>";
 	$sortDir = $form."<p>";
-	$sortDesc = "<input type=\"hidden\" name=\"sortdirection\" value=\"DESC\"><input type=\"submit\" value=\"".lang::getText("asc")."\" id=\"shopSortDir\" />";
-	$sortAsc = "<input type=\"hidden\" name=\"sortdirection\" value=\"ASC\"><input type=\"submit\" value=\"".lang::getText("desc")."\" id=\"shopSortDir\" />";
+	$sortDesc = "<input type=\"hidden\" name=\"sortdirection\" value=\"ASC\"><input type=\"submit\" value=\"".lang::getText("asc")."\" id=\"shopSortDir\" />";
+	$sortAsc = "<input type=\"hidden\" name=\"sortdirection\" value=\"DESC\"><input type=\"submit\" value=\"".lang::getText("desc")."\" id=\"shopSortDir\" />";
 	if(isset($_SESSION["sortDirection"])) {
 		if($_SESSION["sortDirection"] == "ASC") {
-			$sortDir .= $sortDesc;
-		} else {
 			$sortDir .= $sortAsc;
+		} else {
+			$sortDir .= $sortDesc;
 		}
 	} else {
 		$sortDir .= $sortAsc;
@@ -295,8 +333,9 @@ $str .= "</div>
 		return $str;
 	}
 	static public function getProduct($url) {
-		$ret = sql::get("SELECT * FROM products WHERE url = '".$url."'");
+		$ret = sql::get("SELECT * FROM ".Config::dbPrefix()."products WHERE url = '".$url."'");
 		return $ret;
 	}
 }
+shop::init();
 ?>

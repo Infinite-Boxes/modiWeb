@@ -13,9 +13,9 @@ foreach($vars as $v) {
 }
 if($varexists == true) {
 	if($_POST["parent"] !== "null") {
-		$ok = sql::insert("INSERT INTO pages(name, description, url, parent) VALUES('".$_POST["name"]."', '".$_POST["desc"]."', '".$_POST["url"]."', '".$_POST["parent"]."');");
+		$ok = sql::insert("INSERT INTO ".Config::dbPrefix()."pages(name, description, url, parent) VALUES('".$_POST["name"]."', '".$_POST["desc"]."', '".$_POST["url"]."', '".$_POST["parent"]."');");
 	} else {
-		$ok = sql::insert("INSERT INTO pages(name, description, url) VALUES('".$_POST["name"]."', '".$_POST["desc"]."', '".$_POST["url"]."');");
+		$ok = sql::insert("INSERT INTO ".Config::dbPrefix()."pages(name, description, url) VALUES('".$_POST["name"]."', '".$_POST["desc"]."', '".$_POST["url"]."');");
 	}
 	if($ok !== false) {
 		msg::notice("Sidan skapades");

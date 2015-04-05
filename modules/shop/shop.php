@@ -3,7 +3,7 @@ $filter = [];
 if(isset($_GET["cat"])) {
 	echo(shop::filterMenu($_GET["cat"]));
 	if($_SESSION["filterCatInclude"] != "true") {
-		$filter["cat"] = "cat = '".sql::get("SELECT id FROM products_categories WHERE url = '".$_GET["cat"]."'")["id"]."'";
+		$filter["cat"] = "cat = '".sql::get("SELECT id FROM ".Config::dbPrefix()."products_categories WHERE url = '".$_GET["cat"]."'")["id"]."'";
 	} else {
 		$temp = shop::filterCat($_GET["cat"]);
 		if($temp != "") {
@@ -33,7 +33,7 @@ if((isset($_SESSION["sortDirection"])) && (isset($_SESSION["shopSortBy"]))) {
 } else {
 	$sortStr = "";
 }
-$sql = "SELECT url,name,price,img,flags FROM products".$filterTxt.$sortStr;
+$sql = "SELECT url,name,price,img,flags FROM ".Config::dbPrefix()."products".$filterTxt.$sortStr;
 $sqlList = sql::get($sql);
 if($sqlList !== false) {
 	$products = [];

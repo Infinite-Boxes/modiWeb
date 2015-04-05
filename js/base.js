@@ -248,7 +248,7 @@ function formatContent(string) {
 }
 
 function recStatistics() {
-	//ajax("functions/recordstatistic.php"+statVar, "GET", "formatContent");//popup
+	ajax("functions/recordstatistic.php"+statVar, "GET", "formatContent");//popup
 }
 function loaded(page) {
 	if(page == "pages") {
@@ -305,6 +305,7 @@ function ajax(doc, type, callback, args, data) {
 		}
 		xhr.open(type, doc, true);
 		if(data != false) {
+			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			xhr.send(data);
 		} else {
 			xhr.send();

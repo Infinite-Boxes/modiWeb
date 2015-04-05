@@ -14,16 +14,41 @@ class page {
 		"admin_createnewpage"
 	];
 	static public function write($page = "") {
-		$out = sql::get("SELECT * FROM pages WHERE url = '".$page."' OR name = '".$page."';");
+		$out = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url = '".$page."' OR name = '".$page."';");
 		if($out !== false) {
-			$out["content"] = elements::keyReplace("", $out["content"], "");
+			$out["content"] = elements::keyReplace("", stripslashes($out["content"]), "");
 			self::ak("!b!", "<div>");
 			self::ak("!e!", "</div>");
-			$txt = str_replace(self::$keys, self::$vals, $out["content"]);
+			$txt = str_replace(self::$keys, self::$vals, stripslashes($out["content"]));
+			$txt = self::replaceModules($txt);
+			$txt = self::replaceKeynames($txt);
 			$txt = self::replaceVariables($txt);
 			$txt = self::replaceDbQueries($txt);
+			$txt = self::replaceUserFunctions($txt);
 			echo($txt);
 		}
+	}
+	static private function replaceModules($txt) {
+		$c = 0;
+		while($pos = stripos($txt, "!MOD!")) {
+			$pos2 = stripos($txt, "!ENDMOD!", $pos);
+			if($pos2 == false) {
+				$pos2 = strlen($txt);
+			}
+			$mod = substr($txt, $pos+6, ($pos2-$pos)-7);
+			if(Config::snippetExist($mod)) {
+				$replacement = Config::runSnippet($mod);
+			} else {
+				$replacement = "";
+			}
+			$txt = substr_replace($txt, $replacement, $pos, ($pos2-$pos)+8);
+			if($c == 500) {
+				echo(lang::getText("limit_exceeded_variables"));
+				break;
+			}
+			$c++;
+		}
+		return $txt;
 	}
 	static private function replaceVariables($txt) {
 		$c = 0;
@@ -32,13 +57,24 @@ class page {
 			if($pos2 == false) {
 				$pos2 = strlen($txt);
 			}
-			$var = substr($txt, $pos+3, ($pos2-$pos)-3);
-			$txt = substr_replace($txt, $_GET[$var], $pos, ($pos2-$pos)+3);
+			$var = substr($txt, $pos+4, ($pos2-$pos)-5);
+			if(isset($_GET[$var])) {
+				$theVar = $_GET[$var];
+			} else {
+				$theVar = "";
+			}
+			$txt = substr_replace($txt, $theVar, $pos, ($pos2-$pos)+3);
 			if($c == 500) {
 				echo(lang::getText("limit_exceeded_variables"));
 				break;
 			}
 			$c++;
+		}
+		return $txt;
+	}
+	static private function replaceKeynames($txt) {
+		foreach(Config::getKeynames() as $k => $v) {
+			 $txt = str_replace($v, Config::getKeyReplace($v), $txt);
 		}
 		return $txt;
 	}
@@ -104,7 +140,7 @@ class page {
 					}
 					$c2++;
 				}
-				$endQuery .= " FROM ".$table;
+				$endQuery .= " FROM ".Config::dbPrefix().$table;
 				if(stripos($sqlQuery, "WHERE ") !== false) {
 					$sqlQuery = str_replace("WHERE ", " WHERE ", $sqlQuery);
 					$endQuery .= str_replace("IS", "=", $sqlQuery);
@@ -118,10 +154,18 @@ class page {
 						foreach($value as $k => $v) {
 							if(is_array($v)) {
 								foreach($v as $k2 => $v2) {
-									$ret .= $v2."<br />";
+									if(count($v) == 1) {
+										$ret .= $v2."<br />";
+									} else {
+										$ret .= $v2;
+									}
 								}
 							} else {
-								$ret .= $v."<br />";
+								if(count($value) == 1) {
+									$ret .= $v;
+								} else {
+									$ret .= $v."<br />";
+								}
 							}
 						}
 					} else {
@@ -141,8 +185,38 @@ class page {
 		}
 		return $txt;
 	}
+	static private function replaceUserFunctions($txt) {
+		$functions = Config::getUserFunctions();
+		foreach($functions as $v) {
+			$c = 0;
+			while(($pos = strpos($txt, "!FUNC!")) !== false) {
+				$pos2 = strpos($txt, "!ENDFUNC!");
+				$funcStr = substr($txt, $pos+7, ($pos2-$pos)-6);
+				$funcEnd = strpos($funcStr, " ");
+				$func = substr($funcStr, 0, $funcEnd);
+				$argStr = substr($funcStr, $funcEnd+2, -3);
+				$str2Replace = substr($txt, $pos, ($pos2-$pos)+9);
+				if(stripos($funcStr, ",") === false) {
+					$args = $argStr;
+				} else {
+					$args = explode(",", $argStr);
+				}
+				$result = Config::runUserFunction($v, $args);
+				if(gettype($result) === "array") {
+					$result = implode($result);
+				}
+				$txt = str_replace($str2Replace, $result, $txt);
+				if($c == 100) {
+					echo(lang::getText("limit_exceeded_functions"));
+					break;
+				}
+				$c++;
+			}
+		}
+		return $txt;
+	}
 	static public function editable($url) {
-		$out = sql::get("SELECT * FROM pages WHERE url = '".$url."' OR name = '".$url."';");
+		$out = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url = '".$url."' OR name = '".$url."';");
 		$pageType = moduleManifest::menuType($url);
 		if($out !== false) {
 			return $out["id"]; //moduleManifest::menuModule($url)["file"];
@@ -153,7 +227,7 @@ class page {
 		}
 	}
 	static private function pagenameToId($name) {
-		$ret = sql::get("SELECT id FROM pages WHERE name = '".$name."'");
+		$ret = sql::get("SELECT id FROM ".Config::dbPrefix()."pages WHERE name = '".$name."'");
 		return $ret["id"];
 	}
 	static private function ak($kn, $val) {
@@ -162,9 +236,9 @@ class page {
 	}
 	static public function getCode($page = "") {
 		if($page === "") {
-			return sql::get("SELECT content FROM pages;");
+			return stripslashes(sql::get("SELECT content FROM ".Config::dbPrefix()."pages;"));
 		} else {
-			return sql::get("SELECT content FROM pages WHERE id = ".$page.";")["content"];
+			return stripslashes(sql::get("SELECT content FROM ".Config::dbPrefix()."pages WHERE id = ".$page.";")["content"]);
 		}
 	}
 	static public function editorContentID() {
@@ -200,23 +274,29 @@ class page {
 	static public function menu() {
 		echo("<div class=\"pageeditmenu\" id=\"pageeditmenu\">");
 		$help = elements::button("tool_help.png", ["a", "documentation_editor"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Hjälp!');\"", "target=\"_blank\"");
+		$codeAll = elements::button("tool_editcode.png", ["js", "tools_editAllCode()"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Redigera all kod');\"", "target=\"_blank\"");
 		echo("<div style=\"float: right;\">".$help."</div>");
+		echo("<div style=\"float: right;\">".$codeAll."</div>");
 		echo(elements::write("h2", "Redigerar sida", "onclick=\"tools_minmax();\" onmouseover=\"popup('Minimera/maximera verktygslådan');\""));
 		$buttons = [
 			["tool_del.png", "js", "tools_del();", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Radera element');\""],
 			["tool_moveup.png", "js", "tools_move('up');", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Flytta upp');\""],
 			["tool_movedown.png", "js", "tools_move('down');", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Flytta ner');\""],
-			["tool_editcode.png", "js", "tools_editCode();", "tool", "onload=\"tools_loadTool(this, 'P H1 H2 H3 A IMG TABLE UL');\" onmouseover=\"popup('Redigera koden');\""],
+			["tool_editcode.png", "js", "tools_editCode();", "tool", "onload=\"tools_loadTool(this, 'P H1 H2 H3 A IMG TABLE UL DIV');\" onmouseover=\"popup('Redigera koden');\""],
 			["tool_save.png", "js", "tools_save();", "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Spara sidan');\""]
 		];
 		$mainbuttons = "";
 		foreach($buttons as $v) {
 			$mainbuttons .= elements::button($v[0], [$v[1], $v[2]], $v[3], $v[4]);
 		}
+		echo("<div id=\"allCode\" style=\"display: none;\" class=\"tool disabledTool\">");
+		echo(elements::group("<textarea id=\"allCodeTextarea\" style=\"resize: vertical;\"></textarea><input type=\"button\" value=\"Uppdatera sidan\" onclick=\"tools_updateAllCode();\" />", true, "Sidans kod", "tools_codeTool"));
+		echo("</div>");
+		echo("<div id=\"allTools\" class=\"tool\">");
 		echo(elements::group("<p id=\"tools_current\" class=\"only\" style=\"margin-left: 5px;\">Välj ett element</p><br />".$mainbuttons."<br />
-		".elements::button("tool_add_text.png", ["js", "tools_create('P');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till text');\"").elements::button("tool_add_image.png", ["js", "tools_create('IMG');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till bild');\"").elements::button("tool_add_table.png", ["js", "tools_create('TABLE');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till tabell');\"").elements::button("tool_add_list.png", ["js", "tools_create('UL');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till lista');\"").elements::button("tool_add_link.png", ["js", "tools_create('A');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till länk');\"")."<br />".elements::button("tool_edit.png", ["js", "tools_detailEdit();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Redigera');\"").elements::button("tool_edit_save.png", ["js", "tools_detailEditSave();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Spara element');\""), true, "Huvudverktyg", "tools_mainTools"));
+		".elements::button("tool_add_text.png", ["js", "tools_create('P');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till text');\"").elements::button("tool_add_image.png", ["js", "tools_create('IMG');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till bild');\"").elements::button("tool_add_table.png", ["js", "tools_create('TABLE');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till tabell');\"").elements::button("tool_add_list.png", ["js", "tools_create('UL');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till lista');\"").elements::button("tool_add_link.png", ["js", "tools_create('A');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till länk');\"").elements::button("tool_add_code.png", ["js", "tools_createCode();"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till kod');\"").elements::button("tool_add_snippet.png", ["js", "tools_createSnippet();"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Lägg till modul');\"")."<br />".elements::button("tool_edit.png", ["js", "tools_detailEdit();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Redigera');\"").elements::button("tool_edit_save.png", ["js", "tools_detailEditSave();"], "tool", "onload=\"tools_loadTool(this, 'TABLE UL');\" onmouseover=\"popup('Spara element');\""), true, "Huvudverktyg", "tools_mainTools"));
 		
-		$images = sql::get("SELECT * FROM images");
+		$images = sql::get("SELECT * FROM ".Config::dbPrefix()."images");
 		if(isset($images["url"])) {
 			$temp = $images;
 			unset($images);
@@ -250,12 +330,31 @@ class page {
 		echo("</script>
 ");
 		self::tool(["header" => "Text", "content" => "<form onsubmit=\"return false;\" id=\"tools_textDiv\"><script>tools_loadTool(obj('tools_textDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_textDiv').parentNode.parentNode.classList.add('tool'); </script>
-				<textarea id=\"toolsContent\" style=\"resize: vertical;\" onkeyup=\"tools_change();\"></textarea>
+			<textarea id=\"toolsContent\" style=\"resize: vertical;\" onkeyup=\"tools_change();\"></textarea>
+		</form>"]);
+		
+		self::tool(["header" => "Avstånd", "content" => "<form onsubmit=\"return false;\" id=\"tools_marginDiv\"><script>tools_loadTool(obj('tools_marginDiv').parentNode.parentNode, 'P A H1 H2 H3 IMG TABLE UL DIV MOD'); obj('tools_marginDiv').parentNode.parentNode.classList.add('tool'); </script>
+			<input type=\"text\" id=\"tool_marginu\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
+			<input type=\"text\" id=\"tool_marginr\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
+			<input type=\"text\" id=\"tool_margind\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
+			<input type=\"text\" id=\"tool_marginl\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
+		</form>"]);
+			
+		$snippetsMenu = "<option value=\"\">Ingen</option>
+";
+		foreach(Config::getSnippets() as $k => $v) {
+			$snippetsMenu .= "<option value=\"".$v."\">".$v."</option>
+";
+		}
+		self::tool(["header" => "Modul", "content" => "<form onsubmit=\"return false;\" id=\"tools_moduleDiv\"><script>tools_loadTool(obj('tools_moduleDiv').parentNode.parentNode, 'MOD'); obj('tools_moduleDiv').parentNode.parentNode.classList.add('tool'); </script>
+				<select id=\"moduleList\" onchange=\"tools_requestSnippet();\">
+					".$snippetsMenu."
+				</select>
 			</form>"]);
 		self::tool(["header" => "Länk", "content" => "<form onsubmit=\"return false;\" id=\"tools_linkDiv\"><script>tools_loadTool(obj('tools_linkDiv').parentNode.parentNode, 'A'); obj('tools_linkDiv').parentNode.parentNode.classList.add('tool'); </script>
 				<input type=\"text\" id=\"toolsLink\" onkeyup=\"tools_changeLink();\" />
 			</form>"]);
-		self::tool(["header" => "Visa", "content" => "<form onsubmit=\"return false;\" id=\"tools_displayDiv\"><script>tools_loadTool(obj('tools_displayDiv').parentNode.parentNode, 'P A H1 H2 H3'); obj('tools_displayDiv').parentNode.parentNode.classList.add('tool'); </script> 
+		self::tool(["header" => "Visa", "content" => "<form onsubmit=\"return false;\" id=\"tools_displayDiv\"><script>tools_loadTool(obj('tools_displayDiv').parentNode.parentNode, 'P A H1 H2 H3 DIV MOD'); obj('tools_displayDiv').parentNode.parentNode.classList.add('tool'); </script> 
 				".elements::button("tool_display_inline.png", ["js", "tools_displayType('inline');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Dela rad med andra objekt');\"")."
 				".elements::button("tool_display_block.png", ["js", "tools_displayType('block');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Visa ensam på rad');\"")."
 			</form>", "attr" => " class=\"tool\""]);
@@ -306,14 +405,16 @@ class page {
 			array_push($tools, $v);
 		}
 		
-		echo(elements::group(elements::writeTable($tools, "v"), true, "Redigera", "tools_editTools", "", "tool"));
 		$codeTools = ["header" => ["<p><b>Kod</b></p>"], 
 		"<textarea id=\"codearea\" style=\"resize: vertical;\"></textarea><br /><input type=\"button\" onclick=\"tools_updateCode();\" value=\"Uppdatera\" />"];
 		echo(elements::group(elements::writeTable($codeTools, "v"), true, "Kod", "tools_code", "onload=\"tools_disable(this);\"", "tool"));
-		echo("</div>");
+		
+		echo(elements::group(elements::writeTable($tools, "v"), true, "Redigera", "tools_editTools", "", "tool"));
+		
+		echo("</div></div>");
 	}
 	static public function isEditable() {
-		$page = sql::get("SELECT * FROM pages WHERE url = '".$_SESSION["page"]."'");
+		$page = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url = '".$_SESSION["page"]."'");
 		if($page === false) {
 			if(!in_array($_SESSION["page"], self::$adminPages)) {
 				return true;

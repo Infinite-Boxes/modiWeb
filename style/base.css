@@ -19,6 +19,7 @@ p {
 	font-family: Verdana, Geneva, sans-serif;
 	font-size: 0.8em;
 	text-indent: 10px;
+	margin: 5px 0px;
 }
 p,h1,h2,h3,pre {
 	color: #116F50;
@@ -178,7 +179,7 @@ ul {
 
 #content {
 	display: block;
-	padding: 10px 10px 0px;
+	padding: 0px 10px 0px;
 }
 
 #footer {
@@ -483,13 +484,15 @@ table tr th {
 	margin: 0px;
 	padding: 0px;
 }
-#pageeditor div, #pageeditor p, #pageeditor a, #pageeditor h1, #pageeditor h2, #pageeditor h3, #pageeditor table, #pageeditor ul {
-	background: inherit;
+#pageeditor > div, #pageeditor > p, #pageeditor > a, #pageeditor > h1, #pageeditor > h2, #pageeditor > h3, #pageeditor > table, #pageeditor > ul, #pageeditor > span {
 	cursor: pointer;
 	transition: background 200ms;
 }
-#pageeditor div:hover, #pageeditor p:hover, #pageeditor a:hover, #pageeditor h1:hover, #pageeditor h2:hover, #pageeditor h3:hover, #pageeditor table:hover, #pageeditor ul:hover {
+#pageeditor > div:hover, #pageeditor > p:hover, #pageeditor > a:hover, #pageeditor > h1:hover, #pageeditor > h2:hover, #pageeditor > h3:hover, #pageeditor > table:hover, #pageeditor > ul:hover, #pageeditor > span:hover {
 	background: #FCD1D9;
+}
+#pageeditor .marked {
+	background: #FA9DAF;
 }
 .pageeditmenu {
 	position: fixed;
@@ -501,7 +504,7 @@ table tr th {
 	border-radius: 5px;
 	height: 80%;
 	height: calc(100% - 70px);
-	width: 340px;
+	width: 360px;
 	overflow-y: auto;
 	transition: height 500ms, width 1s;
 }
@@ -563,6 +566,10 @@ table tr th {
 .pageeditmenu select {
 	cursor: pointer;
 	width: 100%;
+}
+#content * {
+	min-height: 5px;
+	min-width: 5px;
 }
 
 .req:after {
@@ -643,6 +650,33 @@ table tr th {
 	border: 1px solid #aaa;
 	max-width: 100px;
 	max-height: 100px;
+}
+.buyWindow {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid #aaa;
+	text-align: center;
+}
+.buyWindow p {
+	text-indent: 0px;
+}
+.buyButton {
+	display: inline-block;
+	width: 100px;
+	height: 40px;
+	background: #8DE251;
+	text-align: center;
+	color: #D22F4F;
+	font-size: 1.8em;
+	border-radius: 10px;
+	border: 3px solid #6DC72D;
+	border-color: #4B9417;
+	transition: border-color 200ms, background 200ms, color 200ms;
+}
+.buyButton:hover {
+	background: #A3EE6F;
+	border-color: #6DC72D;
+	color: #EE5573;
 }
 
 .documentationtable td {

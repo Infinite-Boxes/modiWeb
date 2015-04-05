@@ -13,7 +13,7 @@ foreach($checks as $k => $v) {
 	}
 }
 if($error == false) {
-	$ret = sql::upd("UPDATE images SET name = '".$_GET["name"]."', alt = '".addslashes($_GET["alt"])."' WHERE id = ".$_GET["id"]);
+	$ret = sql::upd("UPDATE ".Config::dbPrefix()."images SET name = '".$_GET["name"]."', alt = '".addslashes($_GET["alt"])."' WHERE id = ".$_GET["id"]);
 	if($ret === true) {
 		echo("ok");
 	} else {

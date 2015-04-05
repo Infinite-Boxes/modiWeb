@@ -1,9 +1,8 @@
 <?php
 elements::write("h1", "Redigera bild");
-$img = sql::get("SELECT * FROM images WHERE id = '".$_GET["id"]."';");
+$img = sql::get("SELECT * FROM ".Config::dbPrefix()."images WHERE id = '".$_GET["id"]."';");
 if($img !== false) {
 	echo(elements::link("Tillbaka", "admin_images")."<br />");
-	
 } else {
 	msg::warning("Ett fel har inträffat. Försök igen senare.");
 	header("Location: admin");

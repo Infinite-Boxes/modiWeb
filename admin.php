@@ -21,7 +21,7 @@ echo(elements::group(elements::writeTable($form), false, "Logga in"));
 	echo(elements::keyReplace("a", "Logga ut", "a href=\"functions/logout.php\"")."<br />
 ");
 	// Config-variables
-	$configs = sql::get("SELECT * FROM config_site");
+	$configs = sql::get("SELECT * FROM ".Config::dbPrefix()."config_site");
 	$configOut = [];
 	foreach($configs as $k => $v) {
 		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";

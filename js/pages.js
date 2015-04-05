@@ -15,22 +15,37 @@ var tools_tools = {
 	"H3": [],
 	"IMG": [],
 	"TABLE": [],
-	"UL": []
+	"UL": [],
+	"DIV": [],
+	"MOD": []
 };
 var tools_link2follow = "";
+var tools_parent = false;
+var tools_loading = false;
+var tools_codeEditing = false;
+var tools_editMode = "GUI";
 function tools_save() {
 	popup("Sparar sidan...");
 	tools_mark("none");
 	var onclicks = [];
 	for(var c = 0; c < obj("pageeditor").children.length; c++) {
 		var o = obj("pageeditor").children[c];
-		o.style.background = "";
+		if(o.classList.contains("marked")) {
+			o.classList.remove("marked");
+		}
 		onclicks[o.id] = o.onclick;
 		o.removeAttribute("onclick");
 		o.removeAttribute("id");
+		o.removeAttribute("tabindex");
+		if(o.tagName == "DIV") {
+			if(typeof o.vars.moduleName != "undefined") {
+				o.innerHTML = "!MOD! "+o.vars.moduleName+" !ENDMOD!";
+			}
+		}
 	}
 	var toSend = obj("pageeditor").innerHTML;
-	ajax("functions/savepage.php?id="+pageId+"&content="+toSend, "GET", "popup");
+	
+	ajax("functions/savepage.php", "POST", "popup", "", "id="+pageId+"&content="+toSend);
 	for(var c = 0; c < obj("pageeditor").children.length; c++) {
 		var o = obj("pageeditor").children[c];
 		o.onclick = onclicks[o.id];
@@ -42,6 +57,10 @@ function tools_load() {
 		var o = obj("pageeditor").children[c];
 		o.id = "el"+c;
 		o.vars = [];
+		o.tabIndex = c+1;
+		o.onfocus = function() {
+			tools_mark(this);
+		};
 		if(o.tagName == "P") {
 			o.vars.type = "P";
 		} else if(o.tagName == "H1") {
@@ -51,13 +70,20 @@ function tools_load() {
 		} else if(o.tagName == "H3") {
 			o.vars.type = "H3";
 		} else if(o.tagName == "DIV") {
-			if(o.children[0].tagName == "IMG") {
+			if(o.classList.contains("img") == true) {
 				o.vars.type = "IMG";
+			} else if(o.innerHTML.substring(0, 5) == "!MOD!"){
+				o.vars.type = "MOD";
+				var mod = o.innerHTML.substring(6, o.innerHTML.length-9);
+				o.vars.moduleName = mod;
+				tools_fillSnippet(o.id, mod);
 			} else {
-				alert("ERROR");
+				o.vars.type = "DIV";
 			}
 		} else if(o.tagName == "TABLE") {
 			o.vars.type = "TABLE";
+			o.vars.editMode = false;
+			o.vars.editMode = false;
 		} else if(o.tagName == "UL") {
 			o.vars.type = "UL";
 		} else if(o.tagName == "A") {
@@ -216,6 +242,75 @@ function tools_create(type) {
 		tools_mark(frame);
 	}
 }
+function tools_createCode() {
+	var main = obj("pageeditor");
+	var object = document.createElement("DIV");
+	var id = "el"+obj("pageeditor").children.length;
+	tools_objects.push(id);
+	var ev = document.createAttribute("onclick");
+	ev.value = "tools_mark(this);";
+	var vars = {
+		type: "DIV",
+		obj: "this"
+	};
+	object.innerHTML = "Kod";
+	object.vars = vars;
+	object.setAttributeNode(ev);
+	object.id = id;
+	main.appendChild(object);
+	tools_mark(object);
+	tools_editCode();
+}
+function tools_createSnippet() {
+	var main = obj("pageeditor");
+	var object = document.createElement("DIV");
+	var id = "el"+obj("pageeditor").children.length;
+	tools_objects.push(id);
+	var ev = document.createAttribute("onclick");
+	ev.value = "tools_mark(this);";
+	var vars = {
+		type: "MOD",
+		obj: "this",
+		moduleName: "false"
+	};
+	object.innerHTML = "*Modul*";
+	object.vars = vars;
+	object.setAttributeNode(ev);
+	object.id = id;
+	object.classList.add("module");
+	main.appendChild(object);
+	tools_mark(object);
+}
+function tools_requestSnippet() {
+	var mod = obj("moduleList").value;
+	if(mod == "") {
+		tools_marked.innerHTML = "*modul*";
+		tools_marked.vars.moduleName = "false";
+	} else {
+		tools_marked.vars.moduleName = mod;
+		ajax("functions/toolsloadsnippet.php?mod="+mod, "GET", "tools_updateSnippet", mod);
+	}
+}
+function tools_updateSnippet(txt, mod) {
+	if(tools_marked !== -1) {
+		if(txt != "") {
+			tools_marked.innerHTML = txt;
+		} else {
+			tools_marked.innerHTML = "*"+mod+"-modul*";
+		}
+	}
+}
+function tools_fillSnippet(object, mod) {
+	ajax("functions/toolsloadsnippet.php?mod="+mod, "GET", "tools_fillSnippet2", [object, mod]);
+}
+function tools_fillSnippet2(txt, args) {
+	if(txt != "") {
+		obj(args[0]).innerHTML = txt;
+	} else {
+		obj(args[0]).innerHTML = "*"+args[1]+"-modul*";
+		obj(args[0]).vars.moduleName = args[1];
+	}
+}
 function tools_editType(type, object) {
 	if(tools_marked !== -1) {
 		if(type == "none") {
@@ -238,7 +333,7 @@ function tools_editType(type, object) {
 			obj("toolsContent").value = text;
 		} else if(type == "IMG") {
 			var chosen = 0;
-			var src = tools_marked.children[0].src
+			var src = tools_marked.children[0].src;
 			for(var c = 0; c < obj("toolsImageUrl").options.length; c++) {
 				if(obj("toolsImageUrl").options[c].value == src.substr(-obj("toolsImageUrl").options[c].value.length)) {
 					chosen = c;
@@ -247,6 +342,37 @@ function tools_editType(type, object) {
 			obj("toolsImageUrl").selectedIndex = chosen;
 			obj("toolsImageMaxwidth").value = tools_marked.style.maxWidth.replace("px", "");
 			tools_updateImage();
+		} else if(type == "DIV") {
+			if(typeof object.vars.moduleName != "undefined") {
+				for(var c = 0; c < obj("moduleList").options.length; c++) {
+					if(obj("moduleList").options[c].value == object.vars.moduleName) {
+						chosen = c;
+					}
+				}
+				obj("moduleList").selectedIndex = chosen;
+			}
+		}
+		if(type != "all") {
+			var marg = object.style.margin;
+			if(marg == false) {
+				marg = "0px 0px 0px 0px";
+			}
+			marg = marg.split(" ");
+			var margStr = [];
+			if(marg.length == 1) {
+				var size = marg[0].substring(0, marg[0].length-2);
+				for(var c = 0; c < 4; c++) {
+					margStr[c] = size;
+				}
+			} else {
+				for(var c in marg) {
+					margStr[c] = marg[c].substring(0, marg[c].length-2);
+				}
+			}
+			obj("tool_marginu").value = margStr[0];
+			obj("tool_marginr").value = margStr[1];
+			obj("tool_margind").value = margStr[2];
+			obj("tool_marginl").value = margStr[3];
 		}
 	}
 }
@@ -267,19 +393,28 @@ function tools_detailEdit() {
 				for(var r = 0; r < tools_marked.rows.length; r++) {
 					for(var c = 0; c < tools_marked.rows[r].cells.length; c++) {
 						var str = tools_marked.rows[r].cells[c].innerHTML;
-						str = str.replace("<p>", "");
-						str = str.replace("</p>", "");
 						tools_marked.rows[r].cells[c].innerHTML = "<input type='text' value='"+str+"' />";
-						tools_marked.rows[r].cells[c].children[0].size = str.length;
+						if(str == "") {
+							var size = 1;
+						} else {
+							var size = Math.round(str.length*0.9);
+						}
+						if(size > 50) {
+							size = 50;
+						}
+						tools_marked.rows[r].cells[c].children[0].size = size;
 					}
 				}
 				tools_marked.vars.editMode = true;
 			} else if(tools_marked.vars.type == "UL") {
 				for(var c = 0; c < tools_marked.children.length; c++) {
 					var str = tools_marked.children[c].innerHTML;
-					str = str.replace("<p>", "");
-					str = str.replace("</p>", "");
 					tools_marked.children[c].innerHTML = "<input type='text' value='"+str+"' />";
+					if(str == "") {
+						size = 1;
+					} else {
+						sise = Math.round(str.length*0.9);
+					}
 					tools_marked.children[c].size = str.length;
 				}
 				tools_marked.vars.editMode = true;
@@ -296,14 +431,14 @@ function tools_detailEditSave() {
 				for(var r = 0; r < tools_marked.rows.length; r++) {
 					for(var c = 0; c < tools_marked.rows[r].cells.length; c++) {
 						var str = tools_marked.rows[r].cells[c].children[0].value;
-						tools_marked.rows[r].cells[c].innerHTML = "<p>"+str+"</p>";
+						tools_marked.rows[r].cells[c].innerHTML = str;
 					}
 				}
 				tools_marked.vars.editMode = false;
 			} else if(tools_marked.vars.type == "UL") {
 				for(var c = 0; c < tools_marked.children.length; c++) {
 					var str = tools_marked.children[c].children[0].value;
-					tools_marked.children[c].innerHTML = "<p>"+str+"</p>";
+					tools_marked.children[c].innerHTML = str;
 				}
 				tools_marked.vars.editMode = false;
 			}
@@ -352,27 +487,45 @@ function tools_followLink() {
 	}
 }
 function tools_mark(object) {
-	if(object != "none") {
-		tools_marked = object;
-		obj("tools_current").innerHTML = "<b>Markerat:</b> "+tools_marked.id;
-		tools_editType(tools_marked.vars.type, object);
-		for(var c = 0; c < obj("pageeditor").children.length; c++) {
-			obj("pageeditor").children[c].style.background = "";
+	if(tools_loading == false) {
+		if(object != "none") {
+			tools_marked = object;
+			obj("tools_current").innerHTML = "<b>Markerat:</b> "+tools_marked.id;
+			tools_editType(tools_marked.vars.type, object);
+			for(var c = 0; c < obj("pageeditor").children.length; c++) {
+				if(obj("pageeditor").children[c].classList.contains("marked")) {
+					obj("pageeditor").children[c].classList.remove("marked");
+				}
+			}
+			object.classList.add("marked");
+			if(object.vars.type == "DIV") {
+				tools_editCode(true);
+			} else if(object.vars.type == "MOD") {
+				tools_editCode(false);
+			} else {
+				if(tools_codeEditing == true) {
+					tools_editCode(true);
+				} else {
+					tools_editCode(false);
+				}
+			}
+		} else {
+			tools_marked = -1;
+			obj("tools_current").innerHTML = "Välj ett element";
+			tools_editType("none", "");
 		}
-		object.style.background = "#FA9DAF";
+		tools_changeTools();
+		tools_updateCodearea();
 	} else {
-		tools_marked = -1;
-		obj("tools_current").innerHTML = "Välj ett element";
-		tools_editType("none", "");
+		popup("Laddar modul");
 	}
-	tools_changeTools();
-	tools_updateCodearea();
 }
 function tools_del() {
 	if(tools_marked !== -1) {
 		obj("pageeditor").removeChild(tools_marked);
 		tools_mark("none");
 		tools_editCode(false);
+		tols_codeEditing = false;
 	} else {
 		popup("Inget markerat");
 	}
@@ -571,6 +724,33 @@ function tools_tableBorder(type) {
 		tools_updateCodearea();
 	}
 }
+function tools_updMargin() {
+	if(tools_marked != -1) {
+		var margu = obj("tool_marginu").value;
+		var margr = obj("tool_marginr").value;
+		var margd = obj("tool_margind").value;
+		var margl = obj("tool_marginl").value;
+		tools_marked.style.margin = margu+"px "+margr+"px "+margd+"px "+margl+"px";
+	} else {
+		popup("Inget element är valt");
+	}
+}
+function tools_marginEnd() {
+	if(tools_marked != -1) {
+		if((obj("tool_marginu").value == "") || (obj("tool_marginu").value == "undefined")) {
+			obj("tool_marginu").value = 0;
+		}
+		if((obj("tool_marginr").value == "") || (obj("tool_marginr").value == "undefined")) {
+			obj("tool_marginr").value = 0;
+		}
+		if((obj("tool_margind").value == "") || (obj("tool_margind").value == "undefined")) {
+			obj("tool_margind").value = 0;
+		}
+		if((obj("tool_marginl").value == "") || (obj("tool_marginl").value == "undefined")) {
+			obj("tool_marginl").value = 0;
+		}
+	}
+}
 function tools_list(todo) {
 	if(tools_marked != -1) {
 		if(todo == "add") {
@@ -613,23 +793,23 @@ function tools_updateImage() {
 					tools_marked.children[1].innerHTML = subtexts[c];
 				}
 			}
-		} else {
-			tools_marked.children[0].src = "img/tools_emptyimage.png";
 		}
 		tools_updateCodearea();
 	}
 }
 function tools_updateCodearea() {
 	obj("codearea").value = tools_marked.innerHTML;
-	obj("codearea").rows = Math.ceil((obj("codearea").value.length)/35);
+	obj("codearea").rows = Math.ceil((obj("codearea").value.length)/30);
 }
 function tools_editCode(set) {
 	if(typeof set == "undefined") {
 		if(obj("tools_code").classList.contains("disabledTool")) {
 			tools_undisable(obj("tools_code"));
 			tools_updateCodearea();
+			tools_codeEditing = true;
 		} else {
 			tools_disable(obj("tools_code"));
+			tools_codeEditing = false;
 		}
 	}
 	if(set == true) {
@@ -639,7 +819,62 @@ function tools_editCode(set) {
 		tools_disable(obj("tools_code"));
 	}
 }
+function tools_editAllCode() {
+	if(obj("allTools").classList.contains("disabledTool")) {
+		tools_undisable(obj("allTools"));
+		tools_disable(obj("allCode"));
+		tools_editMode = "GUI";
+	} else {
+		tools_mark("none");
+		tools_disable(obj("allTools"));
+		tools_undisable(obj("allCode"));
+		var allCode = obj("pageeditor").cloneNode(true);
+		for(var child in allCode.children) {
+			var to = allCode.children[child];
+			var or = obj("pageeditor").children[child];
+			if(to.tagName == "DIV") {
+				if(typeof or.vars !== "undefined") {
+					if(typeof or.vars.moduleName !== "undefined") {
+						to.innerHTML = "!MOD! "+or.vars.moduleName+" !ENDMOD!";
+					}
+				}
+			}
+			if(typeof to.id !== "undefined") {
+				if(to.id.substring(0, 2) == "el") {
+					to.removeAttribute("id");
+					if(to.onclick == "function onclick(event) {\n  tools_mark(this);\n}") {
+						to.removeAttribute("onclick");
+					}
+					to.removeAttribute("tabIndex");
+					if(to.classList.contains("marked")) {
+						to.classList.remove("marked");
+					}
+					if(to.classList.length == 0) {
+						to.removeAttribute("class");
+					}
+				}
+			}
+		}
+		obj("allCodeTextarea").value = allCode.innerHTML.trim();
+		obj("allCodeTextarea").rows = Math.ceil((allCode.innerHTML.length)/32);
+		tools_editMode = "CODE";
+	}
+}
+function tools_updateAllCode() {
+	obj("pageeditor").innerHTML = obj("allCodeTextarea").value;
+	tools_load();
+	popup("Sidan har uppdaterats");
+}
 function tools_updateCode() {
-	tools_marked.innerHTML = obj("codearea").value;
-	tools_mark(tools_marked);
+	if(tools_marked != -1) {
+		if(tools_marked.tagName == "DIV") {
+			if(typeof tools_marked.vars.moduleName != "undefined") {
+				alert("ändra modul");
+			}
+		}
+		tools_marked.innerHTML = obj("codearea").value;
+		tools_mark(tools_marked);
+	} else {
+		popup("Inget element markerat");
+	}
 }
