@@ -53,8 +53,8 @@ class shop {
 			$priceFlags = "";
 		}
 		$price = $obj["price"];
-		return "<div style=\"float: left; text-align: center;\"><a href=\"p_".$obj["url"]."\"><div class=\"product\"><p class=\"name\">".$obj["name"]."</p>
-<img src=\"".$img."\" class=\"imgNotLinked\" />
+		return "<div class=\"product\"><a href=\"p_".$obj["url"]."\"><div><p class=\"name\">".$obj["name"]."</p>
+<div class=\"productImg\"><img src=\"".$img."\" class=\"imgNotLinked\" /></div>
 <p class=\"price".$priceFlags."\">".$price." ".lang::getText("currency")."</p></div></a><div class=\"buyButtonSmall\" onclick=\"shop_shoppingCartAdd('".$obj["name"]."', '".$obj["url"]."', ".$obj["price"].");\">Köp</div></div>";
 	}
 	public static function getCats($prod) {
@@ -344,27 +344,32 @@ $str .= "</div>
 		$totSum = 0;
 		if(isset($_SESSION["shoppingCart"])) {
 			$prodList = $_SESSION["shoppingCart"];
+			$totSum = 0;
 			if(count($prodList) > 4) {
 				$products = "<p>".count($prodList)." produkter";
+				foreach($prodList as $k => $v) {
+					$totSum += sql::get("SELECT price FROM ".Config::dbPrefix()."products WHERE (url = '".$v["url"]."')")["price"];
+				}
 			} elseif(count($prodList) > 0) {
-				$products = "";
+				$products = "<table>";
+				$c = 0;
 				foreach($prodList as $k => $v) {
-					$products .= "<a href=\"p_".$v["url"]."\" style=\"display: block;\">".$v["name"]."</a>";
+					$price = sql::get("SELECT price FROM ".Config::dbPrefix()."products WHERE (url = '".$v["url"]."')")["price"];
+					$totSum += $price;
+					$products .= "<tr><td>".elements::button("button_minus_15.png", ["js", "shop_shoppingCartRemove('".$v["url"]."')"], "", "onmouseover=\"popup('Ta bort produkten');\"")."</td>
+					<td><a href=\"p_".$v["url"]."\">".$v["name"]."</a><input type=\"hidden\" id=\"price".$c."\" value=\"".$price."\">
+					</td></tr>";
+					$c++;
 				}
+				$products .= "</table>";
 			} else {
-				$products = "<p>Inga produkter</p>";
-			}
-			if(count($prodList) > 0) {
-				$totSum = 0;
-				foreach($prodList as $k => $v) {
-					$totSum += sql::get("SELECT SUM(price) AS sum FROM ".Config::dbPrefix()."products WHERE (url = '".$v["url"]."')")["sum"];
-				}
+				$products = "<tr><td><p>Inga produkter</p></td></tr>";
 			}
 		} else {
-			$products = "<p>Inga produkter</p>";
+			$products = "<tr><td><p>Inga produkter</p></td></tr>";
 		}
 		return "<div id=\"shoppingCart\"><a href=\"shop_cart\"><b>".lang::getText("shoppingCart")."</b></a>
-<div id=\"shoppingCartList\">".$products."</div><p id=\"cartTotPrice\">Totalt ".$totSum." ".lang::getText("currency")."</div>";
+<div id=\"shoppingCartList\">".$products."</table></div><p id=\"cartTotPrice\">Totalt ".$totSum." ".lang::getText("currency")."</div>";
 	}
 }
 shop::init();

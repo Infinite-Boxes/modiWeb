@@ -285,7 +285,7 @@ window.onload = function() {
 			obj("header").style.marginBottom = "0px";
 		}
 	};
-	document.body.style.margin = "0px 0px "+(obj("footer").clientHeight)+"px";
+	document.body.style.padding = "0px 0px "+(obj("footer").clientHeight)+"px";
 	loaded(loadedVar);
 	recStatistics();
 };

@@ -80,7 +80,6 @@ echo("
 <div id=\"header\">
 <div id=\"headerContent\">
 ");
-//unset($_SESSION["shoppingCart"]);
 ?>
 <img src="<?php echo(ROOT); ?>img/logo.png" alt="Banner" />
 </div>
