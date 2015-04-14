@@ -1,4 +1,5 @@
 <?php
+echo(shop::writeCartSmall());
 $filter = [];
 if(isset($_GET["cat"])) {
 	echo(shop::filterMenu($_GET["cat"]));

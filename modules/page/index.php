@@ -191,17 +191,22 @@ class page {
 			$c = 0;
 			while(($pos = strpos($txt, "!FUNC!")) !== false) {
 				$pos2 = strpos($txt, "!ENDFUNC!");
-				$funcStr = substr($txt, $pos+7, ($pos2-$pos)-6);
+				$funcStr = substr($txt, $pos+7, ($pos2-$pos)-8);
 				$funcEnd = strpos($funcStr, " ");
 				$func = substr($funcStr, 0, $funcEnd);
-				$argStr = substr($funcStr, $funcEnd+2, -3);
-				$str2Replace = substr($txt, $pos, ($pos2-$pos)+9);
-				if(stripos($funcStr, ",") === false) {
-					$args = $argStr;
+				if(stripos($funcStr, "(") === false) {
+					$args = "";
+					$result = Config::runUserFunction($v);
 				} else {
-					$args = explode(",", $argStr);
+					$argStr = substr($funcStr, $funcEnd+2, -3);
+					if(stripos($funcStr, ",") === false) {
+						$args = $argStr;
+					} else {
+						$args = explode(",", $argStr);
+					}
+					$result = Config::runUserFunction($v, $args);
 				}
-				$result = Config::runUserFunction($v, $args);
+				$str2Replace = substr($txt, $pos, ($pos2-$pos)+9);
 				if(gettype($result) === "array") {
 					$result = implode($result);
 				}
@@ -304,9 +309,9 @@ class page {
 		} elseif(!isset($images[0]["url"])) {
 			$images = false;
 		}
-		$imgText = "<select id=\"toolsImageUrl\" onchange=\"tools_updateImage();\">";$imgText .= "<option value=\"false\" selected>Ingen</option>
+		$imgText = "<select id=\"toolsImageUrl\" onchange=\"tools_updateImage(true);\">";$imgText .= "<option value=\"false\" selected>Ingen</option>
 ";
-		if($images != false) {
+		if($images !== false) {
 			foreach($images as $k => $v) {
 				$imgText .= "<option value=\"".$v["url"]."\">".$v["name"]."</option>
 ";
@@ -319,13 +324,15 @@ class page {
 	var subtexts = [];
 	var subtextsIndex = [];
 ");
-		foreach($images as $k => $v) {
-			echo("	subtexts[".$k."] = \"".$v["alt"]."\";
-");
-		}
-		foreach($images as $k => $v) {
-			echo("	subtextsIndex[".$k."] = \"".$v["url"]."\";
-");
+		if($images !== false) {
+			foreach($images as $k => $v) {
+				echo("	subtexts[".$k."] = \"".$v["alt"]."\";
+	");
+			}
+			foreach($images as $k => $v) {
+				echo("	subtextsIndex[".$k."] = \"".$v["url"]."\";
+	");
+			}
 		}
 		echo("</script>
 ");
@@ -411,7 +418,7 @@ class page {
 		
 		echo(elements::group(elements::writeTable($tools, "v"), true, "Redigera", "tools_editTools", "", "tool"));
 		
-		echo("</div></div>");
+		echo("</div><div id=\"out\"></div></div>");
 	}
 	static public function isEditable() {
 		$page = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url = '".$_SESSION["page"]."'");

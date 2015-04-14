@@ -11,3 +11,132 @@
 .product * {
 	font-size: 1em;
 }
+
+
+#products {
+	margin: 0px;
+	padding: 0px;
+}
+
+#filterMenu {
+	background: #eee;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+}
+#filterMenu form {
+	display: table-cell;
+	margin: 0px 5px;
+}
+
+.product {
+	width: 150px;
+	height: 150px;
+	text-align: center;
+	border: 1px solid #ccc;
+	margin: 10px 5px 5px;
+	border-radius: 10px;
+	padding: 5px;
+	overflow: hidden;
+	background: #fff;
+	transition: border-color 200ms;
+}
+.product:nth-child(1) {
+	margin-left: 0px;
+}
+.product:hover {
+	border-color: #888;
+}
+.product .name {
+	margin: 0px 0px 5px;
+	font-weight: bold;
+}
+.product .price {
+	margin: 0px;
+}
+.product .priceSale {
+	color: #f00;
+}
+.product img {
+	border: 1px solid #aaa;
+	max-width: 100px;
+	max-height: 100px;
+}
+.buyWindow {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid #aaa;
+	text-align: center;
+}
+.buyWindow p {
+	text-indent: 0px;
+}
+.buyButton {
+	display: inline-block;
+	width: 100px;
+	height: 40px;
+	background: #8DE251;
+	text-align: center;
+	color: #D22F4F;
+	font-size: 1.8em;
+	border-radius: 10px;
+	border: 3px solid #6DC72D;
+	border-color: #4B9417;
+	transition: border-color 200ms, background 200ms, color 200ms;
+}
+.buyButton:hover {
+	background: #A3EE6F;
+	border-color: #6DC72D;
+	color: #EE5573;
+}
+.buyButtonSmall {
+	display: inline-block;
+	width: 80px;
+	height: 20px;
+	background: #8DE251;
+	text-align: center;
+	color: #D22F4F;
+	font-size: 1em;
+	border-radius: 5px;
+	border: 3px solid #6DC72D;
+	border-color: #4B9417;
+	transition: border-color 200ms, background 200ms, color 200ms;
+}
+.buyButtonSmall:hover {
+	background: #A3EE6F;
+	border-color: #6DC72D;
+	color: #EE5573;
+}
+
+#shoppingCart {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: #fff;
+	border: 1px solid #000;
+	border-radius: 10px;
+	box-shadow: 0 0 0px #fff;
+	padding: 10px;
+	transition: background 400ms, box-shadow 400ms;
+}
+#shoppingCart p {
+	text-indent: 0px;
+	margin: 0px;
+}
+.bigShoppingCart {
+	margin-top: 20px;
+}
+.bigShoppingCart tr td{
+	border: 1px solid #ccc;
+	border-width: 1px 0px 1px 0px;
+}
+.bigShoppingCart tr td:first-child{
+	border: 1px solid #ccc;
+	border-width: 1px 0px 1px 1px;
+}
+.bigShoppingCart tr td:last-child{
+	border: 1px solid #ccc;
+	border-width: 1px 1px 1px 0px;
+}
+.bigShoppingCart td {
+	padding: 0px 10px 4px 2px;
+}

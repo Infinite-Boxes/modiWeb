@@ -24,17 +24,22 @@ var tools_parent = false;
 var tools_loading = false;
 var tools_codeEditing = false;
 var tools_editMode = "GUI";
+function tools_init() {
+	tools_load();
+	tools_changeTools();
+}
 function tools_save() {
 	popup("Sparar sidan...");
 	tools_mark("none");
-	var onclicks = [];
 	for(var c = 0; c < obj("pageeditor").children.length; c++) {
 		var o = obj("pageeditor").children[c];
 		if(o.classList.contains("marked")) {
 			o.classList.remove("marked");
 		}
-		onclicks[o.id] = o.onclick;
-		o.removeAttribute("onclick");
+		if(o.classList.length === 0) {
+			o.removeAttribute("class");
+		}
+		tools_stripEvents(o);
 		o.removeAttribute("id");
 		o.removeAttribute("tabindex");
 		if(o.tagName == "DIV") {
@@ -42,14 +47,11 @@ function tools_save() {
 				o.innerHTML = "!MOD! "+o.vars.moduleName+" !ENDMOD!";
 			}
 		}
+		tools_enableEvents(o);
 	}
 	var toSend = obj("pageeditor").innerHTML;
 	
 	ajax("functions/savepage.php", "POST", "popup", "", "id="+pageId+"&content="+toSend);
-	for(var c = 0; c < obj("pageeditor").children.length; c++) {
-		var o = obj("pageeditor").children[c];
-		o.onclick = onclicks[o.id];
-	}
 	tools_load();
 }
 function tools_load() {
@@ -58,9 +60,7 @@ function tools_load() {
 		o.id = "el"+c;
 		o.vars = [];
 		o.tabIndex = c+1;
-		o.onfocus = function() {
-			tools_mark(this);
-		};
+		tools_disableEvents(o);
 		if(o.tagName == "P") {
 			o.vars.type = "P";
 		} else if(o.tagName == "H1") {
@@ -90,12 +90,16 @@ function tools_load() {
 			o.vars.type = "A";
 		}
 		var ev = document.createAttribute("onclick");
+		var ev2 = document.createAttribute("onfocus");
+		//alert(o.onclick);
 		if(o.vars.type == "A") {
 			ev.value = "tools_mark(this); tools_followLink();";
 		} else {
 			ev.value = "tools_mark(this);";
 		}
+		ev2.value = "tools_mark(this);";
 		o.setAttributeNode(ev);
+		o.setAttributeNode(ev2);
 	}
 	tools_disable(obj("tools_code"));
 }
@@ -193,6 +197,7 @@ function tools_create(type) {
 	var main = obj("pageeditor");
 	var object = document.createElement(type);
 	var id = "el"+obj("pageeditor").children.length;
+	object.setAttribute("tabIndex", obj("pageeditor").children.length+1);
 	tools_objects.push(id);
 	var ev = document.createAttribute("onclick");
 	if(type == "A") {
@@ -202,6 +207,7 @@ function tools_create(type) {
 	}
 	var vars = {
 		type: type,
+		events: [],
 		obj: "this"
 	};
 	if(type == "P") {
@@ -295,6 +301,9 @@ function tools_updateSnippet(txt, mod) {
 	if(tools_marked !== -1) {
 		if(txt != "") {
 			tools_marked.innerHTML = txt;
+			for(var c = 0; c < tools_marked.children.length; c++) {
+				tools_stripEvents(tools_marked.children[c]);
+			}
 		} else {
 			tools_marked.innerHTML = "*"+mod+"-modul*";
 		}
@@ -306,6 +315,9 @@ function tools_fillSnippet(object, mod) {
 function tools_fillSnippet2(txt, args) {
 	if(txt != "") {
 		obj(args[0]).innerHTML = txt;
+		for(var c = 0; c < obj(args[0]).children.length; c++) {
+			tools_stripEvents(obj(args[0]).children[c]);
+		}
 	} else {
 		obj(args[0]).innerHTML = "*"+args[1]+"-modul*";
 		obj(args[0]).vars.moduleName = args[1];
@@ -316,20 +328,20 @@ function tools_editType(type, object) {
 		if(type == "none") {
 			obj("toolsContent").value = "";
 		} else if(type == "P") {
-			text = object.innerHTML;
+			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
 		} else if(type == "A") {
-			text = object.innerHTML;
+			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
 			obj("toolsLink").value = object.href;
 		} else if(type == "H1") {
-			text = object.innerHTML;
+			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
 		} else if(type == "H2") {
-			text = object.innerHTML;
+			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
 		} else if(type == "H3") {
-			text = object.innerHTML;
+			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
 		} else if(type == "IMG") {
 			var chosen = 0;
@@ -343,7 +355,7 @@ function tools_editType(type, object) {
 			obj("toolsImageMaxwidth").value = tools_marked.style.maxWidth.replace("px", "");
 			tools_updateImage();
 		} else if(type == "DIV") {
-			if(typeof object.vars.moduleName != "undefined") {
+			if(typeof object.vars.moduleName !== "undefined") {
 				for(var c = 0; c < obj("moduleList").options.length; c++) {
 					if(obj("moduleList").options[c].value == object.vars.moduleName) {
 						chosen = c;
@@ -369,6 +381,11 @@ function tools_editType(type, object) {
 					margStr[c] = marg[c].substring(0, marg[c].length-2);
 				}
 			}
+			for(var c = 0; c < 4; c++) {
+				if(typeof margStr[c] === "undefined") {
+					margStr[c] = 0;
+				}
+			}
 			obj("tool_marginu").value = margStr[0];
 			obj("tool_marginr").value = margStr[1];
 			obj("tool_margind").value = margStr[2];
@@ -380,6 +397,7 @@ function tools_change() {
 	if(tools_marked !== -1) {
 		if(obj("toolsContent").value != "") {
 			tools_marked.innerHTML = obj("toolsContent").value;
+			tools_disableEvents(tools_marked);
 		} else {
 			popup("Du måste fylla i text");
 		}
@@ -448,17 +466,8 @@ function tools_detailEditSave() {
 }
 function tools_changeLink() {
 	if(tools_marked !== -1) {
-		if(obj("toolsLink").value != "") {
-			if(obj("toolsLink").value.length > 3) {
-				if((obj("toolsLink").value.substr(0, 4) != "http") && (obj("toolsLink").value.substr(0, 3) != "ftp") && (obj("toolsLink").value.substr(0, 4) != "mail")) {
-					obj("toolsLink").value = "http://"+obj("toolsLink").value;
-					setTimeout(function(){ tools_changeLink(); }, 200);
-				} else {
-					tools_marked.href = obj("toolsLink").value;
-				}
-			} else {
-				tools_marked.href = obj("toolsLink").value;
-			}
+		if(obj("toolsLink").value !== "") {
+			tools_marked.href = obj("toolsLink").value;
 		} else {
 			tools_marked.removeAttribute("href");
 			popup("Länken är tom");
@@ -726,11 +735,13 @@ function tools_tableBorder(type) {
 }
 function tools_updMargin() {
 	if(tools_marked != -1) {
-		var margu = obj("tool_marginu").value;
-		var margr = obj("tool_marginr").value;
-		var margd = obj("tool_margind").value;
-		var margl = obj("tool_marginl").value;
-		tools_marked.style.margin = margu+"px "+margr+"px "+margd+"px "+margl+"px";
+		tools_marginEnd();
+		var m = [];
+		m[0] = obj("tool_marginu").value;
+		m[1] = obj("tool_marginr").value;
+		m[2] = obj("tool_margind").value;
+		m[3] = obj("tool_marginl").value;
+		tools_marked.style.margin = m[0]+"px "+m[1]+"px "+m[2]+"px "+m[3]+"px";
 	} else {
 		popup("Inget element är valt");
 	}
@@ -784,22 +795,35 @@ function tools_getAllObjects(type) {
 	}
 	return objects;
 }
-function tools_updateImage() {
+function tools_updateImage(def) {
 	if(tools_marked != -1) {
-		if(obj("toolsImageUrl").value != "false") {
+		if(typeof def === "undefined") {
+			def = false;
+		}
+		if(obj("toolsImageUrl").value !== "false") {
 			tools_marked.children[0].src = obj("toolsImageUrl").value;
+			if(typeof tools_marked.children[1] === "undefined") {
+				var p = document.createElement("P");
+				p.classList.add("subtext");
+				tools_marked.appendChild(p);
+			}
 			for(var c in subtextsIndex) {
 				if(subtextsIndex[c] == obj("toolsImageUrl").value) {
 					tools_marked.children[1].innerHTML = subtexts[c];
 				}
 			}
+		} else if(def === true) {
+			tools_marked.children[0].src = "img/tools_emptyimage.png";
+			tools_marked.children[1].innerHTML = "";
 		}
 		tools_updateCodearea();
 	}
 }
 function tools_updateCodearea() {
-	obj("codearea").value = tools_marked.innerHTML;
-	obj("codearea").rows = Math.ceil((obj("codearea").value.length)/30);
+	if(tools_marked !== -1) {
+		obj("codearea").value = tools_innerHTML(tools_marked);
+		obj("codearea").rows = Math.ceil((obj("codearea").value.length)/30);
+	}
 }
 function tools_editCode(set) {
 	if(typeof set == "undefined") {
@@ -868,13 +892,195 @@ function tools_updateAllCode() {
 function tools_updateCode() {
 	if(tools_marked != -1) {
 		if(tools_marked.tagName == "DIV") {
-			if(typeof tools_marked.vars.moduleName != "undefined") {
-				alert("ändra modul");
+			if(typeof tools_marked.vars.moduleName !== "undefined") {
+				popup("Ändrat från modul till DIV-element");
+				tools_marked.vars.type = "DIV";
 			}
 		}
 		tools_marked.innerHTML = obj("codearea").value;
-		tools_mark(tools_marked);
+		for(var c = 0; c < tools_marked.children.length; c++) {
+			tools_disableEvents(tools_marked.children[c]);
+		}
+		//tools_mark(tools_marked);
 	} else {
 		popup("Inget element markerat");
+	}
+}
+
+function tools_isNotEditorFunction(str) {
+	if(typeof str === "function") {
+		var s1 = "function onclick(event) {\n  tools_mark(this);\n}";
+		var s2 = "function onclick(event) {\n  tools_mark(this); tools_followLink();\n}";
+		if((str == s1) || (str == s2) || (str === null)) {
+			return false;
+		} else {
+			return true;
+		}
+	} else {
+		return false;
+	}
+}
+function tools_disableEvents(obj) {
+	var oList = [obj];
+	var sList = [];
+	var oc = 0;
+	var errC = 0;
+	while(oList.length !== sList.length) {
+		var found = false;
+		for(var c2 in sList) {
+			if(oList[oc].tagName === "IMG") {
+				var check1 = oList[oc].src;
+			} else {
+				var check1 = oList[oc].innerHTML;
+			}
+			if(sList[c2].tagName === "IMG") {
+				var check2 = sList[c2].src;
+			} else {
+				var check2 = sList[c2].innerHTML;
+			}
+			if(check1 === check2) {
+				found = true;
+			}
+		}
+		if(found === false) {
+			var to = oList[oc];
+			sList.push(to);
+			for(var c2 = 0; c2 < to.children.length; c2++) {
+				oList.push(to.children[c2]);
+			}
+			if(typeof to.vars === "undefined") {
+				to.vars = [];
+			}
+			if(typeof to.vars.events === "undefined") {
+				to.vars.events = [];
+			}
+			var evs = "";
+			for(var c2 in to) {
+				if(c2.substring(0, 2) == "on") {
+					if(typeof to[c2] === "function") {
+						if(tools_isNotEditorFunction(to.getAttribute(c2)) === true) {
+							if(typeof o.vars === "undefined") {
+								o.vars = [];
+							}
+							if(typeof o.vars.events === "undefined") {
+								o.vars.events = [];
+							}
+							to.vars.events.push({"type": c2, "function": to.getAttribute(c2)});
+							to.removeAttribute(c2);
+							//to.setAttribute("data-events", c2);
+						}
+					}
+				}
+			}
+		}
+		oc++;
+		if(errC == 1000) {
+			alert("Ett fel har uppstått");
+			oList = [];
+			sList = [];
+		}
+		errC++;
+	}
+}
+function tools_stripEvents(obj) {
+	var oList = [obj];
+	var sList = [];
+	var oc = 0;
+	var errC = 0;
+	while(oList.length !== sList.length) {
+		var found = false;
+		for(var c2 in sList) {
+			if(oList[oc].tagName === "IMG") {
+				var check1 = oList[oc].src;
+			} else {
+				var check1 = oList[oc].innerHTML;
+			}
+			if(sList[c2].tagName === "IMG") {
+				var check2 = sList[c2].src;
+			} else {
+				var check2 = sList[c2].innerHTML;
+			}
+			if(check1 === check2) {
+				found = true;
+			}
+		}
+		if(found === false) {
+			var to = oList[oc];
+			sList.push(to);
+			for(var c2 = 0; c2 < to.children.length; c2++) {
+				oList.push(to.children[c2]);
+			}
+			for(var c2 in to) {
+				if(c2.substring(0, 2) == "on") {
+					if(typeof to[c2] === "function") {
+						to.removeAttribute(c2);
+					}
+				}
+			}
+		}
+		oc++;
+		if(errC == 1000) {
+			alert("Ett fel har uppstått");
+			oList = [];
+			sList = [];
+		}
+		errC++;
+	}
+}
+function tools_innerHTML(obj) {
+	tools_enableEvents(obj);
+	var content = obj.cloneNode(true);
+	tools_disableEvents(obj);
+	return content.innerHTML;
+}
+function tools_enableEvents(obj, ret) {
+	if(typeof ret === "undefined") {
+		ret = false;
+	}
+	var oList = [obj];
+	var sList = [];
+	var oc = 0;
+	var errC = 0;
+	while(oList.length !== sList.length) {
+		var found = false;
+		for(var c2 in sList) {
+			if(oList[oc].tagName === "IMG") {
+				var check1 = oList[oc].src;
+			} else {
+				var check1 = oList[oc].innerHTML;
+			}
+			if(sList[c2].tagName === "IMG") {
+				var check2 = sList[c2].src;
+			} else {
+				var check2 = sList[c2].innerHTML;
+			}
+			if(check1 === check2) {
+				found = true;
+			}
+		}
+		if(found === false) {
+			var to = oList[oc];
+			sList.push(oList[oc]);
+			for(var c2 = 0; c2 < oList[oc].children.length; c2++) {
+				oList.push(oList[oc].children[c2]);
+			}
+			if(typeof to.vars !== "undefined") {
+				if(typeof to.vars.events !== "undefined") {
+					for(var c2 in to.vars.events) {
+						to.setAttribute(to.vars.events[c2].type, to.vars.events[c2].function);
+					}
+				}
+			}
+		}
+		oc++;
+		if(errC == 1000) {
+			alert("Ett fel har uppstått");
+			oList = [];
+			sList = [];
+		}
+		errC++;
+	}
+	if(ret === true) {
+		return obj;
 	}
 }

@@ -23,6 +23,10 @@ if(!config::isProtectedPage($_GET["_page"])) {
 	");
 	}
 }
+foreach(moduleManifest::getJS() as $k => $v) {
+	echo("<script src=\"".$v."\"></script>
+");
+}
 ?>
 </head>
 <body>
@@ -76,6 +80,7 @@ echo("
 <div id=\"header\">
 <div id=\"headerContent\">
 ");
+//unset($_SESSION["shoppingCart"]);
 ?>
 <img src="<?php echo(ROOT); ?>img/logo.png" alt="Banner" />
 </div>
@@ -84,7 +89,6 @@ menu::write();
 ?>
 </div>
 <div id="content">
-<div id="out"></div>
 <noscript>
 <p style="background: #fff; color: #f00; border: 1px solid #f00; border-radius: 10px; padding: 10px; margin: 0px;">Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.<?php
 if(PAGE == "pages") {

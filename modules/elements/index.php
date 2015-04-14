@@ -190,7 +190,11 @@ class elements {
 					foreach($header as $key => $row) {
 						$ret .= "<tr>";
 						$ret .= "<th>".$row."</th>";
-						$ret .= "<td>".$theContent[$key]."</td>";
+						if(isset($theContent[$key])) {
+							$ret .= "<td>".$theContent[$key]."</td>";
+						} else {
+							$ret .= "<td></td>";
+						}
 						$ret .= "</tr>";
 					}
 				}
@@ -212,7 +216,7 @@ class elements {
 		
 		return $ret;
 	}
-	public static function group($content, $minimizable = false, $title = false, $id = false, $attr = false, $class = false) {
+	public static function group($content, $minimizable = false, $title = false, $id = false, $attr = false, $class = false, $contentAttr = false) {
 		if($id !== false) {
 			$idt = " id=\"".$id."\"";
 		} else {
@@ -228,13 +232,18 @@ class elements {
 		} else {
 			$class = "";
 		}
+		if($contentAttr !== false) {
+			$contentAttr = " ".$contentAttr;
+		} else {
+			$contentAttr = "";
+		}
 		if($minimizable === true) {
 			$minimize = " onclick=\"groupMinimize(this);\" onmouseover=\"popup('Minimera');\"";
 		} else {
 			$minimize = "";
 		}
 		if($title != false) {
-			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\"".$minimize."><h3>".$title."</h3></div><div class=\"groupcontent\">".$content."</div></div>
+			return "<div class=\"group".$class."\"".$idt.$attr."><div class=\"grouptitle\"".$minimize."><h3>".$title."</h3></div><div class=\"groupcontent\"".$contentAttr.">".$content."</div></div>
 ";
 		}
 	}

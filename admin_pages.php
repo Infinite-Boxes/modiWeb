@@ -16,7 +16,7 @@ if(!isset($_SESSION["user"])) {
 			array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$pageslist["id"]]).elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
 		}
 	}
-	$pagesText = elements::button("new_doc.png", ["a", "admin_createnewpage"], "newDoc", "");
+	$pagesText = elements::button("new_doc.png", ["a", "admin_createnewpage"], "newDoc", "onmouseover=\"popup('Lägg till ny sida');\"");
 	foreach($pages as $k => $v) {
 		if($pagesText == "") {
 			$pagesText .= $v;

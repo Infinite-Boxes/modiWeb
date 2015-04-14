@@ -4,7 +4,7 @@ if(file_exists(ROOT.$_GET["file"])) {
 	$url = $_GET["file"];
 	if($_GET["name"] != "") {
 		if($_GET["alt"] != "") {
-			$name = $_GET["name"];
+			$name = addslashes($_GET["name"]);
 			$alt = addslashes($_GET["alt"]);
 			if(sql::insert("INSERT INTO ".Config::dbPrefix()."images(name, url, alt) values('".$name."', '".$url."', '".$alt."')")) {
 				echo("ok");

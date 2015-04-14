@@ -11,7 +11,7 @@ if(!isset($_SESSION["user"])) {
 		unset($images);
 		$images[0] = $temp;
 	}
-	echo(elements::button("tool_add_image.png", ["a", "admin_addimage"], "addImage"));
+	echo(elements::button("tool_add_image.png", ["a", "admin_addimage"], "addImage", "onmouseover=\"popup('Lägg till ny bild');\""));
 	if($images !== false) {
 		$imgText = [];
 		foreach($images as $k => $v) {
@@ -19,6 +19,6 @@ if(!isset($_SESSION["user"])) {
 		}
 		echo(elements::writeTable($imgText, "v"));
 	} else {
-		echo($imgText["Lägg till"]."<p>Inga bilder i databasen</p>");
+		echo("<p>Inga bilder i databasen</p>");
 	}
 }

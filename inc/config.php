@@ -74,8 +74,12 @@ class Config {
 	public static function getKeyReplace($key) {
 		return self::$editorKeynames[$key];
 	}
-	public static function runUserFunction($function, $args) {
-		return call_user_func([self::$userFunctions[$function]["caller"], self::$userFunctions[$function]["function"]], $args);
+	public static function runUserFunction($function, $args = false) {
+		if($args === false) {
+			return call_user_func([self::$userFunctions[$function]["caller"], self::$userFunctions[$function]["function"]]);
+		} else {
+			return call_user_func([self::$userFunctions[$function]["caller"], self::$userFunctions[$function]["function"]], $args);
+		}
 	}
 	public static function getUserFunctions() {
 		$list = [];

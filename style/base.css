@@ -3,7 +3,7 @@
     src: url('../fonts/theano.ttf') format('truetype');
 }
 html {
- margin: 0px 0px 20px;
+	margin: 0px 0px 5px;
 }
 body {
 	background: #fff;
@@ -21,15 +21,23 @@ p {
 	text-indent: 10px;
 	margin: 5px 0px;
 }
-p,h1,h2,h3,pre {
+:not(a) > p, :not(a) > h1, :not(a) > h2, :not(a) > h3, :not(a) > pre {
 	color: #116F50;
 	white-space: pre-line;
 }
 a:not(img) {
 	font-family: Verdana, Geneva, sans-serif;
 	text-decoration: none;
-	font-size: 0.8em;
 	color: #D22F4F;
+}
+:not(p) > a:not(img) {
+	font-size: 0.8em;
+}
+a:hover {
+	color: #EE5573;
+}
+*[onclick] {
+	cursor: pointer;
 }
 a img {
 	border: none;
@@ -46,9 +54,6 @@ a img {
 	margin-bottom: -5px;
 	border-width: 5px;
 	transition: border-width 200ms, border-radius 200ms, margin-bottom 200ms;
-}
-a:hover {
-	color: #EE5573;
 }
 h1,h2,h3 {
 	font-family: theano, Times New Roman, serif;
@@ -143,7 +148,7 @@ ul {
 	border-radius: 0px 0px 10px 0px;
 }
 .submenu .link:last-child {
-	border-radius: 0px 0px 10px 0px;
+	border-radius: 0px 5px 10px 0px;
 }
 #menu .link:hover {
 	border-color: #FFCBA0 #FFA55B #FFA55B #FFA55B;
@@ -270,6 +275,9 @@ pre {
 table {
 	margin: 5px 0px;
 }
+table * {
+	vertical-align: middle;
+}
 table tr td {
 	padding: 5px;
 }
@@ -352,6 +360,36 @@ table tr th {
 	border: 1px solid #000;
 	background: #000;
 }
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+.but_spin img {
+    -webkit-animation-play-state: paused;
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spin;
+    -moz-animation-duration: 1s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spin;
+    -ms-animation-duration: 1s;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+    -o-transition: rotate(3600deg);
+}
+.but_spin img:hover {
+    -webkit-animation-play-state: running;
+    -moz-animation-play-state: running;
+    -ms-animation-play-state: running;
+
+}
 
 #popup {
 	position: absolute;
@@ -370,6 +408,18 @@ table tr th {
 	word-wrap: break-word;
 	z-index: 5;
 	transition: opacity 500ms, top 100ms, left 100ms;
+}
+.adminNewsItem:nth-of-type(1) {
+	margin: 0px 0px 10px;
+}
+.adminNewsItem:last-of-type {
+	margin: 10px 0px 0px;
+}
+.adminNewsItem {
+	border: 1px solid #aaa;
+	border-radius: 20px;
+	margin: 10px 0px;
+	padding: 10px;
 }
 
 .admineditable {
@@ -471,6 +521,12 @@ table tr th {
 }
 #admineditmoveable {
 	cursor: move;
+	background: #fff;
+}
+#admineditmoveable:hover {
+	cursor: move;
+	border-color: #fff;
+	background: #eee;
 }
 .edit {
 	color: #E28233;
@@ -600,83 +656,6 @@ table tr th {
 }
 .subtext:empty {
 	display: none;
-}
-
-#products {
-	margin: 0px;
-	padding: 0px;
-}
-
-#filterMenu {
-	background: #eee;
-	border: 1px solid #ccc;
-	border-radius: 10px;
-}
-#filterMenu form {
-	display: table-cell;
-	margin: 0px 5px;
-}
-
-.product {
-	float: left;
-	width: 150px;
-	height: 150px;
-	text-align: center;
-	border: 1px solid #ccc;
-	margin: 10px 5px;
-	border-radius: 10px;
-	padding: 5px;
-	overflow: hidden;
-	background: #fff;
-	transition: border-color 200ms;
-}
-.product:nth-child(1) {
-	margin-left: 0px;
-}
-.product:hover {
-	border-color: #888;
-}
-.product .name {
-	margin: 0px 0px 5px;
-	font-weight: bold;
-}
-.product .price {
-	margin: 0px;
-}
-.product .priceSale {
-	color: #f00;
-}
-.product img {
-	border: 1px solid #aaa;
-	max-width: 100px;
-	max-height: 100px;
-}
-.buyWindow {
-	display: inline-block;
-	padding: 10px;
-	border: 1px solid #aaa;
-	text-align: center;
-}
-.buyWindow p {
-	text-indent: 0px;
-}
-.buyButton {
-	display: inline-block;
-	width: 100px;
-	height: 40px;
-	background: #8DE251;
-	text-align: center;
-	color: #D22F4F;
-	font-size: 1.8em;
-	border-radius: 10px;
-	border: 3px solid #6DC72D;
-	border-color: #4B9417;
-	transition: border-color 200ms, background 200ms, color 200ms;
-}
-.buyButton:hover {
-	background: #A3EE6F;
-	border-color: #6DC72D;
-	color: #EE5573;
 }
 
 .documentationtable td {

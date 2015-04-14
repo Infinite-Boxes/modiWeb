@@ -19,6 +19,11 @@ class moduleManifest {
 							$v[$k2] = ROOT."modules/".$module."/".$v2;
 						}
 						array_push(self::$moduleVars[$k], $v);
+					} elseif($k == "js") {
+						foreach($v as $k2 => $v2) {
+							$v[$k2] = ROOT."modules/".$module."/".$v2;
+						}
+						array_push(self::$moduleVars[$k], $v);
 					} else {
 						array_push(self::$moduleVars[$k], $v);
 					}
@@ -128,6 +133,9 @@ class moduleManifest {
 	}
 	public static function getCSS() {
 		return self::getModVal("css");
+	}
+	public static function getJS() {
+		return self::getModVal("js");
 	}
 	public static function hasMenu($page = false) {
 		$ret = false;

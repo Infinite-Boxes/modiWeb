@@ -25,16 +25,15 @@ function uploadImage() {
 		if(typeof file !== "undefined") {
 			var name = file.name;
 			obj("uploadWindow").innerHTML = "Laddar upp \""+name+"\". Stäng inte sidan!";
-			
-			var formData = new FormData();
 			if (!file.type.match('image.*')) {
 				obj("uploadWindow").innerHTML = "Filen är inte en bild";
 			} else {
+				var formData = new FormData();
 				formData.append("uploadFile", file, file.name);
 				ajax("functions/uploadimage.php", "POST", "uploadDone", "", formData);
 			}
 		} else {
-		popup("saveImage", "Ingen fil vald att ladda upp");
+			popup("Ingen fil vald att ladda upp");
 		}
 		event.preventDefault();
 		return false;
@@ -66,6 +65,7 @@ function addImage_add() {
 	} else if(obj("imagealt").value.length < 3) {
 		popup("För kort alternativ text");
 	} else {
+		var name = encodeURI(obj("imagename").value);
 		ajax("functions/addimage.php?file="+obj("currentUrl").value+"&name="+obj("imagename").value+"&alt="+obj("imagealt").value, "GET", "addImage_added");
 	}
 }
@@ -76,6 +76,7 @@ function addImage_added(txt) {
 		addImage_updateChosen(false);
 		obj("imagename").value = "";
 		obj("uploadForm").reset();
+		obj("subText").innerHTML = "";
 	} else {
 		popup(txt.substr(6));
 	}

@@ -3,28 +3,15 @@ class menu {
 	static private $items;
 	static public function init() {
 		// STANDARD
-		self::add("Hem", "hem");
+		//self::add("Hem", "hem");
 		if(isset($_SESSION["user"])) {
 			self::add("Admin", "admin");
+			self::add("ModiWeb", "admin_modiweb", "admin");
 			self::add("Sidor", "admin_pages", "admin");
 			self::add("Bilder", "admin_images", "admin");
 		}
-		// MODULES
-		foreach(moduleManifest::getMenu() as $k => $v) {
-			if(isset($v["name"])) {
-				if($v["visible"] !== false) {
-					self::add($v["name"], $v["link"], $v["parent"]);
-				}
-			} elseif(isset($v[0]["name"])) {
-				foreach($v as $key => $val) {
-					if($val["visible"] !== false) {
-						self::add($v[$key]["name"], $v[$key]["link"], $v[$key]["parent"]);
-					}
-				}
-			}
-		}
 		// PAGES
-		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL");
+		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL AND inmenu = 1 ORDER BY ord");
 		if($pages != false) {
 			if(isset($pages["name"])){
 				if($pages["parent"] == null) {
@@ -38,6 +25,20 @@ class menu {
 						self::add($v["name"], $v["url"]);
 					} else {
 						self::add($v["name"], $v["url"], $v["parent"]);
+					}
+				}
+			}
+		}
+		// MODULES
+		foreach(moduleManifest::getMenu() as $k => $v) {
+			if(isset($v["name"])) {
+				if($v["visible"] !== false) {
+					self::add($v["name"], $v["link"], $v["parent"]);
+				}
+			} elseif(isset($v[0]["name"])) {
+				foreach($v as $key => $val) {
+					if($val["visible"] !== false) {
+						self::add($v[$key]["name"], $v[$key]["link"], $v[$key]["parent"]);
 					}
 				}
 			}

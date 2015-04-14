@@ -2,13 +2,17 @@
 class shop {
 	public static function init() {
 		// Create userfunction. Arg1 = callName. Arg2 = arguments. For multiple arguments, use Array
-		Config::addUserFunction("productCategories", "catTree");
+		//Config::addUserFunction("productCategories", "catTree");
+		Config::addUserFunction("includeSmallShoppingCart", "writeCartSmall");
 		// Add keynames to use in the editor.
 		Config::addKeyname("[currency]", lang::getText("currency"));
 		// Create snippets
 		Config::addSnippet("Produktbild", "productimage");
 		Config::addSnippet("ProduktKategoriTräd", "productCategories");
 		Config::addSnippet("Köpruta", "buyWindow");
+	}
+	public static function rot() {
+		return "hej";
 	}
 	public static function productimage() {
 		$src = sql::get("SELECT img FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."'")["img"];
@@ -19,14 +23,14 @@ class shop {
 	}
 	public static function buyWindow() {
 		$all = "";
-		$price = sql::get("SELECT price FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."'")["price"];
+		$p = sql::get("SELECT price,name,url FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."'");
 		$curr = lang::getText("currency");
-		if($price == "") {
+		if($p["price"] == "") {
 			$priceStr = "<p>Pris saknas</p>";
 		} else {
-			$priceStr = "<p>".$price.$curr."</p>";
+			$priceStr = "<p>".$p["price"].$curr."</p>";
 		}
-		$buyStr = "<div class=\"buyButton\">Köp</div>";
+		$buyStr = "<div class=\"buyButton\" onclick=\"shop_shoppingCartAdd('".$p["name"]."', '".$p["url"]."', ".$p["price"].");\">Köp</div>";
 		$all = "<div class=\"buyWindow\">".$priceStr.$buyStr."</div>";
 		return $all;
 	}
@@ -34,7 +38,7 @@ class shop {
 		if(isset($_GET["product"])) {
 			return "<p>".self::catTree($_GET["product"])."</p>";
 		} else {
-			return "<p>ProductCategories</p>";
+			return "<p>Module: ProductCategories</p>";
 		}
 	}
 	public static function productObject($obj) {
@@ -49,9 +53,9 @@ class shop {
 			$priceFlags = "";
 		}
 		$price = $obj["price"];
-		return "<a href=\"p_".$obj["url"]."\"><div class=\"product\"><p class=\"name\">".$obj["name"]."</p>
+		return "<div style=\"float: left; text-align: center;\"><a href=\"p_".$obj["url"]."\"><div class=\"product\"><p class=\"name\">".$obj["name"]."</p>
 <img src=\"".$img."\" class=\"imgNotLinked\" />
-<p class=\"price".$priceFlags."\">".$price." ".lang::getText("currency")."</p></div></a>";
+<p class=\"price".$priceFlags."\">".$price." ".lang::getText("currency")."</p></div></a><div class=\"buyButtonSmall\" onclick=\"shop_shoppingCartAdd('".$obj["name"]."', '".$obj["url"]."', ".$obj["price"].");\">Köp</div></div>";
 	}
 	public static function getCats($prod) {
 		$cat = [];
@@ -335,6 +339,32 @@ $str .= "</div>
 	static public function getProduct($url) {
 		$ret = sql::get("SELECT * FROM ".Config::dbPrefix()."products WHERE url = '".$url."'");
 		return $ret;
+	}
+	static public function writeCartSmall() {
+		$totSum = 0;
+		if(isset($_SESSION["shoppingCart"])) {
+			$prodList = $_SESSION["shoppingCart"];
+			if(count($prodList) > 4) {
+				$products = "<p>".count($prodList)." produkter";
+			} elseif(count($prodList) > 0) {
+				$products = "";
+				foreach($prodList as $k => $v) {
+					$products .= "<a href=\"p_".$v["url"]."\" style=\"display: block;\">".$v["name"]."</a>";
+				}
+			} else {
+				$products = "<p>Inga produkter</p>";
+			}
+			if(count($prodList) > 0) {
+				$totSum = 0;
+				foreach($prodList as $k => $v) {
+					$totSum += sql::get("SELECT SUM(price) AS sum FROM ".Config::dbPrefix()."products WHERE (url = '".$v["url"]."')")["sum"];
+				}
+			}
+		} else {
+			$products = "<p>Inga produkter</p>";
+		}
+		return "<div id=\"shoppingCart\"><a href=\"shop_cart\"><b>".lang::getText("shoppingCart")."</b></a>
+<div id=\"shoppingCartList\">".$products."</div><p id=\"cartTotPrice\">Totalt ".$totSum." ".lang::getText("currency")."</div>";
 	}
 }
 shop::init();

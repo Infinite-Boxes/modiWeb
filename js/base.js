@@ -247,19 +247,45 @@ function formatContent(string) {
 	return;
 }
 
+function scrollDistance() {
+    var doc = document, w = window;
+    var x, y, docEl;
+    
+    if ( typeof w.pageYOffset === 'number' ) {
+        x = w.pageXOffset;
+        y = w.pageYOffset;
+    } else {
+        docEl = (doc.compatMode && doc.compatMode === 'CSS1Compat')?
+                doc.documentElement: doc.body;
+        x = docEl.scrollLeft;
+        y = docEl.scrollTop;
+    }
+    return {x:x, y:y};
+}
+
 function recStatistics() {
-	ajax("functions/recordstatistic.php"+statVar, "GET", "formatContent");//popup
+	//ajax("functions/recordstatistic.php"+statVar, "GET", "formatContent");//popup
 }
 function loaded(page) {
 	if(page == "pages") {
-		tools_load();
-		tools_changeTools();
+		tools_init();
 	}
 }
 var loadedVar = "";
 var pageeditcontent = "";
 var editElements = 0;
 window.onload = function() {
+	document.onscroll = function() {
+		if(scrollDistance().y > obj("headerContent").clientHeight) {
+			obj("menu").style.position = "fixed";
+			obj("menu").style.top = "0px";
+			obj("header").style.marginBottom = (obj("menu").clientHeight)+"px";
+		} else {
+			obj("menu").style.position = "relative";
+			obj("header").style.marginBottom = "0px";
+		}
+	};
+	document.body.style.margin = "0px 0px "+(obj("footer").clientHeight)+"px";
 	loaded(loadedVar);
 	recStatistics();
 };
@@ -304,8 +330,10 @@ function ajax(doc, type, callback, args, data) {
 			}
 		}
 		xhr.open(type, doc, true);
-		if(data != false) {
-			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		if(data !== false) {
+			if(typeof data === "string") {
+				xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			}
 			xhr.send(data);
 		} else {
 			xhr.send();

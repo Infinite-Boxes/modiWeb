@@ -36,7 +36,7 @@ foreach($fileList as $k => $v) {
 	}
 }
 if($tc == 0) {
-	echo("<div id=\"uploader\" class=\"img\" style=\"float: left; max-width: 200px;\"><img src=\"img/tools_emptyimage.png\" id=\"currentImage\" onerror=\"addImage_errorUrl();\"><p id=\"subText\" class=\"subtext\">a</p></div>
+	echo("<div id=\"uploader\" class=\"img\" style=\"float: left; max-width: 200px;\"><img src=\"img/tools_emptyimage.png\" id=\"currentImage\" onerror=\"addImage_errorUrl();\"><p id=\"subText\" class=\"subtext\"></p></div>
 ");
 }
 $tab = [];

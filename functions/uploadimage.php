@@ -1,13 +1,14 @@
 <?php
 require("../inc/bootstrap.php");
+$file = $_FILES["uploadFile"];
 $target_dir = ROOT."img/user/";
-$target_file = $target_dir . basename($_FILES["uploadFile"]["name"]);
-$returnName = "img/user/".$_FILES["uploadFile"]["name"];
+$target_file = $target_dir . basename($file["name"]);
+$returnName = "img/user/".$file["name"];
 $uploadOk = 1;
 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
 // Check if image file is a actual image or fake image
 if(isset($_POST["submit"])) {
-    $check = getimagesize($_FILES["uploadFile"]["tmp_name"]);
+    $check = getimagesize($file["tmp_name"]);
     if($check !== false) {
         $uploadOk = 1;
     } else {
@@ -21,7 +22,7 @@ if (file_exists($target_file)) {
     $uploadOk = 0;
 }
 // Check file size
-if ($_FILES["uploadFile"]["size"] > 500000) {
+if ($file["size"] > 500000) {
     echo "ERROR_Tyvärr, filen är för stor.";
     $uploadOk = 0;
 }
@@ -44,8 +45,8 @@ if($errFile === true) {
 }
 // Check if $uploadOk is set to 0 by an error
 if ($uploadOk != 0) {
-    if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_file)) {
-        echo $returnName.":::".$_FILES["uploadFile"]["name"];
+    if (move_uploaded_file($file["tmp_name"], $target_file)) {
+        echo $returnName.":::".$file["name"];
     } else {
         echo "ERROR_Det har inträffat ett fel när vi försökte ladda upp din bild. Försök igen.";
     }
