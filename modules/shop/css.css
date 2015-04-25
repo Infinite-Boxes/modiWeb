@@ -9,11 +9,11 @@
 	left: -10px;
 }
 .product * {
-	font-size: 1em;
+	font-size: 0.9em;
 }
 #products {
 	margin: 0px;
-	padding: 0px;
+	padding: 10px 0px 20px;
 }
 
 #filterMenu {
@@ -45,7 +45,7 @@
 .product:nth-child(1) {
 	margin-left: 0px;
 }
-.product:hover {
+.product div:first-child:hover {
 	border-color: #888;
 }
 .product .name {
@@ -119,12 +119,7 @@
 }
 
 #shoppingCart {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	background: #fff;
-	border: 1px solid #000;
-	border-radius: 10px;
+	margin: 5px 5px 5px 0px;
 	box-shadow: 0 0 0px #fff;
 	padding: 10px;
 	transition: background 400ms, box-shadow 400ms;
@@ -138,6 +133,8 @@
 }
 .bigShoppingCart {
 	margin-top: 20px;
+	width: 100%;
+	max-width: 800px;
 }
 .bigShoppingCart tr td{
 	border: 1px solid #ccc;
@@ -153,4 +150,86 @@
 }
 .bigShoppingCart td {
 	padding: 0px 10px 4px 2px;
+}
+.bigShoppingCart tr td:nth-child(1) {
+	width: 22px;
+}
+.bigShoppingCart tr td:nth-child(2) {
+	width: 75px;
+}
+.bigShoppingCart tr td:nth-child(4) {
+	width: 15%;
+}
+
+.shop_steps {
+	background: #ddd;
+	border: 1px solid #aaa;
+	width: 100%;	
+	max-width: 800px;
+	border-top-right-radius: 50px;
+	border-bottom-right-radius: 50px;
+	margin-bottom: 10px;
+}
+.shop_steps a {
+	display: inline-block;
+	text-align: center;
+	height: 100%;
+	width: 20%;
+	max-width: 160px;
+}
+.shop_steps a:first-child {
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+.shop_stepsCurrent {
+	background: #eee;
+	margin: 0px;
+}
+.shop_stepsCurrent:not(.last .done):hover {
+	background: #f6f6f6;
+}
+.shop_stepsCurrent.last:not(.done)+a:hover {
+	background: #eee;
+	background: linear-gradient(-90deg, #eee, #ddd);
+	border-radius: 0px 20px 20px 0px;
+}
+.shop_steps .last {
+	border-top-right-radius: 50px;
+	border-bottom-right-radius: 50px;
+}
+.shop_steps .error {
+	background: #faa;
+}
+.shop_steps .done {
+	background: #afa;
+}
+.shop_steps .done:last-of-type {
+	border-radius: 0px 20px 20px 0px;
+}
+#shop_tabWindows {
+	width: 100%;	
+	max-width: 800px;
+	cursor: pointer;
+}
+#shop_tabWindows > div {
+	background: #ddd;
+	border: 1px solid #ccc;
+	border-color: #ccc;
+	padding: 5px;
+	transition: color 200ms, background 200ms, border-color 400ms;
+}
+#shop_tabWindows .tabHeader {
+	font-weight: bold;
+	color: #D22F4F;
+}
+#shop_tabWindows > div:hover {
+	background: #eee;
+	color: #EE5573;
+}
+#shop_tabWindows > div > div:first-of-type + div {
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+	max-height: 0px;
+	transition: max-height 400ms, padding 400ms;
 }

@@ -3,6 +3,25 @@
 <head>
 <meta charset="utf-8">
 <title><?php echo(Config::getConfig("title")); ?></title>
+<?php
+$config = Config::getConfig("all");
+$favIcon = "";
+$favIconType = "";
+foreach($config as $v) {
+	if($v["name"] === "favicon") {
+		$favIcon = $v["val"];
+	}
+}
+$favType = substr($favIcon, strripos($favIcon, ".")+1);
+if($favType === "png") {
+	$favIconType = "image/png";
+} elseif($favType === "gif") {
+	$favIconType = "image/gif";
+} elseif($favType === "ico") {
+	$favIconType = "image/vnd.microsoft.icon";
+}
+?>
+<link rel="icon" type="<?php echo($favIconType); ?>" href="<?php echo($favIcon); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo(ROOT); ?>style/base.css">
 <?php
 //echo("<base href=\"".$_SERVER["DOCUMENT_ROOT"].SITEPATH."\" target=\"_blank\">");
@@ -30,6 +49,51 @@ foreach(moduleManifest::getJS() as $k => $v) {
 ?>
 </head>
 <body>
+<div style="position: absolute; top: 0px; right: 0px;">
+<?php
+$oList = moduleManifest::getModVal("integrate");
+$list = [];
+foreach($oList as $k => $v) {
+	if(!isset($list[$v["prio"]])) {
+		$list[$v["prio"]] = [];
+	}
+	$list[$v["prio"]][] = $v;
+}
+krsort($list);
+$objects = [];
+foreach($list as $k => $v) {
+	foreach($list[$k] as $k2 => $v2) {
+		array_push($objects, $v2);
+	}
+}
+foreach($objects as $k => $v) {
+	if($v["position"] === "topright") {
+		if(isset($v["pages"])) {
+			$found = false;
+			foreach($v["pages"] as $k2 => $v2) {
+				if(($v2 === $_GET["_page"]) || ($v2 === "all")) {
+					$found = true;
+				}
+			}
+		} else {
+			$found = true;
+		}
+		if(isset($v["notPages"])) {
+			foreach($v["notPages"] as $k2 => $v2) {
+				if($v2 === $_GET["_page"]) {
+					$found = false;
+				}
+			}
+		}
+		if($found === true) {
+			echo("<div style=\"float: right;\">");
+			include($v["url"]);
+			echo("</div>");
+		}
+	}
+}
+?>
+</div>
 <div id="grey" class="off" style="display: none;"></div>
 <?php
 echo("<script>

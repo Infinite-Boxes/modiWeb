@@ -105,3 +105,18 @@ function shop_shoppingCartRemove2(txt, url) {
 		obj("shoppingCartList").innerHTML = "<p>Inga produkter</p>";
 	}
 }
+function shop_updShipping(o, value) {
+	for(var c = 0; c < obj("shop_tabWindows").children.length; c++) {
+		obj("shop_tabWindows").children[c].children[1].style.maxHeight = "0px";
+		obj("shop_tabWindows").children[c].children[1].style.padding = "0px";
+		obj("shop_tabWindows").children[c].style.borderColor = "#ccc";
+	}
+	o.children[1].style.maxHeight = "100px";
+	o.children[1].style.maxHeight = "100px";
+	o.children[1].style.padding = "5px";
+	o.style.borderColor = "#888";
+	obj("shippingType").value = value;
+}
+function shop_updPayment(o, value) {
+	obj("paymentType").value = value;
+}

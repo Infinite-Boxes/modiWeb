@@ -19,19 +19,36 @@ class shop {
 		if($src == "") {
 			$src = "none.png";
 		}
-		return "<img style=\"margin: 0px 10px 0px 0px; border: 1px solid #bbb; width: 100px; height: 150px; float: left;\" src=\"img/products/".$src."\" />";
+		if(!strpos($src, "://")) {
+			$src = "img/products/".$src;
+		}
+		return "<img style=\"margin: 0px 10px 0px 0px; border: 1px solid #bbb; max-width: 100px; max-height: 150px; float: left;\" src=\"".$src."\" />";
 	}
 	public static function buyWindow() {
 		$all = "";
-		$p = sql::get("SELECT price,name,url FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."'");
-		$curr = lang::getText("currency");
-		if($p["price"] == "") {
-			$priceStr = "<p>Pris saknas</p>";
+		if(isset($_GET["product"])) {
+			$productUrl = $_GET["product"];
 		} else {
-			$priceStr = "<p>".$p["price"].$curr."</p>";
+			$productUrl = "";
 		}
-		$buyStr = "<div class=\"buyButton\" onclick=\"shop_shoppingCartAdd('".$p["name"]."', '".$p["url"]."', ".$p["price"].");\">Köp</div>";
-		$all = "<div class=\"buyWindow\">".$priceStr.$buyStr."</div>";
+		$p = sql::get("SELECT price,name,url FROM ".Config::dbPrefix()."products WHERE url = '".$productUrl."' AND active = 1");
+		if($p === FALSE) {
+			$all = "<div class=\"buyWindow\"><p>Produkten finns inte</p></div>";
+		} else {
+			$curr = lang::getText("currency");
+			if($p["price"] == "") {
+				$priceStr = "<p>Pris saknas</p>";
+			} else {
+				$priceStr = "<p>".$p["price"].$curr."</p>";
+			}
+			if(!isset($p["price"])) {
+				$price = "false";
+			} else {
+				$price = $p["price"];
+			}
+			$buyStr = "<div class=\"buyButton\" onclick=\"shop_shoppingCartAdd('".$p["name"]."', '".$p["url"]."', ".$price.");\">Köp</div>";
+			$all = "<div class=\"buyWindow\">".$priceStr.$buyStr."</div>";
+		}
 		return $all;
 	}
 	public static function productCategories() {
@@ -43,11 +60,15 @@ class shop {
 	}
 	public static function productObject($obj) {
 		if($obj["img"] != null) {
-			$img = "img/products/".$obj["img"];
+			if(!strpos($obj["img"], "://")) {
+				$img = "img/products/".$obj["img"];
+			} else {
+				$img = $obj["img"];
+			}
 		} else {
-			$img = "img/tools_emptyimage.png";
+			$img = "img/products/none.png";
 		}
-		if(in_array("sale", $obj["flags"])) {
+		if(in_array("S", $obj["flags"])) {
 			$priceFlags = " priceSale";
 		} else {
 			$priceFlags = "";
@@ -139,7 +160,7 @@ class shop {
 		}
 		return $str;
 	}
-	static private function sortCats($cats = false) {
+	static public function sortCats($cats = false) {
 		if($cats == false) {
 			return false;
 		} else {
@@ -164,7 +185,7 @@ class shop {
 			return $cats;
 		}
 	}
-	static private function catDepth($cats, $cat) {
+	static public function catDepth($cats, $cat) {
 		$depth = 0;
 		$pid = $cat;
 		$err = 0;
@@ -184,25 +205,26 @@ class shop {
 		}
 		return $depth;
 	}
-	static private function catChildren($id) {
-		$depth = 0;
-		$pid = $cat;
-		$err = 0;
-		while($pid !== "") {
-			foreach($cats as $k => $v) {
-				if($k == $pid) {
-					$pid = $v;
+	static public function allParentsFromId($id) {
+		$cats = sql::get("SELECT id,parent FROM ".Config::dbPrefix()."products_categories");
+		$ret = [$id];
+		$c = 0;
+		$ids = [["id" => $id]];
+		while(count($ids) > 0) {
+			$id = array_shift($ids);
+			foreach($cats as $v) {
+				if($v["parent"] === $id["id"]) {
+					array_push($ids, $v);
+					array_push($ret, $v["id"]);
+					$ok = false;
 				}
 			}
-			if($pid != "") {
-				$depth++;
+			if($c === 50) {
+				break;
 			}
-			$err ++;
-			if($err == 20) {
-				$pid = "";
-			}
+			$c++;
 		}
-		return $depth;
+		return $ret;
 	}
 	static public function orderQuery() {
 		
@@ -245,6 +267,36 @@ class shop {
 	static public function emptyShop() {
 		return "<p>Inga produkter</p>";
 	}
+	static public function catsSelect($cats = false, $cat = null) {
+		if($cats === false) {
+			$cats = sql::get("SELECT * FROM ".Config::dbPrefix()."products_categories ORDER BY parent ASC, id ASC");
+		}
+		$ret = "<select name=\"filterCat\" id=\"filterCat\" style=\"margin: 0px 5px;\" onchange=\"submit();\">";
+		if($cat !== null) {
+			$ret .= "<option value=\"__all__\" selected>".lang::getText("everything")."</option>";
+		} else {
+			$ret .= "<option value=\"__all__\">".lang::getText("everything")."</option>";
+		}
+		if(isset($cats["name"])) {
+			$ret .= "<option value=\"".$cats["url"]."\">".$cats["name"]."</option>";
+		} else {
+			$theCats = [];
+			foreach($cats as $k => $v) {
+				$theCats[$v["id"]] = $v["parent"];
+			}
+			$cats = self::sortCats($cats);
+			foreach($cats as $k => $v) {
+				if($v["url"] == $cat) {
+					$sel = " selected";
+				} else {
+					$sel = "";
+				}
+				$ret .= "<option value=\"".$v["url"]."\"".$sel.">".str_repeat("-&nbsp;", self::catDepth($theCats, $v["id"])).$v["name"]." (".self::subProductsCount($v["id"]).")</option>";
+			}
+		}
+		$ret .= "</select>";
+		return $ret;
+	}
 	static public function filterMenu($cat = null) {
 		$str = <<<EOD
 <div id="filterMenu">
@@ -252,30 +304,7 @@ EOD;
 $cats = sql::get("SELECT * FROM ".Config::dbPrefix()."products_categories ORDER BY parent ASC, id ASC");
 if($cats != false) {
 	$form = "<form action=\"functions/shop_redir.php\" method=\"POST\">";
-	$select = $form."<p>".lang::getText("category")."<select name=\"filterCat\" id=\"filterCat\" style=\"margin: 0px 5px;\" onchange=\"submit();\">";
-	if($cat !== null) {
-		$select .= "<option value=\"__all__\" selected>".lang::getText("everything")."</option>";
-	} else {
-		$select .= "<option value=\"__all__\">".lang::getText("everything")."</option>";
-	}
-	if(isset($cats["name"])) {
-		$select .= "<option value=\"".$cats["url"]."\">".$cats["name"]."</option>";
-	} else {
-		$theCats = [];
-		foreach($cats as $k => $v) {
-			$theCats[$v["id"]] = $v["parent"];
-		}
-		$cats = self::sortCats($cats);
-		foreach($cats as $k => $v) {
-			if($v["url"] == $cat) {
-				$sel = " selected";
-			} else {
-				$sel = "";
-			}
-			$select .= "<option value=\"".$v["url"]."\"".$sel.">".str_repeat("-&nbsp;", self::catDepth($theCats, $v["id"])).$v["name"]." (".self::subProductsCount($v["id"]).")</option>";
-		}
-	}
-	$select .= "</select></p>
+	$select = $form."<p>".lang::getText("category").self::catsSelect(false, $cat)."</p>
 </form>";
 	$includes = $form;
 	$filterCatInclude_yes = "<input type=\"hidden\" name=\"filterCatInclude\" value=\"true\"><input type=\"submit\" value=\"".lang::getText("incl_subcategories")."\" />";
@@ -337,8 +366,16 @@ $str .= "</div>
 		return $str;
 	}
 	static public function getProduct($url) {
-		$ret = sql::get("SELECT * FROM ".Config::dbPrefix()."products WHERE url = '".$url."'");
+		$ret = sql::get("SELECT * FROM ".Config::dbPrefix()."products WHERE url = '".$url."' AND active = 1");
 		return $ret;
+	}
+	static public function productExist() {
+		$ret = sql::get("SELECT * FROM ".Config::dbPrefix()."products WHERE url = '".$_GET["product"]."' AND active = 1");
+		if($ret !== false) {
+			return true;
+		} else {
+			return lang::getText("shop_missing_product");
+		}
 	}
 	static public function writeCartSmall() {
 		$totSum = 0;
@@ -368,8 +405,232 @@ $str .= "</div>
 		} else {
 			$products = "<tr><td><p>Inga produkter</p></td></tr>";
 		}
-		return "<div id=\"shoppingCart\"><a href=\"shop_cart\"><b>".lang::getText("shoppingCart")."</b></a>
+		return "<div id=\"shoppingCart\" class=\"window\"><a href=\"shop_cart\"><b>".lang::getText("shoppingCart")."</b></a>
 <div id=\"shoppingCartList\">".$products."</table></div><p id=\"cartTotPrice\">Totalt ".$totSum." ".lang::getText("currency")."</div>";
+	}
+	static public function shippingPackageNameFromCode($codeNr) {
+		$code[5] = "Ändrat förfogande";
+		$code[6] = "Påminnelseavgift";
+		$code[7] = "Kopia på kvittens";
+		$code[8] = "Tilläggsförsäkring Pall.ETT";
+		$code[9] = "Tilläggsförsäkring DPD";
+		$code[10] = "Lastbärare";
+		$code[11] = "Posten Varubrev Ekonomi";
+		$code[13] = "Postpaket";
+		$code[14] = "DPD Företagspaket 12.00";
+		$code[15] = "DPD Företagspaket";
+		$code[19] = "MyPack";
+		$code[20] = "Företagspaket (Förbetald)";
+		$code[21] = "Företagspaket Ekonomi Förbet.";
+		$code[22] = "Hempaket Retur";
+		$code[23] = "Kundretur";
+		$code[24] = "MyPack - Retur";
+		$code[25] = "Postpaket";
+		$code[26] = "Paket utan kvittens";
+		$code[27] = "Postpaket Kontant";
+		$code[28] = "SverigePaket";
+		$code[31] = "DPD Företagspaket 09.00";
+		$code[32] = "Hempaket";
+		$code[33] = "Hem Lokalt";
+		$code[35] = "Företagspaket 09.00, (Förbet.)";
+		$code[38] = "Kartong med porto";
+		$code[42] = "Expresspaket";
+		$code[43] = "Express Global Plus";
+		$code[44] = "Bud distributionslösningar";
+		$code[45] = "Brevpostförskott Inrikes";
+		$code[46] = "Brev";
+		$code[47] = "EMS International Express";
+		$code[48] = "InNight";
+		$code[49] = "InNight Reverse";
+		$code[50] = "Urntransport";
+		$code[51] = "Företagspaket Comeback";
+		$code[52] = "PALL.ETT";
+		$code[53] = "PALL.ETT Special";
+		$code[54] = "PALL.ETT+";
+		$code[57] = "DPD Företagspaket Special";
+		$code[58] = "InNight Forwarding";
+		$code[59] = "Retail Delivery";
+		$code[69] = "InNight Systemtransporter";
+		$code[75] = "Posten Varubrev 1:a klass";
+		$code[76] = "Extern produkt TNT";
+		$code[77] = "Extern produkt FedEx";
+		$code[78] = "Posten Varubrev Klimatek";
+		$code[79] = " Posten Varubrev Ekonomi";
+		$code[80] = "DPD MAX";
+		$code[81] = "Lokal Åkeritjänst - Pall";
+		$code[82] = "Lokal Åkeritjänst - Paket";
+		$code[83] = "Styckegods";
+		$code[84] = "Road Freight Europe";
+		$code[86] = "Posten Varubrev 1:a klass";
+		$code[87] = "Posten Varubrev Retur";
+		$code[88] = "DPD Classic";
+		$code[91] = "Postpaket Utrikes";
+		$code[92] = "Import-Ekonomipaket";
+		$code[93] = "eCIP Collect";
+		$code[94] = "eCIP Home";
+		$code[95] = "Postpaket Utrikes";
+		$code[96] = "eCIP Return";
+		$code[97] = "Import-UPU";
+		$code[98] = "Import-EPG";
+		$code[99] = "Internpostservice";
+		if(isset($code[$codeNr])) {
+			return $code[$codeNr];
+		} else {
+			return false;
+		}
+	}
+	static public function writeCartTabs($tab, $ok) {
+		echo("<div class=\"shop_steps\">");
+		$pages[0] = "cart";
+		$pages[1] = "information";
+		$pages[2] = "shipping";
+		$pages[3] = "payment";
+		$pages[4] = "done";
+		$link = [];
+		$link[0] = " href=\"shop_cart\"";
+		$link[1] = " href=\"shop_client\"";
+		$link[2] = [" href=\"#\" onclick=\"obj('informationForm').submit();\"", " href=\"shop_shipping\""];
+		$link[3] = [" href=\"#\" onclick=\"obj('shippingForm').submit();\"", " href=\"shop_payment\""];
+		$link[4] = " href=\"shop_done\"";
+		$item = [];
+		$classType1 = "";
+		$classType2 = "shop_stepsCurrent";
+		$classType3 = "shop_stepsCurrent last";
+		$classType4 = "shop_stepsCurrent done";
+		$found = false;
+		for($c = 0; $c < 5; $c++) {
+			if($tab === $pages[$c]) {
+				$found = true;
+			}
+			if($tab === $pages[4]) {
+				$item[$c] = " class=\"".$classType4."\"";
+				$link[$c] = " href=\"#\"";
+			} else {
+				if($found === false) {
+					if(gettype($link[$c]) === "array") {
+						$link[$c] = $link[$c][1];
+					}
+					$item[$c] = " class=\"".$classType2."\"";
+				} elseif($found === true) {
+					$item[$c] = " class=\"".$classType3."\"";
+					$link[$c] = " href=\"#\"";
+					$found = "found";
+				} else {
+					if($found === "found") {
+						$found = "done";
+						if(gettype($link[$c]) === "array") {
+							if($ok !== false) {
+								$link[$c] = $link[$c][0];
+							} else {
+								$link[$c] = " href=\"#\"";
+							}
+						}
+					} else {
+						$link[$c] = " href=\"#\"";
+					}
+					$item[$c] = " class=\"".$classType1."\"";
+				}
+			}
+		}
+		echo("<a".$link[0].$item[0]."><h2>".lang::getText("cart")."</h2></a><a".$link[1].$item[1]."><h2>".lang::getText("clientinformation")."</h2></a><a".$link[2].$item[2]."><h2>".lang::getText("shipping")."</h2></a><a".$link[3].$item[3]."><h2>".lang::getText("payment")."</h2></a><a".$link[4].$item[4]."><h2>".lang::getText("done")."</h2></a>
+</div>");
+	}
+	static public function writeShipping($id) {
+		if($id === "posten") {
+			$name = $_SESSION["shop_information"]["name"];
+			$address = $_SESSION["shop_information"]["address"];
+			$postalNumber = $_SESSION["shop_information"]["postalNumber"];
+			$postalCity = $_SESSION["shop_information"]["postalCity"];
+			$addressEnd = trim(strrchr($address, " "));
+			if($addressEnd !== false) {
+				$addressStart = trim(substr($address, 0, strrpos($address, $addressEnd)));
+			} else {
+				$addressStart = $address;
+				$addressEnd = "";
+			}
+			$vars["consumerId"] = Config::getKey("shipping", "posten");
+			$vars["dateOfDeparture"] = "+";
+			$vars["serviceCode"] = 25;
+			$vars["serviceGroupCode"] = "SE";
+			$vars["fromAddressStreetName"] = "Bryggaregatan";
+			$vars["fromAddressStreetNumber"] = "32";
+			$vars["fromAddressPostalCode"] = "25227";
+			$vars["fromAddressCountryCode"] = "SE";
+			$vars["toAddressStreetName"] = $addressStart;
+			$vars["toAddressStreetNumber"] = $addressEnd;
+			$vars["toAddressPostalCode"] = str_replace(" ", "", $postalNumber);
+			$vars["toAddressCountryCode"] = "SE";
+			$vars["responseContent"] = "full";
+			$varsStr = "";
+			foreach($vars as $k => $v) {
+				if($varsStr === "") {
+					$varsStr .= "?";
+				} else {
+					$varsStr .= "&";
+				}
+				if($v !== "+") {
+					$v = urlEncode($v);
+				}
+				$varsStr .= $k."=".$v;
+			}
+			$shippingTime = @file_get_contents("http://api.postnord.com/wsp/rest-services/notis-rest/api/transitTimeInfo.json".$varsStr);
+			if($shippingTime === false) {
+				$shippingTimeStr = "?";
+			} else {
+				$shippingTime = json_decode($shippingTime);
+				$shippingTime = $shippingTime->{"se.posten.loab.lisp.notis.publicapi.serviceapi.TransitTimeResponse"};
+				if(!isset($shippingTime->compositeFault)) {
+					$shippingTimeStr = $shippingTime->transitTimes[0]->transitTimeInDays." dagar";
+				} else {
+					$shippingTimeStr = "";
+				}
+			}
+			return "<h3>Posten</h3>
+<p>".$shippingTimeStr."</p>";
+		} elseif($id === "dhl") {
+			return "<h3>DHL</h3>
+<p>Dhl leverans</p>";
+		} else {
+			return false;
+		}
+	}
+	static public function klarnaMethods() {
+		$tvars = Config::getKey("payment", "klarna");
+		$digest = base64_encode(pack("H*", hash("sha256", $tvars["eid"].":SEK:".$tvars["secret"])));
+		$vars["Authorization"] = "xmlrpc-4.2 ".$digest;
+		//$vars["Host"] = "payment.testdrive.klarna.com";
+		
+		$response = base::apiGet("klarna", "https://api-test.klarna.com/touchpoint/checkout/?currency=SEK&merchant_id=".$tvars["eid"]."&locale=sv_se&total_price=".round($_SESSION["shop_information"]["totalPrice"]*100), $vars);
+		$ret = false;
+		echo("<pre>");
+		print_r($response->payment_methods);
+		echo("</pre>");
+		$payments = $response->payment_methods;
+		$ret = [];
+		foreach($payments as $k => $v) {
+			if($v->extra_info !== "") {
+				$xinfo = "<p>".$v->extra_info."</p>";
+			} else {
+				$xinfo = "";
+			}
+			if($v->use_case !== "") {
+				$usage = "<p><i>".$v->use_case."</i></p>";
+			} else {
+				$usage = "";
+			}
+			if(isset($v->logo->uri)) {
+				$ico = "<img src=\"".$v->logo->uri."\" style=\"float: right; max-height: 20px;\">";
+			} else {
+				$ico = "";
+			}
+			array_push($ret, ["name" => $v->group->title.": <p style=\"display: inline;\">".$v->title."</p>".$ico, "value" => $v->group->code, "info" => $xinfo.$usage]);
+		}
+		return $ret;
+	}
+	static public function paysonMethods() {
+	}
+	static public function startOrder() {
+		
 	}
 }
 shop::init();

@@ -24,7 +24,16 @@ echo(elements::group(elements::writeTable($form), false, "Logga in"));
 	$configs = sql::get("SELECT * FROM ".Config::dbPrefix()."config_site");
 	$configOut = [];
 	foreach($configs as $k => $v) {
-		$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["id"]."\" value=\"".$v["val"]."\"></p>";
+		if($v["name"] === "default_lang") {
+			$configOut[ucFirst($v["admname"])] = "<select name=\"".$v["name"]."\">";
+			$languages = sql::get("SELECT * FROM ".Config::dbPrefix()."languages");
+			foreach($languages as $lang) {
+				$configOut[ucFirst($v["admname"])] .= "<option value=\"".$lang["val"]."\">".$lang["name"]."</option>";
+			}
+			$configOut[ucFirst($v["admname"])] .= "</select>";
+		} else {
+			$configOut[ucfirst($v["admname"])] = "<input type=\"text\" name=\"".$v["name"]."\" value=\"".$v["val"]."\"></p>";
+		}
 	}
 	echo(elements::group(elements::writeTable($configOut), false, "Sidans konfiguration", "", "style=\"float: left; width: 300px;\"", "tabcell"));
 }

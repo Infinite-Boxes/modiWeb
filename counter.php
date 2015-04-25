@@ -7,16 +7,19 @@ $fileinfos = new RecursiveIteratorIterator(
 function ok($var){
 	$ret = true;
 	if(substr($var, 0, 4) == ".git") { $ret = false; }
+	if(substr($var, 0, 11) == "ext_modules") { $ret = false; }
 	if(substr($var, -4) == ".ttf") { $ret = false; }
 	if(substr($var, -4) == ".png") { $ret = false; }
 	if(substr($var, -4) == ".jpg") { $ret = false; }
 	if(substr($var, -4) == ".sql") { $ret = false; }
+	if(substr($var, -7) == ".config") { $ret = false; }
 	if(substr($var, 0, 12) == "projectfiles") { $ret = false; }
 	if($var == ".htaccess") { $ret = false; }
 	if($var == ".project") { $ret = false; }
 	if($var == "colors.html") { $ret = false; }
 	if($var == "counter.php") { $ret = false; }
 	if($var == "README.md") { $ret = false; }
+	if(strpos($var, ".") === false) { $ret = false; }
 	return $ret;
 }
 function type($var) {

@@ -2,5 +2,9 @@
 require("../inc/bootstrap.php");
 unset($_SESSION["user"]);
 msg::notice(elements::keyName("logoutnotice")["content"]);
-header("Location: ../admin");
+if(isset($_GET["redir"])) {
+	header("Location: ../".$_GET["redir"]);
+} else {
+	header("Location: ../admin");
+}
 ?>

@@ -8,12 +8,17 @@ class Config {
 	private static $userFunctions = [];
 	private static $editorKeynames = [];
 	private static $editorSnippets = [];
+	private static $keys = [];
 	static public function init() {
 		// Required modules
 		self::$db["dsn"] = "mysql:host=localhost;dbname=modiweb";
 		self::$db["user"] = "root";
 		self::$db["pass"] = "";
-		/*self::$db["dsn"] = "mysql:host=localhost;dbname=etqwxiwh_db";self::$db["user"] = "etqwxiwh_admin";self::$db["pass"] = "=0211dave";*/
+		
+		/*self::$db["dsn"] = "mysql:host=localhost;dbname=etqwxiwh_db";
+		self::$db["user"] = "etqwxiwh_admin";
+		self::$db["pass"] = "=0211dave";*/
+		
 		self::$db["prefix"] = "modiweb";
 		
 		//self::$css["theme"] = "theme.css";
@@ -46,6 +51,13 @@ class Config {
 		
 		// PROTECTED PAGES
 		array_push(self::$protectedPages, "pages");
+		array_push(self::$protectedPages, "admin_modiweb");
+		array_push(self::$protectedPages, "admin_pages");
+		array_push(self::$protectedPages, "admin_images");
+		
+		// KEYS. These CANNOT be altered
+		self::$keys["shipping"]["posten"] = "0eb30c21-625c-429b-9f8b-d696327f00d1";
+		self::$keys["payment"]["klarna"] = ["eid" => "4123", "secret" => "3h9yNpI9UtTBaah"];
 	}
 	private static function loadModules() {
 		foreach(self::$modules as $k => $v) {
@@ -109,6 +121,9 @@ class Config {
 	public static function runSnippet($function) {
 		return call_user_func([self::$editorSnippets[$function]["caller"], self::$editorSnippets[$function]["function"]]);
 	}
+	public static function addToProtectedPages($page) {
+		array_push(self::$protectedPages, $page);
+	}
 	public static function isProtectedPage($page) {
 		$ret = false;
 		foreach(self::$protectedPages as $v) {
@@ -142,6 +157,17 @@ class Config {
 			return sql::get("SELECT name,val FROM ".Config::dbPrefix()."config_site");
 		} else {
 			return sql::get("SELECT val FROM ".Config::dbPrefix()."config_site WHERE name = '".$key."'")["val"];
+		}
+	}
+	public static function getKey($type, $key) {
+		if(isset(self::$keys[$type])) {
+			if(isset(self::$keys[$type][$key])) {
+				return self::$keys[$type][$key];
+			} else {
+				return "Key does not exist";
+			}
+		} else {
+			return "Type does not exist";
 		}
 	}
 }

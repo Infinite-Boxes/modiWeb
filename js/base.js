@@ -262,6 +262,34 @@ function scrollDistance() {
     }
     return {x:x, y:y};
 }
+function updUpdateButton(url, version) {
+	ajax("http://"+url+"/version.php", "GET", "updUpdateButton2", [url, version]);
+	ajax("http://"+url+"/news.php", "GET", "updNews");
+}
+function updUpdateButton2(txt, args) {
+	if(txt > args[1]) {
+		obj("updateButton").innerHTML = "<a href=\"http://"+args[0]+"/update\" target=\"_blank\" class=\"but_spin\"><img src=\"img/update.png\" class=\"imgbutton\" onmouseover=\"popup('Uppdatera ModiWeb');\"></a>";
+	} else {
+		obj("updateButton").innerHTML = "<img src=\"img/update_disabled.png\" class=\"imgbutton\" onmouseover=\"popup('Ni har den senaste versionen');\">";
+	}
+}
+function updNews(txt) {
+	obj("news").innerHTML = txt;
+}
+function openTab(o) {
+	for(var c = 0; c < o.parentNode.parentNode.children.length; c++) {
+		if(o.parentNode === o.parentNode.parentNode.children[c]) {
+			if(o.parentNode.classList.contains("openedTab")) {
+				o.parentNode.parentNode.children[c].classList.remove("openedTab");
+			} else {
+				o.parentNode.classList.add("openedTab");
+			}
+		} else {
+			o.parentNode.parentNode.children[c].classList.remove("openedTab");
+		}
+	}
+}
+
 
 function recStatistics() {
 	//ajax("functions/recordstatistic.php"+statVar, "GET", "formatContent");//popup

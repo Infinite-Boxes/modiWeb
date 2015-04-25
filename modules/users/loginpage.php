@@ -1,0 +1,26 @@
+<div style="padding: 10px 10px;">
+<?php
+if(!isset($_SESSION["user"])) {
+?>
+<div class="tabWindow" style="background: #fff;">
+<div>
+	<div onclick="openTab(this);" class="tabHeader"><a>Login</a></div>
+	<div>
+	<form action="functions/login.php" method="POST">
+	<input type="hidden" name="page" value="<?php echo(PAGE); ?>">
+	<p style="text-indent: 0px;"><input type="text" name="username" size=12 placeholder="<?php echo(lang::getText("username")); ?>"></p>
+	<p style="text-indent: 0px;"><input type="password" name="password" size=12 placeholder="<?php echo(lang::getText("password")); ?>"></p>
+	<input type="submit" value="<?php echo(lang::getText("login")); ?>">
+	</form>
+	</div>
+</div></div>
+<?php
+} else {
+?>
+<div class="window">
+<?php echo("<a href=\"functions/logout.php?redir=".PAGE."\">".lang::getText("logout")); ?></a>
+</div>
+<?php
+}
+?>
+</div>

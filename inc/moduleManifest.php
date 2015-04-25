@@ -24,6 +24,11 @@ class moduleManifest {
 							$v[$k2] = ROOT."modules/".$module."/".$v2;
 						}
 						array_push(self::$moduleVars[$k], $v);
+					} elseif($k == "integrate") {
+						foreach($v as $k2 => $v2) {
+							$v[$k2]["url"] = ROOT."modules/".$module."/".$v2["url"];
+						}
+						array_push(self::$moduleVars[$k], $v);
 					} else {
 						array_push(self::$moduleVars[$k], $v);
 					}
@@ -32,6 +37,9 @@ class moduleManifest {
 					$menu = $vars["menu"];
 					if(isset($menu["name"])) {
 						if(isset($menu["link"])) {
+							if(isset($menu["protected"])) {
+								Config::addToProtectedPages($menu["link"]);
+							}
 							if(isset($menu["visible"])) {
 								$vis = $menu["visible"];
 							} else {
@@ -61,6 +69,9 @@ class moduleManifest {
 						foreach($menu as $k => $v) {
 							if(isset($menu[$k]["name"])) {
 								if(isset($menu[$k]["link"])) {
+									if(isset($menu[$k]["protected"])) {
+										Config::addToProtectedPages($menu[$k]["link"]);
+									}
 									if(isset($menu[$k]["visible"])) {
 										$vis = $menu[$k]["visible"];
 									} else {
@@ -151,8 +162,14 @@ class moduleManifest {
 		return $ret;
 	}
 	public static function getModVal($val) {
-		if(self::$moduleVars[$val] !== false) {
-			return self::$moduleVars[$val][0];
+		if(isset(self::$moduleVars[$val])) {
+			$ret = [];
+			foreach(self::$moduleVars[$val] as $v) {
+				foreach($v as $v2) {
+					array_push($ret, $v2);
+				}
+			}
+			return $ret;
 		} else {
 			return false;
 		}

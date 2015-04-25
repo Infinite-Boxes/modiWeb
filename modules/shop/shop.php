@@ -1,5 +1,4 @@
 <?php
-echo(shop::writeCartSmall());
 $filter = [];
 if(isset($_GET["cat"])) {
 	echo(shop::filterMenu($_GET["cat"]));
@@ -15,19 +14,10 @@ if(isset($_GET["cat"])) {
 	echo(shop::filterMenu());
 }
 echo("<div id=\"products\">");
-if(count($filter) > 0) {
-	$filterTxt = " WHERE";
-	$sw = false;
-	foreach($filter as $k => $v) {
-		$andTxt = " AND ";
-		if($sw == false) {
-			$andTxt = " ";
-			$sw = true;
-		}
-		$filterTxt .= $andTxt.$v; 
-	}
-} else {
-	$filterTxt = "";
+$filterTxt = " WHERE active = 1";
+foreach($filter as $k => $v) {
+	$andTxt = " AND ";
+	$filterTxt .= $andTxt.$v; 
 }
 if((isset($_SESSION["sortDirection"])) && (isset($_SESSION["shopSortBy"]))) {
 	$sortStr = " ORDER BY ".$_SESSION["shopSortBy"]." ".$_SESSION["sortDirection"];

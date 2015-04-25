@@ -1,5 +1,6 @@
 <?php
 session_start();
+//$sitePath = "/";
 $sitePath = "/modiweb/";
 define("SITEPATH", $sitePath);
 $currentPath = str_replace(substr(strrchr($_SERVER["SCRIPT_NAME"], "/"), 1), "", $_SERVER["SCRIPT_NAME"]);
@@ -15,8 +16,10 @@ for($c = 0; $c < substr_count($currentPath, "/"); $c++) {
 $tempstr = str_replace($sitePath, "", strtolower($_SERVER["REQUEST_URI"]));
 if(strpos($tempstr, "?") !== false) {
 	define("PAGE", substr($tempstr, 0, strpos($tempstr, "?")));
+	define("PAGEGETS", substr($tempstr, strpos($tempstr, "?")));
 } else {
 	define("PAGE", $tempstr);
+	define("PAGEGETS", "");
 }
 if(isset($_SESSION["previous_page"])) {
 	define("PREPAGE", $_SESSION["previous_page"]);

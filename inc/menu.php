@@ -11,7 +11,7 @@ class menu {
 			self::add("Bilder", "admin_images", "admin");
 		}
 		// PAGES
-		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL AND inmenu = 1 ORDER BY ord");
+		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL AND inmenu = 1 ORDER BY -ord DESC");
 		if($pages != false) {
 			if(isset($pages["name"])){
 				if($pages["parent"] == null) {

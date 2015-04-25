@@ -21,7 +21,10 @@ p {
 	text-indent: 10px;
 	margin: 5px 0px;
 }
-:not(a) > p, :not(a) > h1, :not(a) > h2, :not(a) > h3, :not(a) > pre {
+label {
+	font-size: 0.8em;
+}
+:not(a) > p, :not(a) > h1, :not(a) > h2, :not(a) > h3, :not(a) > pre, :not(a) > label {
 	color: #116F50;
 	white-space: pre-line;
 }
@@ -33,11 +36,16 @@ a:not(img) {
 :not(p) > a:not(img) {
 	font-size: 0.8em;
 }
-a:hover {
+a:not([href="#"]):hover, *[onclick]:hover {
 	color: #EE5573;
 }
 *[onclick] {
+	color: #D22F4F;
 	cursor: pointer;
+}
+a[href="#"]:not([onclick]) {
+	color: #116F50;
+	cursor: default;
 }
 a img {
 	border: none;
@@ -59,6 +67,9 @@ h1,h2,h3 {
 	font-family: theano, Times New Roman, serif;
 	line-height: 100%;
 	margin: 5px;
+}
+#content > h1,#content > h2,#content > h3 {
+	margin: 20px 5px 5px;
 }
 h1 *,h2 *,h3 * {
 	font-family: inherit;
@@ -103,8 +114,8 @@ ul {
 }
 #headerContent {
 	background: #4B9417;
-	border-bottom: 1px solid;
-	border-color: #260E78;
+	border-bottom: 2px solid;
+	border-color: #265108;
 	padding: 10px;
 }
 #menu {
@@ -156,15 +167,11 @@ ul {
 #menu .menuActive {
 	border-color: #FFA55B #FFA55B #E28233 #FFA55B;
 }
-#menu .menuActive a:before,#menu .menuActive a:after {
-	content: " - ";
-}
 #menu .menuActive:hover {
 	border-color: #FFCBA0 #FFA55B #E28233 #FFA55B;
 }
 .menu .link {
 	border: 5px solid;
-	width: 150px;
 	height: 30px;
 	transition: height 200ms;
 
@@ -172,12 +179,11 @@ ul {
 .submenu .link {
 	border-color: #FFA55B #E28233 #E28233 #FFB577;
 	border: 4px solid;
-	width: 150px;
 	height: 25px;
 }
 #menu .link a {
 	color: #fff;
-	width: 100%;
+	padding: 0px 20px;
 	height: 100%;
 	display: block;
 }
@@ -185,8 +191,8 @@ ul {
 #content {
 	display: block;
 	padding: 0px 10px 0px;
+	word-wrap: break-word;
 }
-
 #footer {
 	position: fixed;
 	bottom: 0px;
@@ -206,6 +212,12 @@ table p {
 }
 table {
 	border-collapse: collapse;
+}
+.tableLinks tr:hover td {
+	background: #FA9DAF;
+}
+.tableLinks tr:hover td a {
+	background: #EE5573;
 }
 input {
 	border: 1px solid #A75A1A;
@@ -229,6 +241,9 @@ input[type="file"] {
 	border-radius: 0px 10px 10px 0px;
 	color: #116F50;
 	background: linear-gradient(180deg, #fff, #ddd);
+}
+input[type="radio"] {
+	display: inline;
 }
 select {
 	border: 1px solid #A75A1A;
@@ -271,7 +286,13 @@ pre {
 	border: 1px solid #aaa;
 	border-radius: 10px;
 	padding: 5px;
+	cursor: text;
 }
+.info {
+	color: #888;
+	font-style: italic;
+}
+
 table {
 	margin: 5px 0px;
 }
@@ -286,6 +307,12 @@ table tr td p {
 }
 table tr th {
 	text-align: left;
+}
+.linkedDiv {
+	padding: 5px;
+}
+.linkedDiv:hover {
+	background: #ffd6dd;
 }
 .bold {
 	font-weight: bold;
@@ -325,14 +352,14 @@ table tr th {
 	min-width: 100px;
 }
 .group .groupcontent:not(.groupcontentDisabled) {
-	height: initial;
+	max-height: 500px;
 	overflow: hidden;
-	transition: height 1s;
+	transition: max-height 200ms;
 }
 .group .groupcontentDisabled {
-	height: 0px;
+	max-height: 0px;
 	overflow: hidden;
-	transition: height 1s;
+	transition: max-height 200ms;
 }
 .group p {
 	text-indent: 0px;
@@ -360,6 +387,26 @@ table tr th {
 	border: 1px solid #000;
 	background: #000;
 }
+div .button {
+	display: inline-block;
+	background: #ddd;
+	background: linear-gradient(180deg, #eee, #ccc);
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid #aaa;
+}
+div .button p {
+	color: #D22F4F;
+	text-indent: 0px;
+	margin: 0px;
+}
+div .button:hover {
+	background: #eee;
+	background: linear-gradient(180deg, #ddd, #eee);
+}
+div .button:hover  p {
+	color: #EE5573;
+}
 @-moz-keyframes spin {
     from { -moz-transform: rotate(0deg); }
     to { -moz-transform: rotate(360deg); }
@@ -368,27 +415,46 @@ table tr th {
     from { -webkit-transform: rotate(0deg); }
     to { -webkit-transform: rotate(360deg); }
 }
+.doSpin {
+	-webkit-animation-play-state: running;
+	-webkit-animation-name: spin;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+	-moz-animation-play-state: running;
+	-moz-animation-name: spin;
+	-moz-animation-duration: 2s;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-timing-function: linear;
+	-ms-animation-play-state: running;
+	-ms-animation-name: spin;
+	-ms-animation-duration: 2s;
+	-ms-animation-iteration-count: infinite;
+	-ms-animation-timing-function: linear;
+	-o-transition: rotate(3600deg);
+}
 .but_spin img {
-    -webkit-animation-play-state: paused;
-    -webkit-animation-name: spin;
-    -webkit-animation-duration: 1s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
-    -moz-animation-name: spin;
-    -moz-animation-duration: 1s;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
-    -ms-animation-name: spin;
-    -ms-animation-duration: 1s;
-    -ms-animation-iteration-count: infinite;
-    -ms-animation-timing-function: linear;
-    -o-transition: rotate(3600deg);
+	-webkit-animation-play-state: paused;
+	-webkit-animation-name: spin;
+	-webkit-animation-duration: 1s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+	-moz-animation-play-state: paused;
+	-moz-animation-name: spin;
+	-moz-animation-duration: 1s;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-timing-function: linear;
+	-ms-animation-play-state: paused;
+	-ms-animation-name: spin;
+	-ms-animation-duration: 1s;
+	-ms-animation-iteration-count: infinite;
+	-ms-animation-timing-function: linear;
+	-o-transition: rotate(3600deg);
 }
 .but_spin img:hover {
-    -webkit-animation-play-state: running;
-    -moz-animation-play-state: running;
-    -ms-animation-play-state: running;
-
+	-webkit-animation-play-state: running;
+	-moz-animation-play-state: running;
+	-ms-animation-play-state: running;
 }
 
 #popup {
@@ -409,6 +475,75 @@ table tr th {
 	z-index: 5;
 	transition: opacity 500ms, top 100ms, left 100ms;
 }
+.window {
+	padding: 5px;
+	margin: 0px;
+	background: #fff;
+	border: 1px solid #aaa;
+	border-radius: 10px;
+}
+.tabWindow {
+	width: 100%;	
+	max-width: 800px;
+	border-radius: 10px;
+	border: 1px solid #ccc;
+}
+.tabWindow > div > .tabHeader {
+	cursor: pointer;
+	border: 1px solid #ccc;
+	border-width: 0px;
+	padding: 5px;
+	background: #eee;
+	font-weight: bold;
+	transition: color 200ms, background 200ms, border-width 200ms, border-radius 200ms;
+}
+.tabWindow > div > .tabHeader * {
+	color: #D22F4F;
+	text-indent: 0px;
+}
+.tabWindow > div > .tabHeader:hover * {
+	color: #EE5573;
+}
+.tabWindow > div:not(:last-of-type) > .tabHeader {
+	border-width: 0px 0px 1px 0px;
+}
+.tabWindow > div:last-of-type > .tabHeader {
+	border-radius: 0px 0px 10px 10px;
+}
+.tabWindow > div:first-of-type > .tabHeader {
+	border-radius: 10px 10px 0px 0px;
+}
+.tabWindow > div:first-of-type:last-of-type > .tabHeader {
+	border-radius: 10px;
+}
+.tabWindow > div > .tabHeader:hover {
+	background: #f6f6f6;
+}
+.tabWindow > div > div:nth-of-type(2) {
+	margin: 0px;
+	min-height: 0px !important;
+	padding: 0px 5px;
+	overflow: hidden;
+	max-height: 0px;
+	transition: max-height 400ms, padding 400ms;
+}
+.tabWindow > .openedTab > div:nth-of-type(2) {
+	max-height: 400px;
+	padding: 5px 5px;
+}
+.tabWindow > .openedTab > .tabHeader {
+	border-width: 0px 0px 1px;
+}
+.tabWindow > .openedTab:last-of-type > .tabHeader {
+	border-radius: 0px;
+}
+.tabWindow > div~.openedTab:not(:first-of-type) > .tabHeader {
+	border-radius: 0px;
+}
+.tabWindow > .openedTab:last-of-type:first-of-type > .tabHeader {
+	border-radius: 10px 10px 0px 0px;
+}
+
 .adminNewsItem:nth-of-type(1) {
 	margin: 0px 0px 10px;
 }
@@ -663,4 +798,11 @@ table tr th {
 }
 .documentationtable td:first-child {
 	width: 100px;
+}
+/* Specials */
+.secondTdFull tr td:nth-of-type(2) *:not(input[type="checkbox"]) {
+	overflow: hidden;
+	margin: 0px;
+	padding: 3px;
+	width: 100%;
 }
