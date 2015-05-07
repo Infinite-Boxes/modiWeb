@@ -27,6 +27,14 @@ class sql {
 		}
 		return $q;
 	}
+	static public function sanitizePosts($vars, $posts) {
+		foreach($vars as $k => $v) {
+			if(isset($posts[$v])) {
+				$posts[$v] = self::sanitize($posts[$v]);
+			}
+		}
+		return $posts;
+	}
 	public static function get($q) {
 		$q = str_replace(";", "", $q);
 		$todo = self::$pdo->prepare($q.";");

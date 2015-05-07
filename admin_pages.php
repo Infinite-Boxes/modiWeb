@@ -10,10 +10,10 @@ if(!isset($_SESSION["user"])) {
 	if($pageslist != false) {
 		if(!isset($pageslist["url"])) {
 			foreach($pageslist as $k => $v) {
-				array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$v["id"]]).elements::link($v["name"], "pages?id=".$v["id"]));
+				array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$v["id"]], "", "", "onclick=\"dialog('Vill du verkligen radera sidan?', this);\"").elements::link($v["name"], "pages?id=".$v["id"]));
 			}
 		} else {
-			array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$pageslist["id"]]).elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
+			array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$pageslist["id"]], "test='test'").elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
 		}
 	}
 	$pagesText = elements::button("new_doc.png", ["a", "admin_createnewpage"], "newDoc", "onmouseover=\"popup('Lägg till ny sida');\"");

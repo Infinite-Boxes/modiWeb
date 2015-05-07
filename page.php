@@ -22,7 +22,7 @@ if(!config::isProtectedPage($_GET["_page"])) {
 				page::write(moduleManifest::menuModule($_GET["_page"])["file"]);
 			} else {
 				msg::warning($ret);
-				header("Location: ".PREPAGE);
+				header("Location: ".BASEPAGE);
 			}
 		} else {
 			require("header.php");

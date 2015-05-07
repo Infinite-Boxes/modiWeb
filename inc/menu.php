@@ -70,10 +70,26 @@ class menu {
 		$conf = Config::getMenu();
 		echo("<script>
 ");
+		$topPage = "none";
 		foreach(self::$items as $k => $v) {
 			echo("menuList['".$k."'] = [");
 			$tsw = false;
 			foreach($v as $k2 => $v2) {
+				if($v2["url"] === $_SESSION["page"]) {
+					if($k === "main") {
+						$found = false;
+						foreach(self::$items as $k3 => $v3) {
+							if($k3 === $v2["url"]) {
+								$found = true;
+							}
+						}
+						if($found === true) {
+							$topPage = $v2["url"];
+						}
+					} else {
+						$topPage = $k;
+					}
+				}
 				if($tsw === false) {
 					echo("'".$v2["url"]."'");
 					$tsw = true;
@@ -85,7 +101,7 @@ class menu {
 ");
 		}
 		echo("
-menuCurrentPage = '".$_SESSION["page"]."';
+menuCurrentPage = '".$topPage."';
 </script>
 ");
 		if($conf["orientation"] == "horizontal") {
@@ -94,14 +110,14 @@ menuCurrentPage = '".$_SESSION["page"]."';
 				$childExists = true;
 			}
 			if($childExists == true) {
-				echo("<div id=\"menu\">");
+				echo("<div id=\"menu\" class=\"menu\">");
 			} else {
-				echo("<div id=\"menu\">");
+				echo("<div id=\"menu\" class=\"menu\">");
 			}
 			$sw = false;
 			foreach(self::$items as $k => $v) {
 				if($sw == false) {
-					echo("<div class=\"menu\" id=\"main\"><ul>");
+					echo("<div id=\"main\"><ul>");
 				} else {
 					$childExists = false;
 					foreach($v as $k2 => $v2) {
@@ -128,11 +144,11 @@ menuCurrentPage = '".$_SESSION["page"]."';
 					}
 					$active = "";
 					if(isset($_GET["cat"])) {
-						if($v2["url"] == "c_".$_GET["cat"]) {
+						if($v2["url"] === "c_".$_GET["cat"]) {
 							$active = " menuActive";
 						}
 					}
-					if($_SESSION["page"] == $v2["url"]) {
+					if(($_SESSION["page"] === $v2["url"]) || ($v2["url"] === $topPage)) {
 						$active = " menuActive";
 					}
 					$tabDisable = " tabindex=\"-1\"";
@@ -140,10 +156,11 @@ menuCurrentPage = '".$_SESSION["page"]."';
 				}
 				echo("</ul></div>");
 				if($sw == false) {
+					echo("<div class=\"submenus\" onmouseover=\"resetResetTimer()\">");
 					$sw = true;
 				}
 			}
-			echo("</div>");
+			echo("</div></div>");
 		}
 	}
 	static public function isUser($url) {

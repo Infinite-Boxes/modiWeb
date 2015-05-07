@@ -4,97 +4,99 @@ class moduleManifest {
 	private static $modules = [];
 	private static $moduleVars = [];
 	public static function load($module) {
-		require(ROOT."modules/".$module."/index.php");
-		$url = ROOT."modules/".$module."/manifest.php";
-		$menuPush = [];
-		if(file_exists($url)) {
-			include($url);
-			if(isset($vars)) {
-				foreach($vars as $k => $v) {
-					if(!isset(self::$moduleVars[$k])) {
-						self::$moduleVars[$k] = [];
+		if(!Config::isLoaded($module)) {
+			require(ROOT."modules/".$module."/index.php");
+			$url = ROOT."modules/".$module."/manifest.php";
+			$menuPush = [];
+			if(file_exists($url)) {
+				include($url);
+				if(isset($vars)) {
+					foreach($vars as $k => $v) {
+						if(!isset(self::$moduleVars[$k])) {
+							self::$moduleVars[$k] = [];
+						}
+						if($k == "css") {
+							foreach($v as $k2 => $v2) {
+								$v[$k2] = ROOT."modules/".$module."/".$v2;
+							}
+							array_push(self::$moduleVars[$k], $v);
+						} elseif($k == "js") {
+							foreach($v as $k2 => $v2) {
+								$v[$k2] = ROOT."modules/".$module."/".$v2;
+							}
+							array_push(self::$moduleVars[$k], $v);
+						} elseif($k == "integrate") {
+							foreach($v as $k2 => $v2) {
+								$v[$k2]["url"] = ROOT."modules/".$module."/".$v2["url"];
+							}
+							array_push(self::$moduleVars[$k], $v);
+						} else {
+							array_push(self::$moduleVars[$k], $v);
+						}
 					}
-					if($k == "css") {
-						foreach($v as $k2 => $v2) {
-							$v[$k2] = ROOT."modules/".$module."/".$v2;
-						}
-						array_push(self::$moduleVars[$k], $v);
-					} elseif($k == "js") {
-						foreach($v as $k2 => $v2) {
-							$v[$k2] = ROOT."modules/".$module."/".$v2;
-						}
-						array_push(self::$moduleVars[$k], $v);
-					} elseif($k == "integrate") {
-						foreach($v as $k2 => $v2) {
-							$v[$k2]["url"] = ROOT."modules/".$module."/".$v2["url"];
-						}
-						array_push(self::$moduleVars[$k], $v);
-					} else {
-						array_push(self::$moduleVars[$k], $v);
-					}
-				}
-				if(isset($vars["menu"])) {
-					$menu = $vars["menu"];
-					if(isset($menu["name"])) {
-						if(isset($menu["link"])) {
-							if(isset($menu["protected"])) {
-								Config::addToProtectedPages($menu["link"]);
-							}
-							if(isset($menu["visible"])) {
-								$vis = $menu["visible"];
-							} else {
-								$vis = true;
-							}
-							if(isset($menu["type"])) {
-								$type = $menu["type"];
-							} else {
-								$type = false;
-							}
-							if(isset($menu["file"])) {
-								if($type != "page") {
-									$file = "modules/".$module."/".$menu["file"];
-								} else {
-									$file = $menu["file"];
+					if(isset($vars["menu"])) {
+						$menu = $vars["menu"];
+						if(isset($menu["name"])) {
+							if(isset($menu["link"])) {
+								if(isset($menu["protected"])) {
+									Config::addToProtectedPages($menu["link"]);
 								}
-							} else {
-								$file = false;
-							}
-							if(isset($menu["parent"])) {
-								array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => $menu["parent"]]);
-							} else {
-								array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => ""]);
-							}
-						}
-					} elseif(isset($menu[0]["name"])) {
-						foreach($menu as $k => $v) {
-							if(isset($menu[$k]["name"])) {
-								if(isset($menu[$k]["link"])) {
-									if(isset($menu[$k]["protected"])) {
-										Config::addToProtectedPages($menu[$k]["link"]);
-									}
-									if(isset($menu[$k]["visible"])) {
-										$vis = $menu[$k]["visible"];
+								if(isset($menu["visible"])) {
+									$vis = $menu["visible"];
+								} else {
+									$vis = true;
+								}
+								if(isset($menu["type"])) {
+									$type = $menu["type"];
+								} else {
+									$type = false;
+								}
+								if(isset($menu["file"])) {
+									if($type != "page") {
+										$file = "modules/".$module."/".$menu["file"];
 									} else {
-										$vis = true;
+										$file = $menu["file"];
 									}
-									if(isset($menu[$k]["type"])) {
-										$type = $menu[$k]["type"];
-									} else {
-										$type = false;
-									}
-									if(isset($menu[$k]["file"])) {
-										if($type != "page") {
-											$file = "modules/".$module."/".$menu[$k]["file"];
-										} else {
-											$file = $menu[$k]["file"];
+								} else {
+									$file = false;
+								}
+								if(isset($menu["parent"])) {
+									array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => $menu["parent"]]);
+								} else {
+									array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => ""]);
+								}
+							}
+						} elseif(isset($menu[0]["name"])) {
+							foreach($menu as $k => $v) {
+								if(isset($menu[$k]["name"])) {
+									if(isset($menu[$k]["link"])) {
+										if(isset($menu[$k]["protected"])) {
+											Config::addToProtectedPages($menu[$k]["link"]);
 										}
-									} else {
-										$file = false;
-									}
-									if(isset($menu[$k]["parent"])) {
-										array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => $v["parent"]]);
-									} else {
-										array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => ""]);
+										if(isset($menu[$k]["visible"])) {
+											$vis = $menu[$k]["visible"];
+										} else {
+											$vis = true;
+										}
+										if(isset($menu[$k]["type"])) {
+											$type = $menu[$k]["type"];
+										} else {
+											$type = false;
+										}
+										if(isset($menu[$k]["file"])) {
+											if($type != "page") {
+												$file = "modules/".$module."/".$menu[$k]["file"];
+											} else {
+												$file = $menu[$k]["file"];
+											}
+										} else {
+											$file = false;
+										}
+										if(isset($menu[$k]["parent"])) {
+											array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => $v["parent"]]);
+										} else {
+											array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "parent" => ""]);
+										}
 									}
 								}
 							}
@@ -102,10 +104,10 @@ class moduleManifest {
 					}
 				}
 			}
+			$modulePush["name"] = $module;
+			$modulePush["menu"] = $menuPush;
+			array_push(self::$modules, $modulePush);
 		}
-		$modulePush["name"] = $module;
-		$modulePush["menu"] = $menuPush;
-		array_push(self::$modules, $modulePush);
 	}
 	public static function get() {
 		return self::$modules;

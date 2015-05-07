@@ -26,28 +26,29 @@ class Config {
 		self::$menu["orientation"] = "horizontal";
 		
 		// Other modules
-		array_push(self::$modules, "base");
-		array_push(self::$modules, "msg");
-		array_push(self::$modules, "browsercheck");
-		array_push(self::$modules, "sql");
-		array_push(self::$modules, "log");
-		array_push(self::$modules, "statistics");
-		array_push(self::$modules, "elements");
-		array_push(self::$modules, "page");
-		array_push(self::$modules, "users");
-		array_push(self::$modules, "lang");
-		array_push(self::$modules, "dates");
+		array_push(self::$modules, ["base", false]);
+		array_push(self::$modules, ["msg", false]);
+		array_push(self::$modules, ["browsercheck", false]);
+		//array_push(self::$modules, ["sql", false]);
+		array_push(self::$modules, ["log", false]);
+		array_push(self::$modules, ["statistics", false]);
+		array_push(self::$modules, ["elements", false]);
+		array_push(self::$modules, ["page", false]);
+		array_push(self::$modules, ["users", false]);
+		array_push(self::$modules, ["lang", false]);
+		array_push(self::$modules, ["dates", false]);
 		
-		array_push(self::$modules, "shop");
+		array_push(self::$modules, ["shop", false]);
 		
-		self::loadModules();
-		
+		self::loadModule("sql");
 		// SET SESSIONS
 		if(!isset($_SESSION["lang"])) {
 			$_SESSION["lang"] = self::getConfig("default_lang");
 		} else {
 			$_SESSION["lang"] = self::getConfig("default_lang");
 		}
+		self::loadModules();
+		
 		
 		// PROTECTED PAGES
 		array_push(self::$protectedPages, "pages");
@@ -61,8 +62,26 @@ class Config {
 	}
 	private static function loadModules() {
 		foreach(self::$modules as $k => $v) {
-			ModuleManifest::load($v);
+			ModuleManifest::load($v[0]);
+			self::$modules[$k][1] = true;
 		}
+	}
+	private static function loadModule($mod) {
+		array_push(self::$modules, [$mod, false]);
+		foreach(self::$modules as $k => $v) {
+			if($v[0] === $mod) {
+				ModuleManifest::load($v[0]);
+				self::$modules[$k][1] = true;
+			}
+		}
+	}
+	public static function isLoaded($mod) {
+		foreach(self::$modules as $k => $v) {
+			if($v[0] === $mod) {
+				return self::$modules[$k][1];
+			}
+		}
+		return false;
 	}
 	public static function addUserFunction($name, $function) {
 		if(isset(debug_backtrace()[1]["class"])) {

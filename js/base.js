@@ -10,6 +10,28 @@ function obj(object) {
 		return false;
 	}
 }
+var dialogObj;
+function dialog(txt, object) {
+	if(dialogObj !== object) {
+		dialogObj = object;
+		obj("dialog").children[0].children[0].innerHTML = txt;
+		obj("dialog").style.display = "block";
+		obj("dialog").style.opacity = 1;
+		event.preventDefault();
+		return false;
+	} else {
+		alert("go");
+	}
+}
+function dialogFinish(mode) {
+	obj("dialog").style.opacity = 0;
+	setTimeout(function() {
+		obj("dialog").style.display = "none";
+	}, 510);
+	if(mode === true) {
+		dialogObj.click();
+	}
+}
 function fader(state) {
 	if(typeof state == "undefined") {
 		if(obj("grey").classList.contains("off")) {
@@ -192,49 +214,76 @@ function moving(event) {
 	mousex = event.clientX;
 }
 var menuList = [];
-var menuTimer;
+var menuTimer = "";
 var menuCurrentPage = "";
+var menuNextPage = "";
 var prePage = "";
+var transitionSpeed = 200;
+var resetTimer = "";
 function submenu(id) {
-	if((id != "none") && (id != "reset")) {
-		for(var c = 0; c < obj("menu").children.length; c++) {
-			if(obj("menu").children[c].id != "main") {
-				obj("menu").children[c].classList.add("disabledMenu");
-			}
-		}
-		obj("sub"+id).classList.remove("disabledMenu");
-	} else if(id != "reset") {
-		for(var c = 0; c < obj("menu").children.length; c++) {
-			if(obj("menu").children[c].id != "main") {
-				obj("menu").children[c].classList.add("disabledMenu");
-			}
-		}
+	if(menuNextPage === "") {
+		menuNextPage = menuCurrentPage;
 	}
-	clearTimeout(menuTimer);
-	menuTimer = setTimeout(function() {
-		submenuReset(id);
-	}, 2000);
-	prePage = id;
-}
-function submenuReset(id) {
-	var subMenuName = "";
-	if(obj("sub"+menuCurrentPage) == false) {
-		for(var v in menuList) {
-			for(var v2 in menuList[v]) {
-				if(menuCurrentPage == menuList[v][v2]) {
-					menuCurrentPage = v;
+	if(id !== menuNextPage) {
+		if(typeof event !== "undefined") {
+			if(event.fromElement === null) {
+				var from = "LI";
+			} else {
+				var from = event.fromElement.tagName;
+			}
+			var currentTarget = event.currentTarget.tagName;
+		} else {
+			var currentTarget = "LI";
+			var from = "LI";
+		}
+		if((currentTarget === "LI") && (from !== "A")) {
+			if(menuTimer === "") {
+				var object = obj("menu").childNodes[1];
+				menuNextPage = id;
+				resetResetTimer();
+				var speed = transitionSpeed;
+				if(prePage === "none") {
+					speed = 0;
+				} else {
+					object.style.maxHeight = "0px";
+				}
+				if(id !== "none") {
+					if(speed !== 0) {
+						menuTimer = setTimeout(function() {
+							for(var c = 0; c < obj("menu").children[1].children.length; c++) {
+								obj("menu").children[1].children[c].style.display = "none";
+							}
+							if(menuNextPage !== "none") {
+								obj("sub"+menuNextPage).style.display = "block";
+							}
+							object.style.maxHeight = "100px";
+							menuTimer = setTimeout(function() {
+								menuTimer = "";
+							}, transitionSpeed);
+						}, speed);
+					} else {
+						for(var c = 0; c < obj("menu").children[1].children.length; c++) {
+							obj("menu").children[1].children[c].style.display = "none";
+						}
+						if(menuNextPage !== "none") {
+							obj("sub"+menuNextPage).style.display = "block";
+						}
+						object.style.maxHeight = "100px";
+						menuTimer = "";
+					}
 				}
 			}
+			prePage = id;
 		}
 	}
-	for(var c = 0; c < obj("menu").children.length; c++) {
-		if((obj("menu").children[c].id != "main") && (obj("menu").children[c].id != "sub"+menuCurrentPage)) {
-			obj("menu").children[c].classList.add("disabledMenu");
-		}
+}
+function resetResetTimer() {
+	if(resetTimer !== null) {
+		clearTimeout(resetTimer);
 	}
-	if(obj("sub"+menuCurrentPage) !== false) {
-		obj("sub"+menuCurrentPage).classList.remove("disabledMenu");
-	}
+	resetTimer = setTimeout(function() {
+		submenu(menuCurrentPage);
+	}, 2000);
 }
 
 function str_replace(find, replace, str) {
@@ -289,6 +338,22 @@ function openTab(o) {
 		}
 	}
 }
+var baseTime = 3000;
+function fadeNotice() {
+	if(obj("msg") !== false) {
+		if((noticeTimer1 !== null) || (noticeTimer2 !== null)) {
+			clearTimeout(noticeTimer1);
+			clearTimeout(noticeTimer2);
+			obj("msg").style.opacity = 1;
+		}
+		noticeTimer1 = setTimeout(function() {
+			obj("msg").style.opacity = 0;
+		}, baseTime+(obj("msg").innerHTML.length*15));
+		noticeTimer2 = setTimeout(function() {
+			obj("msg").parentNode.removeChild(obj("msg"));
+		}, baseTime+1000+(obj("msg").innerHTML.length*15));
+	}
+}
 
 
 function recStatistics() {
@@ -302,17 +367,23 @@ function loaded(page) {
 var loadedVar = "";
 var pageeditcontent = "";
 var editElements = 0;
+var noticeTimer1;
+var noticeTimer2;
 window.onload = function() {
+	var menu = obj("menu").cloneNode(true);
+	obj("header").appendChild(menu);
+	menu.id = "floatingMenu";
+	menu.style.position = "fixed";
+	menu.style.top = "0px";
+	menu.style.display = "none";
 	document.onscroll = function() {
 		if(scrollDistance().y > obj("headerContent").clientHeight) {
-			obj("menu").style.position = "fixed";
-			obj("menu").style.top = "0px";
-			obj("header").style.marginBottom = (obj("menu").clientHeight)+"px";
+			obj("floatingMenu").style.display = "block";
 		} else {
-			obj("menu").style.position = "relative";
-			obj("header").style.marginBottom = "0px";
+			obj("floatingMenu").style.display = "none";
 		}
 	};
+	fadeNotice();
 	document.body.style.padding = "0px 0px "+(obj("footer").clientHeight)+"px";
 	loaded(loadedVar);
 	recStatistics();

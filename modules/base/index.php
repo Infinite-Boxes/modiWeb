@@ -76,4 +76,100 @@ class base {
 		}
 		return $ret;
 	}
+	static private function stringLikeness($v1, $v2) {
+		$v1 = strtolower($v1);
+		$v2 = strtolower($v2);
+		$totLen = strlen($v1)+strlen($v2);
+		$percent = similar_text($v1, $v2, $percent)/$totLen;
+		return ($percent*$percent*$percent*$percent)*100;
+	}
+	static private function searchDocument($q, $doc) {
+		$mode = true;
+		$doc = strip_tags(preg_replace("#<[^>]+>#", "-", $doc));
+		$words = explode(" ", $doc);
+		$points = [];
+		$repl = [
+			".",
+			",",
+			";",
+			":",
+			"!",
+			"?"
+		];
+		$qs = explode(" ", $q);
+		for($c = 0; $c < substr_count(strtolower($doc), strtolower($q)); $c++) {
+			for($count = 0; $count < count($words)*0.5; $count++) {
+				$points[] = 100;
+			}
+		}
+		for($c = 0; $c < substr_count($doc, $q); $c++) {
+			for($count = 0; $count < count($words)*0.5; $count++) {
+				$points[] = 100;
+			}
+		}
+		foreach($qs as $ql) {
+			for($c = 0; $c < substr_count(strtolower($doc), $ql); $c++) {
+				$points[] = 100;
+			}
+			foreach($words as $v) {
+				if($v !== "") {
+					$v = str_replace($repl, "", $v);
+					$points[] = self::stringLikeness($v, $ql);
+				}
+			}
+		}
+		if(count($points) !== 0) {
+			$points = array_sum($points)/count($points);
+		} else {
+			$points = 0;
+		}
+		return $points;
+	}
+	static private function searchSort($a, $b) {
+		if($a["searchPoints"] === $b["searchPoints"]) {
+			return 0;
+		}
+		return ($a["searchPoints"] > $b["searchPoints"]) ? -1 : 1;
+	}
+	static public function search($q) {
+		$filePages = moduleManifest::getModVal("menu");
+		$pages = [];
+		foreach($filePages as $k => $v) {
+			if(isset($v["searchable"])) {
+				if($v["searchable"] === false) {
+					unset($filePages[$k]);
+				}
+			}
+			if(isset($v["type"])) {
+				if($v["type"] !== "file") {
+					unset($filePages[$k]);
+				}
+			}
+		}
+		$userPages = sql::get("SELECT name,url,content FROM ".Config::dbPrefix()."pages WHERE searchable = 1");
+		if((count($userPages) < 2) && ($userPages !== false)) {
+			$userPages = [$userPages];
+		}
+		if($userPages !== false) {
+			foreach($userPages as $k => $v) {
+				$points  = self::searchDocument($q, $v["content"]);
+				array_push($pages, ["type" => "page", "url" => $v["url"], "name" => $v["name"], "searchPoints" => $points]);
+			}
+		}
+		foreach($filePages as $k => $v) {
+			$url = $v["link"];
+			$points  = self::searchDocument($q, file_get_contents(moduleManifest::menuModule($v["link"])["file"]));
+			array_push($pages, ["type" => "page", "url" => $url, "name" => $v["name"], "searchPoints" => $points]);
+		}
+		foreach(moduleManifest::getModVal("search") as $v) {
+			array_push($pages, ["type" => $v["type"], "url" => $v["url"], "name" => $v["name"], "searchPoints" => self::searchDocument($q, $v["txt"])]);
+		}
+		foreach($pages as $k => $v) {
+			if($v["searchPoints"] < 10) {
+				unset($pages[$k]);
+			}
+		}
+		usort($pages, array("base", "searchSort"));
+		return $pages;
+	}
 }

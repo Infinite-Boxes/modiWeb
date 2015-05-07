@@ -53,42 +53,44 @@ foreach(moduleManifest::getJS() as $k => $v) {
 <?php
 $oList = moduleManifest::getModVal("integrate");
 $list = [];
-foreach($oList as $k => $v) {
-	if(!isset($list[$v["prio"]])) {
-		$list[$v["prio"]] = [];
+if($_GET["_page"] !== "pages") {
+	foreach($oList as $k => $v) {
+		if(!isset($list[$v["prio"]])) {
+			$list[$v["prio"]] = [];
+		}
+		$list[$v["prio"]][] = $v;
 	}
-	$list[$v["prio"]][] = $v;
-}
-krsort($list);
-$objects = [];
-foreach($list as $k => $v) {
-	foreach($list[$k] as $k2 => $v2) {
-		array_push($objects, $v2);
+	krsort($list);
+	$objects = [];
+	foreach($list as $k => $v) {
+		foreach($list[$k] as $k2 => $v2) {
+			array_push($objects, $v2);
+		}
 	}
-}
-foreach($objects as $k => $v) {
-	if($v["position"] === "topright") {
-		if(isset($v["pages"])) {
-			$found = false;
-			foreach($v["pages"] as $k2 => $v2) {
-				if(($v2 === $_GET["_page"]) || ($v2 === "all")) {
-					$found = true;
+	foreach($objects as $k => $v) {
+		if($v["position"] === "topright") {
+			if(isset($v["pages"])) {
+				$found = false;
+				foreach($v["pages"] as $k2 => $v2) {
+					if(($v2 === $_GET["_page"]) || ($v2 === "all")) {
+						$found = true;
+					}
+				}
+			} else {
+				$found = true;
+			}
+			if(isset($v["notPages"])) {
+				foreach($v["notPages"] as $k2 => $v2) {
+					if($v2 === $_GET["_page"]) {
+						$found = false;
+					}
 				}
 			}
-		} else {
-			$found = true;
-		}
-		if(isset($v["notPages"])) {
-			foreach($v["notPages"] as $k2 => $v2) {
-				if($v2 === $_GET["_page"]) {
-					$found = false;
-				}
+			if($found === true) {
+				echo("<div style=\"float: right;\">");
+				include($v["url"]);
+				echo("</div>");
 			}
-		}
-		if($found === true) {
-			echo("<div style=\"float: right;\">");
-			include($v["url"]);
-			echo("</div>");
 		}
 	}
 }
@@ -151,14 +153,7 @@ echo("
 menu::write();
 ?>
 </div>
-<div id="content">
-<noscript>
-<p style="background: #fff; color: #f00; border: 1px solid #f00; border-radius: 10px; padding: 10px; margin: 0px;">Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.<?php
-if(PAGE == "pages") {
-	echo("<br />Just denna sidan kan inte användas alls utan Javascript. Aktivera det för att kunna redigera sidor.");
-}
-?></p>
-</noscript>
+
 <?php
 $msgs = msg::get();
 if((count($msgs["warnings"]) > 0) || (count($msgs["notices"]) > 0)) {
@@ -167,7 +162,7 @@ if((count($msgs["warnings"]) > 0) || (count($msgs["notices"]) > 0)) {
 	$showWarnings = false;
 }
 if($showWarnings == true) {
-	echo("<div id=\"msg\">");
+	echo("<div id=\"msg\"><div class=\"window\" onmouseover=\"fadeNotice();\">");
 	if(count($msgs["warnings"]) > 0) {
 		foreach($msgs["warnings"] as $k => $v) {
 			echo("<p class=\"warning\">".$v."</p>");
@@ -178,6 +173,22 @@ if($showWarnings == true) {
 			echo("<p class=\"notice\">".$v."</p>");
 		}
 	}
-	echo("</div>");
+	echo("</div></div>");
 }
 ?>
+
+<div id="dialog">
+<div class="window">
+<h3>Vill du vinna?</h3>
+<p onclick="dialogFinish(true);"><?php echo(lang::getText("yes")); ?></p><p onclick="dialogFinish(false);"><?php echo(lang::getText("no")); ?></p>
+</div>
+</div>
+
+<div id="content">
+<noscript>
+<p style="background: #fff; color: #f00; border: 1px solid #f00; border-radius: 10px; padding: 10px; margin: 0px;">Din webbläsare stödjer inte javascript eller så har du avaktiverat det. Utan javascript fungerar inte sidan korrekt.<?php
+if(PAGE == "pages") {
+	echo("<br />Just denna sidan kan inte användas alls utan Javascript. Aktivera det för att kunna redigera sidor.");
+}
+?></p>
+</noscript>

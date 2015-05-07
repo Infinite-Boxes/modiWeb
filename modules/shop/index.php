@@ -86,11 +86,11 @@ class shop {
 		while($pid !== "") {
 			$parent = sql::get("SELECT parent,name FROM ".Config::dbPrefix()."products_categories WHERE id = ".$pid);
 			$pid = $parent["parent"];
-			if($pid != "") {
+			if($parent !== false) {
 				array_push($cat, $parent["name"]);
 			}
 			$err ++;
-			if($err == 100) {
+			if($err == 200) {
 				$pid = "";
 			}
 		}
@@ -104,7 +104,7 @@ class shop {
 		while($pid !== "") {
 			$parent = sql::get("SELECT parent,name,url FROM ".Config::dbPrefix()."products_categories WHERE id = ".$pid);
 			$pid = $parent["parent"];
-			if($pid != "") {
+			if($parent !== false) {
 				array_push($cat, ["name" => $parent["name"], "link" => $parent["url"]]);
 			}
 			$err ++;
@@ -393,7 +393,7 @@ $str .= "</div>
 				foreach($prodList as $k => $v) {
 					$price = sql::get("SELECT price FROM ".Config::dbPrefix()."products WHERE (url = '".$v["url"]."')")["price"];
 					$totSum += $price;
-					$products .= "<tr><td>".elements::button("button_minus_15.png", ["js", "shop_shoppingCartRemove('".$v["url"]."')"], "", "onmouseover=\"popup('Ta bort produkten');\"")."</td>
+					$products .= "<tr><td>".elements::button("button_minus_15.png", ["js", "dialog('".lang::getText("shop_dialog_removeitem")."', this); shop_shoppingCartRemove('".$v["url"]."')"], "", "onmouseover=\"popup('Ta bort produkten');\"")."</td>
 					<td><a href=\"p_".$v["url"]."\">".$v["name"]."</a><input type=\"hidden\" id=\"price".$c."\" value=\"".$price."\">
 					</td></tr>";
 					$c++;

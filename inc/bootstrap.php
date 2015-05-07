@@ -13,6 +13,7 @@ $rootPath = "";
 for($c = 0; $c < substr_count($currentPath, "/"); $c++) {
 	$rootPath .= "../";
 }
+define("BASEPAGE", "home");
 $tempstr = str_replace($sitePath, "", strtolower($_SERVER["REQUEST_URI"]));
 if(strpos($tempstr, "?") !== false) {
 	define("PAGE", substr($tempstr, 0, strpos($tempstr, "?")));

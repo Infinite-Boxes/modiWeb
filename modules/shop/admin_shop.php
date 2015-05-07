@@ -88,18 +88,18 @@ if(isset($_SESSION["user"])) {
 		$cats .= "<option value=\"".$v["id"]."\">".$space.$v["name"]."</option>";
 	}
 	$inp = [
-		"productname" => "<input type=\"text\" name=\"name\">",
-		"activated" => "<input type=\"checkbox\" name=\"active\">",
-		"url" => "<input type=\"text\" name=\"url\" maxlength=255>",
-		"category" => "<select name=\"cat\">".$cats."</select>",
-		"shortdescription" => "<input type=\"text\" name=\"desc_short\">",
-		"longdescription" => "<textarea name=\"desc_long\" style=\"resize: vertical;\"></textarea>",
-		"price" => "<input type=\"text\" name=\"price\">",
-		"img" => "<input type=\"text\" name=\"img\">",
-		"flags" => "<input type=\"checkbox\" name=\"flag1\"><label for=\"flag1\">".lang::getText("sale")."</label><input type=\"checkbox\" name=\"flag2\"><label for=\"flag2\">".lang::getText("shop_limitedproduct")."</label>"
+		"productname" => 		["<input type=\"text\" name=\"name\">", ""],
+		"activated" => 			["<input type=\"checkbox\" name=\"active\">", ""],
+		"url" => 				["<input type=\"text\" name=\"url\" maxlength=255>", "Tillåtna tecken: A-ö, 0-9, -_"],
+		"category" => 			["<select name=\"cat\">".$cats."</select>", ""],
+		"shortdescription" => 	["<input type=\"text\" name=\"desc_short\">", ""],
+		"longdescription" => 	["<textarea name=\"desc_long\" style=\"resize: vertical;\"></textarea>", ""],
+		"price" => 				["<input type=\"text\" name=\"price\">", ""],
+		"img" => 				["<input type=\"text\" name=\"img\">", ""],
+		"flags" => 				["<input type=\"checkbox\" name=\"flag1\"><label for=\"flag1\">".lang::getText("sale")."</label><input type=\"checkbox\" name=\"flag2\"><label for=\"flag2\">".lang::getText("shop_limitedproduct")."</label>", ""]
 	];
 	foreach($inp as $k => $v) {
-		echo("<tr><td><p>".lang::getText($k)."</p></td><td style=\"width: 300px;\">".$v."</td></tr>");
+		echo("<tr><td><p style=\"white-space: nowrap;\">".lang::getText($k)."</p></td><td style=\"white-space: nowrap;\">".$v[0]."</td><td><p style=\"display: inline;\" class=\"info\">".$v[1]."</p></td></tr>");
 	}
 	echo("</table><input type=\"submit\" value=\"".lang::getText("add")."\">");
 ?>
