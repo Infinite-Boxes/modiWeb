@@ -10,6 +10,25 @@ function obj(object) {
 		return false;
 	}
 }
+function objInObj(object, needle) {
+	var ret = false;
+	if(object && (object.children.length > 0)) {
+		for(var c = 0; c < object.children.length; c++) {
+			if(object.children[c].id === needle) {
+				ret = object.children[c];
+			}
+		}
+	}
+	return ret;
+}
+function objInClass(object, cl) {
+	var ret = false;
+	var list = object.getElementsByClassName(cl);
+	if (list && list.length > 0) {
+		ret = list[0];
+	}
+	return ret;
+}
 var dialogObj;
 function dialog(txt, object) {
 	if(dialogObj !== object) {
@@ -19,8 +38,6 @@ function dialog(txt, object) {
 		obj("dialog").style.opacity = 1;
 		event.preventDefault();
 		return false;
-	} else {
-		alert("go");
 	}
 }
 function dialogFinish(mode) {
@@ -30,8 +47,47 @@ function dialogFinish(mode) {
 	}, 510);
 	if(mode === true) {
 		dialogObj.click();
+	} else {
+		dialogObj = false;
 	}
 }
+//			INPUT
+function clickCheckbox(object, yesVal, noVal) {
+	if(object.children[0].value === yesVal) {
+		object.children[0].value = noVal;
+		object.children[1].src = "img/checkbox_15.png";
+	} else {
+		object.children[0].value = yesVal;
+		object.children[1].src = "img/checkbox_15_checked.png";
+	}
+}
+function setCheckbox(id, val) {
+	if(val === true) {
+		obj(id).children[0].value = checkbox[id][0];
+		obj(id).children[1].src = "img/checkbox_15_checked.png";
+	} else {
+		obj(id).children[0].value = checkbox[id][1];
+		obj(id).children[1].src = "img/checkbox_15.png";
+	}
+}
+function loadCheckbox(name, yes, no) {
+	checkbox[name] = [yes, no];
+}
+function inputChoice_choose(o, val) {
+	if(typeof o !== "undefined") {
+		var parent = o.parentNode;
+		for(var c = 1; c < parent.children.length; c++) {
+			if(parent.children[c].classList.contains("checked")) {
+				parent.children[c].classList.remove("checked");
+			}
+		}
+		o.classList.add("checked");
+		parent.children[0].value = val;
+	} else {
+		alert("ERROR: The inputchoice is configured wrong");
+	}
+}
+
 function fader(state) {
 	if(typeof state == "undefined") {
 		if(obj("grey").classList.contains("off")) {
@@ -60,7 +116,10 @@ function groupMinimize(object) {
 }
 var popupTimer1 = false;
 var popupTimer2 = false;
-function popup(txt) {
+function popup(txt, time) {
+	if(typeof time === "undefined") {
+		time = 2000;
+	}
 	obj("popup").style.display = "block";
 	obj("popup").innerHTML = txt;
 	setTimeout(function(){
@@ -77,20 +136,20 @@ function popup(txt) {
 		popupTimer1 = setTimeout(function(){
 			obj("popup").style.opacity = 0;
 			popupTimer1 = false;
-		}, 2500);
+		}, 500+time);
 		popupTimer2 = setTimeout(function(){
 			obj("popup").style.display = "none";
 			popupTimer2 = false;
-		}, 3000);
+		}, 1000+time);
 	} else {
 		popupTimer1 = setTimeout(function(){
 			obj("popup").style.opacity = 0;
 			popupTimer1 = false;
-		}, 4500);
+		}, 2500+time);
 		popupTimer2 = setTimeout(function(){
 			obj("popup").style.display = "none";
 			popupTimer2 = false;
-		}, 5000);
+		}, 3000+time);
 	}
 	if(typeof e != "undefined") {
 		setTimeout(function(){
@@ -238,7 +297,7 @@ function submenu(id) {
 		}
 		if((currentTarget === "LI") && (from !== "A")) {
 			if(menuTimer === "") {
-				var object = obj("menu").childNodes[1];
+				var object = obj(menuid).childNodes[1];
 				menuNextPage = id;
 				resetResetTimer();
 				var speed = transitionSpeed;
@@ -248,13 +307,14 @@ function submenu(id) {
 					object.style.maxHeight = "0px";
 				}
 				if(id !== "none") {
+					var submenu = objInClass(obj(menuid), "submenus");
 					if(speed !== 0) {
 						menuTimer = setTimeout(function() {
 							for(var c = 0; c < obj("menu").children[1].children.length; c++) {
-								obj("menu").children[1].children[c].style.display = "none";
+								obj(menuid).children[1].children[c].style.display = "none";
 							}
 							if(menuNextPage !== "none") {
-								obj("sub"+menuNextPage).style.display = "block";
+								objInObj(submenu, "sub"+menuNextPage).style.display = "block";
 							}
 							object.style.maxHeight = "100px";
 							menuTimer = setTimeout(function() {
@@ -262,11 +322,11 @@ function submenu(id) {
 							}, transitionSpeed);
 						}, speed);
 					} else {
-						for(var c = 0; c < obj("menu").children[1].children.length; c++) {
-							obj("menu").children[1].children[c].style.display = "none";
+						for(var c = 0; c < obj(menuid).children[1].children.length; c++) {
+							obj(menuid).children[1].children[c].style.display = "none";
 						}
 						if(menuNextPage !== "none") {
-							obj("sub"+menuNextPage).style.display = "block";
+							objInObj(submenu, "sub"+menuNextPage).style.display = "block";
 						}
 						object.style.maxHeight = "100px";
 						menuTimer = "";
@@ -323,7 +383,11 @@ function updUpdateButton2(txt, args) {
 	}
 }
 function updNews(txt) {
-	obj("news").innerHTML = txt;
+	if(txt.substring(0, 4) === "ERR_") {
+		obj("news").innerHTML = "<p class='warning'>"+txt.substring(4)+"</p>";
+	} else {
+		obj("news").innerHTML = txt;
+	}
 }
 function openTab(o) {
 	for(var c = 0; c < o.parentNode.parentNode.children.length; c++) {
@@ -365,23 +429,47 @@ function loaded(page) {
 	}
 }
 var loadedVar = "";
+
 var pageeditcontent = "";
 var editElements = 0;
+
 var noticeTimer1;
 var noticeTimer2;
-window.onload = function() {
+
+var checkbox = [];
+
+var menuid = "menu";
+var menuFader;
+function copyMenu() {
+	if(obj("floatingMenu") !== false) {
+		obj("header").removeChild(objInObj(obj("header"), "floatingMenu"));
+	}
 	var menu = obj("menu").cloneNode(true);
 	obj("header").appendChild(menu);
 	menu.id = "floatingMenu";
 	menu.style.position = "fixed";
 	menu.style.top = "0px";
-	menu.style.display = "none";
+	menu.style.display = "none";	
+}
+window.onload = function() {
+	var preScrollMode;
 	document.onscroll = function() {
+		var submenu = objInClass(obj(menuid), "submenus");
 		if(scrollDistance().y > obj("headerContent").clientHeight) {
-			obj("floatingMenu").style.display = "block";
+			menuid = "floatingMenu";
 		} else {
-			obj("floatingMenu").style.display = "none";
+			menuid = "menu";
 		}
+		if(preScrollMode !== menuid) {
+			copyMenu();
+			if(menuid === "floatingMenu") {
+				obj("floatingMenu").style.display = "block";
+				obj("menu").style.opacity = 0;
+			} else {
+				obj("menu").style.opacity = 1;
+			}
+		}
+		preScrollMode = menuid;
 	};
 	fadeNotice();
 	document.body.style.padding = "0px 0px "+(obj("footer").clientHeight)+"px";

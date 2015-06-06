@@ -24,7 +24,7 @@ $vars["css"] = [];
 
 array_push($vars["css"], "css.css");
 $vars["js"] = [];
-array_push($vars["js"], "shop.js");
+array_push($vars["js"], ["file" => "shop.js", "pages" => true]);
 
 $vars["search"] = [];
 $search = sql::get("SELECT id,name,url,desc_short,desc_long,cat FROM ".Config::dbPrefix()."products");

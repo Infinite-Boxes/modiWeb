@@ -15,6 +15,7 @@ class page {
 	];
 	static public function write($page = "") {
 		$out = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url = '".$page."' OR name = '".$page."';");
+		//$out["content"] = json_decode(stripslashes($out["content"]));
 		if($out !== false) {
 			$out["content"] = elements::keyReplace("", stripslashes($out["content"]), "");
 			self::ak("!b!", "<div>");
@@ -340,6 +341,30 @@ class page {
 			<textarea id=\"toolsContent\" style=\"resize: vertical;\" onkeyup=\"tools_change();\"></textarea>
 		</form>"]);
 		
+		self::tool(["header" => "Teckensnitt", "content" => "<form onsubmit=\"return false;\" id=\"tools_font\"><script>tools_loadTool(obj('tools_font').parentNode.parentNode, 'P H1 H2 H3 A'); obj('tools_font').parentNode.parentNode.classList.add('tool'); </script>
+				<select id=\"tool_font\" onchange=\"tools_changeFont(this);\" oninput=\"tools_changeFont(this);\">
+					<optgroup label=\"Serif\">
+						<option value=\"Georgia, serif\">Georgia</option>
+						<option value=\"'Palatino Linotype', 'Book Antiqua', Palatino, serif\">Palatino Linotype</option>
+						<option value=\"'Times New Roman', Times, serif\">Times New Roman</option>
+					</optgroup>
+					<optgroup label=\"Sans-Serif\">
+						<option value=\"Arial, Helvetica, sans-serif\">Arial</option>
+						<option value=\"'Arial Black', Gadget, sans-serif\">Arial Black</option>
+						<option value=\"'Comic Sans MS', cursive, sans-serif\">Comic Sans MS</option>
+						<option value=\"Impact, Charcoal, sans-serif\">Impact</option>
+						<option value=\"'Lucida Sans Unicode', 'Lucida Grande', sans-serif\">Lucida Sans Unicode</option>
+						<option value=\"Tahoma, Geneva, sans-serif\">Tahoma</option>
+						<option value=\"'Trebuchet MS', Helvetica, sans-serif\">Trebuchet MS</option>
+						<option value=\"Verdana, Geneva, sans-serif\" selected>Verdana -".lang::getText("default")."-</option>
+					</optgroup>
+					<optgroup label=\"Monospace\">
+						<option value=\"'Courier New', Courier, monospace\">Courier New</option>
+						<option value=\"'Lucida Console', Monaco, monospace\">Lucida Console</option>
+					</optgroup>
+				</select>
+			</form>", "attr" => " class=\"tool\""]);
+		
 		self::tool(["header" => "Avstånd", "content" => "<form onsubmit=\"return false;\" id=\"tools_marginDiv\"><script>tools_loadTool(obj('tools_marginDiv').parentNode.parentNode, 'P A H1 H2 H3 IMG TABLE UL DIV MOD'); obj('tools_marginDiv').parentNode.parentNode.classList.add('tool'); </script>
 			<input type=\"text\" id=\"tool_marginu\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
 			<input type=\"text\" id=\"tool_marginr\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
@@ -359,7 +384,60 @@ class page {
 				</select>
 			</form>"]);
 		self::tool(["header" => "Länk", "content" => "<form onsubmit=\"return false;\" id=\"tools_linkDiv\"><script>tools_loadTool(obj('tools_linkDiv').parentNode.parentNode, 'A'); obj('tools_linkDiv').parentNode.parentNode.classList.add('tool'); </script>
-				<input type=\"text\" id=\"toolsLink\" onkeyup=\"tools_changeLink();\" />
+				<input type=\"text\" id=\"toolsLink\" oninput=\"tools_changeLink();\" onkeyup=\"tools_changeLink();\" />
+			</form>"]);
+		
+		$pagesInMenuOption = "";
+		$pagesNotInMenuOption = "";
+		
+		$pagesFromDB = sql::get("SELECT name,url FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL");
+		if($pagesFromDB !== false) {
+			if(isset($pagesFromDB["name"])) {
+				$pagesFromDB = [$pagesFromDB];
+			}
+		}
+		$pagesInMenuList = [];
+		foreach($pagesFromDB as $v) {
+			//array_push($pagesInMenuList, $v);
+		}
+		/*foreach(moduleManifest::getMenu() as $v) {
+			foreach($v as $k2 => $v2) {
+				if(isset($v2["link"])) {
+					if($v2["visible"] === true) {
+						array_push($pagesInMenuList, ["url" => $v2["link"], "name" => $v2["name"]]);
+					}
+				}
+			}
+		}*/
+		foreach(menu::getItemsForPagesList() as $v) {
+			array_push($pagesInMenuList, $v);
+		}
+		$pagesInMenuList = base::sortBy($pagesInMenuList, "name");
+		foreach($pagesInMenuList as $k => $v) {
+			if(gettype($v["url"]) === "NULL") {
+				$url = "NULL";
+			} else {
+				$url = $v["url"];
+			}
+			$pagesInMenuOption .= "<option value=\"".$url."\">".$v["name"]."</option>
+";
+		}
+		self::tool(["header" => "&nbsp;", "content" => "<form onsubmit=\"return false;\" id=\"tools_linkList\"><script>tools_loadTool(obj('tools_linkList').parentNode.parentNode, 'A'); obj('tools_linkList').parentNode.parentNode.classList.add('tool'); </script>
+				<select id=\"tool_linkList\" onchange=\"tools_selectLink()\">
+					<option value=\"NULL\" selected>".lang::getText("custom")."</option>
+					<optgroup label=\"".lang::getText("inmenu")."\">
+						".$pagesInMenuOption."
+					</optgroup>
+					<optgroup label=\"".lang::getText("notinmenu")."\">
+						".$pagesNotInMenuOption."
+					</optgroup>
+				</select>
+			</form>"]);
+		self::tool(["header" => "".lang::getText("target")."", "content" => "<form onsubmit=\"return false;\" id=\"tools_linkTarget\"><script>tools_loadTool(obj('tools_linkTarget').parentNode.parentNode, 'A'); obj('tools_linkTarget').parentNode.parentNode.classList.add('tool'); </script>
+				<select id=\"tool_linkTarget\" onchange=\"tools_linkTarget()\">
+					<option value=\"_blank\" selected>".lang::getText("newwindow")."</option>
+					<option value=\"_self\" selected>".lang::getText("samewindow")."</option>
+				</select>
 			</form>"]);
 		self::tool(["header" => "Visa", "content" => "<form onsubmit=\"return false;\" id=\"tools_displayDiv\"><script>tools_loadTool(obj('tools_displayDiv').parentNode.parentNode, 'P A H1 H2 H3 DIV MOD'); obj('tools_displayDiv').parentNode.parentNode.classList.add('tool'); </script> 
 				".elements::button("tool_display_inline.png", ["js", "tools_displayType('inline');"], "tool", "onload=\"tools_loadTool(this, 'all');\" onmouseover=\"popup('Dela rad med andra objekt');\"")."
@@ -368,6 +446,10 @@ class page {
 		self::tool(["header" => "Bild", "content" => "<form onsubmit=\"return false;\" id=\"tools_urlDiv\"><script>tools_loadTool(obj('tools_urlDiv').parentNode.parentNode, 'IMG'); obj('tools_urlDiv').parentNode.parentNode.classList.add('tool'); </script>
 				".$imgText."
 			</form>"]);
+		self::tool(["header" => "Stil", "content" => "<form onsubmit=\"return false;\" id=\"tools_style\"><script>tools_loadTool(obj('tools_style').parentNode.parentNode, 'P H1 H2 H3 A'); obj('tools_style').parentNode.parentNode.classList.add('tool'); </script>
+				".elements::checkbox("tool_bold", "true", "false", "img/tool_bold.png", "tools_style('bold');")."
+				".elements::checkbox("tool_italic", "true", "false", "img/tool_italic.png", "tools_style('italic');")."
+			</form>", "attr" => " class=\"tool\""]);
 		self::tool(["header" => "Storlek", "content" => "<form onsubmit=\"return false;\" id=\"tools_size\"><script>tools_loadTool(obj('tools_size').parentNode.parentNode, 'P H1 H2 H3'); obj('tools_size').parentNode.parentNode.classList.add('tool'); </script>
 				".elements::button("tool_h1.png", ["js", "tools_textSize('H1');"], "", "onmouseover=\"popup('Störst titel');\"")."
 				".elements::button("tool_h2.png", ["js", "tools_textSize('H2');"], "", "onmouseover=\"popup('Mellanstor titel');\"")."

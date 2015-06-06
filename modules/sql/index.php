@@ -9,10 +9,10 @@ class sql {
 	private static function sanitize($q, $type = true) {
 		$rep = [];
 		$rep[0] = [";", "pass"];
-		$rep[0] = ["AND", ""];
-		$rep[0] = ["OR", ""];
-		$rep[0] = ["SELECT", ""];
-		$rep[0] = ["FROM", ""];
+		$rep[1] = ["AND", ""];
+		$rep[2] = ["OR", ""];
+		$rep[3] = ["SELECT", ""];
+		$rep[4] = ["FROM", ""];
 		$dangers = [];
 		foreach($rep as $k => $v) {
 			$explode = explode(":", $v[1]);
@@ -20,17 +20,17 @@ class sql {
 				array_push($dangers, $v[0]);
 			}
 		}
-		if(gettype($q) === "array") {
-			foreach($q as $k => $v) {
-				$k = str_ireplace($dangers, "", $k);
-			}
-		}
+		$q = str_ireplace($dangers, "", $q);
 		return $q;
 	}
-	static public function sanitizePosts($vars, $posts) {
-		foreach($vars as $k => $v) {
-			if(isset($posts[$v])) {
-				$posts[$v] = self::sanitize($posts[$v]);
+	static public function sanitizePosts($posts, $vars = false) {
+		if($vars === false) {
+			$posts = self::sanitize($posts);
+		} else {
+			foreach($vars as $k => $v) {
+				if(isset($posts[$v])) {
+					$posts[$v] = self::sanitize($posts[$v]);
+				}
 			}
 		}
 		return $posts;
@@ -52,10 +52,10 @@ class sql {
 		$q = str_replace(";", "", $q);
 		$todo = self::$pdo->prepare($q.";");
 		$todo->execute();
-		if($todo->rowCount() == 1) {
+		if($todo->errorCode() == 0) {
 			return self::$pdo->lastInsertId();
 		} else {
-			return $todo->errorInfo();
+			return [false, $todo->errorInfo()];
 		}
 	}
 	public static function upd($q) {

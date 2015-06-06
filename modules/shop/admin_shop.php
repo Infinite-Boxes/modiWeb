@@ -1,6 +1,6 @@
 <h1>Admin - Shop</h1>
 <?php
-if(isset($_SESSION["user"])) {
+if(base::session("user")) {
 	echo("<table><tr><td style=\"vertical-align: top;\">");
 	echo("<form action=\"".PAGE."\" method=\"POST\">");
 	if(isset($_GET["page"])) {

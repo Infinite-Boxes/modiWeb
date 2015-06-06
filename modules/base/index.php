@@ -1,7 +1,19 @@
 <?php
 class base {
+	private static $sortKey = false;
 	static public function stringSafe($str) {
 		return urlencode(utf8_decode($str));//str_replace($k, $v, $str);
+	}
+	static private function sortByFunction($a, $b) {
+		if($a[self::$sortKey] === $b[self::$sortKey]) {
+			return 0;
+		}
+		return ($a[self::$sortKey] < $b[self::$sortKey]) ? -1 : 1;
+	}
+	static public function sortBy($arr, $key) {
+		self::$sortKey = $key;
+		usort($arr, array("base", "sortByFunction"));
+		return $arr;
 	}
 	static public function array_insert($array, $pos, $insert) {
 		$pre = [];
@@ -76,6 +88,13 @@ class base {
 		}
 		return $ret;
 	}
+	static public function session($key) {
+		if(isset($_SESSION[$key])) {
+			return $_SESSION[$key];
+		} else {
+			return null;
+		}
+	}
 	static private function stringLikeness($v1, $v2) {
 		$v1 = strtolower($v1);
 		$v2 = strtolower($v2);
@@ -114,7 +133,8 @@ class base {
 			foreach($words as $v) {
 				if($v !== "") {
 					$v = str_replace($repl, "", $v);
-					$points[] = self::stringLikeness($v, $ql);
+					//echo($v.": ".round(self::stringLikeness($v, $ql))."<br>");
+					$points[] = self::stringLikeness($v, $ql)*(100/6);
 				}
 			}
 		}
@@ -165,7 +185,7 @@ class base {
 			array_push($pages, ["type" => $v["type"], "url" => $v["url"], "name" => $v["name"], "searchPoints" => self::searchDocument($q, $v["txt"])]);
 		}
 		foreach($pages as $k => $v) {
-			if($v["searchPoints"] < 10) {
+			if($v["searchPoints"] < 5) {
 				unset($pages[$k]);
 			}
 		}

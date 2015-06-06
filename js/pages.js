@@ -51,8 +51,11 @@ function tools_save() {
 	}
 	var toSend = obj("pageeditor").innerHTML;
 	
-	ajax("functions/savepage.php", "POST", "popup", "", "id="+pageId+"&content="+toSend);
+	ajax("functions/savepage.php", "POST", "tools_saved", "", "id="+pageId+"&content="+toSend);
 	tools_load();
+}
+function tools_saved(msg) {
+	popup(msg, 1000);
 }
 function tools_load() {
 	for(var c = 0; c < obj("pageeditor").children.length; c++) {
@@ -333,7 +336,9 @@ function tools_editType(type, object) {
 		} else if(type == "A") {
 			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
-			obj("toolsLink").value = object.href;
+			obj("toolsLink").value = object.getAttribute("href");
+			tools_updLinkSelect();
+			tools_updLinkTarget();
 		} else if(type == "H1") {
 			text = tools_innerHTML(object);
 			obj("toolsContent").value = text;
@@ -467,12 +472,49 @@ function tools_detailEditSave() {
 function tools_changeLink() {
 	if(tools_marked !== -1) {
 		if(obj("toolsLink").value !== "") {
-			tools_marked.href = obj("toolsLink").value;
+			tools_marked.setAttribute("href", obj("toolsLink").value);
 		} else {
 			tools_marked.removeAttribute("href");
 			popup("Länken är tom");
 		}
+		tools_updLinkSelect();
 		tools_updateCodearea();
+	}
+}
+function tools_updLinkSelect() {
+	if(tools_marked !== -1) {
+		var selected = 0;
+		for(var c = 0; c < obj("tool_linkList").options.length; c++) {
+			var var2 = obj("tool_linkList").options.item(c).value;
+			if(var2 !== "NULL") {
+				if(obj("toolsLink").value === var2) {
+					selected = c;
+				}
+			}
+		}
+		obj("tool_linkList").selectedIndex = selected;
+	}
+}
+function tools_selectLink() {
+	if(tools_marked !== -1) {
+		if(obj("tool_linkList").value !== "NULL") {
+			obj("toolsLink").value = obj("tool_linkList").value;
+		} else {
+			obj("toolsLink").value = "";
+		}
+		tools_changeLink();
+	}
+}
+function tools_linkTarget() {
+	if(tools_marked !== -1) {
+		tools_marked.target = obj("tool_linkTarget").value;
+	}
+}
+function tools_updLinkTarget() {
+	if(tools_marked !== -1) {
+		if(typeof tools_marked.target !== "undefined") {
+			obj("tool_linkTarget").value = tools_marked.target;
+		}
 	}
 }
 function tools_followLink() {
@@ -507,6 +549,21 @@ function tools_mark(object) {
 				}
 			}
 			object.classList.add("marked");
+			if(object.style.fontWeight !== "bold") {
+				setCheckbox("tool_bold", false);
+			} else {
+				setCheckbox("tool_bold", true);
+			}
+			if(object.style.fontStyle !== "italic") {
+				setCheckbox("tool_italic", false);
+			} else {
+				setCheckbox("tool_italic", true);
+			}
+			if(object.style.fontFamily !== "") {
+				tools_updateFontlist(object.style.fontFamily);
+			} else {
+				tools_updateFontlist("");
+			}
 			if(object.vars.type == "DIV") {
 				tools_editCode(true);
 			} else if(object.vars.type == "MOD") {
@@ -567,13 +624,55 @@ function tools_move(dir) {
 	}
 }
 function tools_align(align) {
-	if(tools_marked != -1) {
+	if(tools_marked !== -1) {
 		tools_marked.style.textAlign = align;
 		tools_updateCodearea();
 	}
 }
+function tools_changeFont(object) {
+	if(tools_marked !== -1) {
+		tools_marked.style.fontFamily = object.value;
+	}
+}
+function tools_updateFontlist(font) {
+	if(tools_marked !== -1) {
+		if(font !== "") {
+			var c = 0;
+			for(var c1 = 0; c1 < obj("tool_font").children.length; c1++) {
+				for(var c2 = 0; c2 < obj("tool_font").children[c1].children.length; c2++) {
+					if(obj("tool_font").children[c1].children[c2].value === font) {
+						obj("tool_font").selectedIndex = c;
+					}
+					c++;
+				}
+			}
+		} else {
+			obj("tool_font").selectedIndex = 10;
+		}
+	}
+}
+function tools_style(type) {
+	if(tools_marked !== -1) {
+		switch(type) {
+			case "bold":
+				if(tools_marked.style.fontWeight !== "bold"){
+					tools_marked.style.fontWeight = "bold";
+				} else {
+					tools_marked.style.fontWeight = "";
+				}
+				break;
+			case "italic":
+				if(tools_marked.style.fontStyle !== "italic"){
+					tools_marked.style.fontStyle = "italic";
+				} else {
+					tools_marked.style.fontStyle = "";
+				}
+				break;
+		}
+	}
+}
 function tools_textSize(size) {
-	if(tools_marked != -1) {
+	if(tools_marked !== -1) {
 		var str = tools_marked.innerHTML;
 		
 		var main = obj("pageeditor");
@@ -590,9 +689,10 @@ function tools_textSize(size) {
 		object.vars = vars;
 		object.setAttributeNode(ev);
 		object.id = id;
-		object.style.textAlign = tools_marked.style.textAlign;
-		object.style.float = tools_marked.style.float;
-		object.style.display = tools_marked.style.display;
+		var atts = ["fontWeight", "fontStyle", "fontFamily", "textAlign", "float", "display"];
+		for(var c in atts) {
+			object.style[atts[c]] = tools_marked.style[atts[c]];
+		}
 		main.appendChild(object);
 		obj("pageeditor").replaceChild(object, tools_marked);
 		tools_mark(object);

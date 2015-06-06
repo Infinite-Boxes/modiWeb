@@ -43,8 +43,19 @@ if(!config::isProtectedPage($_GET["_page"])) {
 	}
 }
 foreach(moduleManifest::getJS() as $k => $v) {
-	echo("<script src=\"".$v."\"></script>
+	echo("<script src=\"".$v["file"]."\"></script>
 ");
+}
+foreach(moduleManifest::getJS() as $k => $v) {
+	if(isset($v["pages"])) {
+		if(($v["pages"] === true) || ($v["pages"] === PAGE)) {
+			echo("<script src=\"".$v["file"]."\"></script>
+	");
+		}
+	} else {
+		echo("<script src=\"".$v["file"]."\"></script>
+	");
+	}
 }
 ?>
 </head>
@@ -179,7 +190,7 @@ if($showWarnings == true) {
 
 <div id="dialog">
 <div class="window">
-<h3>Vill du vinna?</h3>
+<h3>Okänt fel</h3>
 <p onclick="dialogFinish(true);"><?php echo(lang::getText("yes")); ?></p><p onclick="dialogFinish(false);"><?php echo(lang::getText("no")); ?></p>
 </div>
 </div>

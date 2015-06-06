@@ -14,7 +14,7 @@ $tab["header"] = ["<p class=\"req\">Namn</p>", "<p class=\"req\">Alternativ text
 array_push($tab, 
 	"<input type=\"text\" id=\"imagename\" value=\"".$img["name"]."\" />",
 	"<input type=\"text\" id=\"imagealt\"  value=\"".$img["alt"]."\"onkeyup=\"addImage_updSubtext();\" />",
-	"<a href=\"functions/deleteimage.php?id=".$_GET["id"]."\">Radera</a>"
+	"<a href=\"functions/deleteimage.php?id=".$_GET["id"]."\" onclick=\"dialog('Vill du verkligen radera denna bilden?', this);\">Radera</a>"
 );
 echo(elements::writeTable($tab, "v"));
 echo("<p id=\"uploadWindow\"></p>");

@@ -5,6 +5,8 @@ $_POST["username"] = str_replace(";", "", $_POST["username"]);
 $user = users::get($_POST["username"]);
 if($user["base"]["password"] === crypt($_POST["password"], $user["base"]["password"])) {
 	msg::notice("Du har loggat in");
+	unset($user["base"]["id"]);
+	unset($user["base"]["password"]);
 	$_SESSION["user"] = $user;
 } else {
 	msg::warning(elements::keyName("loginerror")["content"]);

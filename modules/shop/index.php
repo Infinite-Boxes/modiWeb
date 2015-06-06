@@ -231,7 +231,7 @@ class shop {
 	}
 	static public function subProductsCount($id = false) {
 		if($id !== false) {
-			if($_SESSION["filterCatInclude"] == "true") {
+			if(base::session("filterCatInclude") == "true") {
 				$cats = sql::get("SELECT id,parent FROM ".Config::dbPrefix()."products_categories");
 				$toSearch = [];
 				foreach($cats as $k => $v) {

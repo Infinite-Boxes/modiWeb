@@ -10,14 +10,11 @@ class Config {
 	private static $editorSnippets = [];
 	private static $keys = [];
 	static public function init() {
+		require("sql.php");
 		// Required modules
-		self::$db["dsn"] = "mysql:host=localhost;dbname=modiweb";
-		self::$db["user"] = "root";
-		self::$db["pass"] = "";
-		
-		/*self::$db["dsn"] = "mysql:host=localhost;dbname=etqwxiwh_db";
-		self::$db["user"] = "etqwxiwh_admin";
-		self::$db["pass"] = "=0211dave";*/
+		self::$db["dsn"] = $sqlInformation["dsn"];
+		self::$db["user"] = $sqlInformation["user"];
+		self::$db["pass"] = $sqlInformation["pass"];
 		
 		self::$db["prefix"] = "modiweb";
 		
@@ -42,10 +39,14 @@ class Config {
 		
 		self::loadModule("sql");
 		// SET SESSIONS
-		if(!isset($_SESSION["lang"])) {
-			$_SESSION["lang"] = self::getConfig("default_lang");
+		if(isset($_SESSION["user"])) {
+			$_SESSION["lang"] = $_SESSION["user"]["base"]["lang"];
 		} else {
-			$_SESSION["lang"] = self::getConfig("default_lang");
+			if(!isset($_SESSION["lang"])) {
+				$_SESSION["lang"] = self::getConfig("default_lang");
+			} else {
+				$_SESSION["lang"] = self::getConfig("default_lang");
+			}
 		}
 		self::loadModules();
 		

@@ -86,5 +86,24 @@ class users {
 		}
 		$ok = sql::insert("INSERT INTO ".Config::dbPrefix()."users (contactid, ".$keys.") VALUES ('".$id."', ".$vals.")");
 	}
+	public static function flags($flag) {
+		$key = [
+			"A",
+			"U"
+		];
+		$src = [
+			"flags_user_admin.png",
+			"flags_user_user.png"
+		];
+		$name = [
+			lang::getText("admin"),
+			lang::getText("user")
+		];
+		$flags = [];
+		foreach($key as $k => $v) {
+			$flags[$v] = ["src" => $src[$k], "name" => $name[$k]];
+		}
+		return $flags[$flag];
+	}
 }
 ?>

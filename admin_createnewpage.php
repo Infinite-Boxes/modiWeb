@@ -2,15 +2,16 @@
 <form action="functions/createpage.php" method="POST">
 <?php
 echo(elements::link("Tillbaka", "admin_pages")."<br />");
-$tab["header"] = ["<p>Namn</p>", "<p>Beskrivning</p>", "<p>Adress</p>", "<p>Plats</p>", "<p>Sökbar</p>", "<p>Undersida till</p>", ""];
-$tab[0] = "<input type=\"text\" name=\"name\">";
+$tab["header"] = ["<p>".lang::getText("name")."</p>", "<p>".lang::getText("description")."</p>", "<p>".lang::getText("url")."</p>", "<p>".lang::getText("position")."</p>", "<p>".lang::getText("searchable")."</p>", "<p>".lang::getText("subpagefor")."</p>", ""];
+$tab[0] = "<input type=\"text\" id=\"menuItemName\" name=\"name\" onkeyup=\"createMenuItem();\" onchange=\"createMenuItem();\" oninput=\"createMenuItem();\">";
 $tab[1] = "<input type=\"text\" name=\"desc\">";
 $tab[2] = "<input type=\"text\" name=\"url\">";
-$tab[3] = "<input type=\"text\" size=1 name=\"order\" onkeyup=\"updOrder();\">";
-$tab[4] = "<input type=\"radio\" name=\"searchable\"><input type=\"radio\" name=\"searchable\">";
-$tab[5] = "<select name=\"parent\">
+$tab[3] = "<input type=\"text\" size=1
+ name=\"order\" id=\"menuItemOrder\" onkeyup=\"createMenuItem();\">";
+$tab[4] = "<input type=\"checkbox\" name=\"searchable\" class=\"checkbox\" checked>";
+$tab[5] = "<select name=\"parent\" id=\"menuItemSub\" onchange=\"createMenuItem();\">
 <option value=\"null\" default>Ingen</option>";
-$pages = sql::get("SELECT name, url FROM ".Config::dbPrefix()."pages WHERE parent IS NULL");
+$pages = sql::get("SELECT name, url FROM ".Config::dbPrefix()."pages WHERE parent IS NULL AND url IS NOT NULL");
 if($pages !== false) {
 	if(isset($pages["name"])) {
 		$tab[5] .= "<option value=\"".$pages["url"]."\">".$pages["name"]."</option>";

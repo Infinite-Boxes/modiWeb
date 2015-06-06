@@ -9,6 +9,7 @@ DirectoryIndex page.php?_page=home sitedown.php
 
 RewriteRule		^error([0-9]+)$			error.php?e=$1						[NC]
 RewriteRule		^headermaker$			headermaker.php						[NC]
+RewriteRule		^func_([a-z0-9%_\-]+)$	function.php?_func=$1				[QSA,NC,L]
 RewriteRule		^p_([a-z0-9%_\-]+)$		page.php?_page=product&product=$1	[QSA,NC,L]
 RewriteRule		^c_([a-z0-9%_\-]+)$		page.php?_page=shop&cat=$1			[QSA,NC,L]
 RewriteRule		^([a-z0-9%_]+)$			page.php?_page=$1					[QSA,NC,L]

@@ -11,6 +11,7 @@ function ok($var){
 	if(substr($var, -4) == ".ttf") { $ret = false; }
 	if(substr($var, -4) == ".png") { $ret = false; }
 	if(substr($var, -4) == ".jpg") { $ret = false; }
+	if(substr($var, -4) == ".txt") { $ret = false; }
 	if(substr($var, -4) == ".sql") { $ret = false; }
 	if(substr($var, -7) == ".config") { $ret = false; }
 	if(substr($var, 0, 12) == "projectfiles") { $ret = false; }
@@ -91,7 +92,7 @@ foreach($typeCount as $k => $v) {
 	} else {
 		$color = "rgb(".rand(0,255).",".rand(0,255).",".rand(0,255).")";
 	}
-	echo("<div style=\"display: inline-block; width: ".($v*9)."px; background: ".$color."; text-align: center;\"><p style=\"text-indent: 0px; color: #fff;\"><b>".$k."</b><br />".round($v)."%</p></div>");
+	echo("<div style=\"min-width: 35px; display: inline-block; width: ".($v*9)."px; background: ".$color."; text-align: center;\"><p style=\"text-indent: 0px; color: #fff;\"><b>".$k."</b><br />".round($v)."%</p></div>");
 }
 
 usort($paths, function($a, $b) {

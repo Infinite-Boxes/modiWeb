@@ -266,4 +266,35 @@ class elements {
 			return "<img src=\"img/".$img."\" class=\"imgbutton".$class."\" onclick=\"".$link[1]."\"".$attr." />";
 		}
 	}
+	public static function checkbox($name, $yesVal = "true", $noVal = "false", $img = false, $js = "") {
+		if($img !== false) {
+			$image = "<img src=\"".$img."\">";
+			$border = " class=\"bordered\"";
+		} else {
+			$image = "";
+			$border = "";
+		}
+		return "<div id=\"".$name."\" onclick=\"clickCheckbox(this, '".$yesVal."', '".$noVal."');".$js."\"".$border."><input type=\"hidden\" name=\"".$name."\" value=\"".$noVal."\"><img src=\"img/checkbox_15.png\">".$image."<script>loadCheckbox('".$name."', '".$yesVal."', '".$noVal."');</script></div>";
+	}
+	public static function inputChoice($name, $choices) {
+		$ret = "<noscript><select name=\"".$name."\">";
+		foreach($choices as $v) {
+			$ret .= "<option value=\"".$v[1]."\">".$v[0]."</option>";
+		}
+		$ret .= "<div class=\"noscript\"></noscript>";
+		$ret .= "<div class=\"inputChoice\">";
+		$ret .= "<input type=\"hidden\" name=\"".$name."\" value=\"".$choices[0][1]."\">";
+		$ret = "";
+		$c = 0;
+		foreach($choices as $v) {
+			$check = "";
+			if($c === 0) {
+				$check = " checked";
+			}
+			$ret .= "<input type=\"radio\" id=\"".$name.$c."\" name=\"".$name."\" value=\"".$v[1]."\"".$check."><label for=\"".$name.$c."\">".$v[0]."</label>";
+			$c++;
+		}
+		//$ret .= "</div><noscript></div></noscript>";
+		return $ret;
+	}
 }
