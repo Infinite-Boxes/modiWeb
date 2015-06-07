@@ -10,10 +10,14 @@ if(!isset($_SESSION["user"])) {
 	if($pageslist != false) {
 		if(!isset($pageslist["url"])) {
 			foreach($pageslist as $k => $v) {
-				array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$v["id"]], "", "", "onclick=\"dialog('Vill du verkligen radera sidan?', this);\"").elements::link($v["name"], "pages?id=".$v["id"]));
+				$type = "page";
+				if($v["type"] !== null) {
+					$type = $v["type"];
+				}
+				array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$v["id"]], "", "", "onclick=\"dialog('Vill du verkligen radera sidan?', this);\"").elements::link($v["name"], "pages?type=".$type."&id=".$v["id"]));
 			}
 		} else {
-			array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$pageslist["id"]], "test='test'").elements::link($pageslist["name"], "pages?id=".$pageslist["id"]));
+			array_push($pages, elements::button("x.png", ["a", "functions/deletepage.php?id=".$pageslist["id"]], "test='test'").elements::link($pageslist["name"], "pages?type=".$v["type"]."&id=".$pageslist["id"]));
 		}
 	}
 	$pagesText = elements::button("new_doc.png", ["a", "admin_createnewpage"], "newDoc", "onmouseover=\"popup('Lägg till ny sida');\"");

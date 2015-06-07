@@ -393,7 +393,7 @@ $str .= "</div>
 				foreach($prodList as $k => $v) {
 					$price = sql::get("SELECT price FROM ".Config::dbPrefix()."products WHERE (url = '".$v["url"]."')")["price"];
 					$totSum += $price;
-					$products .= "<tr><td>".elements::button("button_minus_15.png", ["js", "dialog('".lang::getText("shop_dialog_removeitem")."', this); shop_shoppingCartRemove('".$v["url"]."')"], "", "onmouseover=\"popup('Ta bort produkten');\"")."</td>
+					$products .= "<tr><td>".elements::button("button_minus_15.png", ["js", "if(dialog('".lang::getText("shop_dialog_removeitem")."', this)!==false){shop_shoppingCartRemove('".$v["url"]."');}"], "", "onmouseover=\"popup('Ta bort produkten');\"")."</td>
 					<td><a href=\"p_".$v["url"]."\">".$v["name"]."</a><input type=\"hidden\" id=\"price".$c."\" value=\"".$price."\">
 					</td></tr>";
 					$c++;

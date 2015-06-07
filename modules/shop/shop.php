@@ -2,7 +2,10 @@
 $filter = [];
 if(isset($_GET["cat"])) {
 	echo(shop::filterMenu($_GET["cat"]));
-	if($_SESSION["filterCatInclude"] != "true") {
+	if(!isset($_SESSION["filterCatInclude"])) {
+		$_SESSION["filterCatInclude"] = "true";
+	}
+	if($_SESSION["filterCatInclude"] !== "true") {
 		$filter["cat"] = "cat = '".sql::get("SELECT id FROM ".Config::dbPrefix()."products_categories WHERE url = '".$_GET["cat"]."'")["id"]."'";
 	} else {
 		$temp = shop::filterCat($_GET["cat"]);

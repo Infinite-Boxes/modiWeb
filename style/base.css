@@ -471,6 +471,7 @@ table tr th {
 .tabcell{
 	display: table-cell;
 }
+/*
 .edit {
 	color: #00f;
 	font-size: inherit;
@@ -479,7 +480,7 @@ table tr th {
 	border-width: 0px 2px;
 	margin: 0px -2px;
 	border-radius: 15%;
-}
+}*/
 .imgbutton {
 	border: 1px solid #fff;
 	border-radius: 22px;
@@ -770,26 +771,30 @@ div .button:hover  p {
 	border-color: #fff;
 	background: #eee;
 }
+/*
 .edit {
 	color: #E28233;
 	border-color: #4B9417;
 }
 .edit:hover {
 	color: #FFA55B;
-}
+}*/
 
-#pageeditor {
+.pageeditor {
 	margin: 0px;
 	padding: 0px;
+	/*border: 2px dotted #00f !important;*/
+	outline: #00f dotted 2px;
+	box-shadow: 0px 0px 50px 2px #fa0 !important;
 }
-#pageeditor > div, #pageeditor > p, #pageeditor > a, #pageeditor > h1, #pageeditor > h2, #pageeditor > h3, #pageeditor > table, #pageeditor > ul, #pageeditor > span {
+.pageeditor > div, .pageeditor > p, .pageeditor > a, .pageeditor > h1, .pageeditor > h2, .pageeditor > h3, .pageeditor > table, .pageeditor > ul, .pageeditor > span {
 	cursor: pointer;
 	transition: background 200ms;
 }
-#pageeditor > div:hover, #pageeditor > p:hover, #pageeditor > a:hover, #pageeditor > h1:hover, #pageeditor > h2:hover, #pageeditor > h3:hover, #pageeditor > table:hover, #pageeditor > ul:hover, #pageeditor > span:hover {
+.pageeditor > div:hover, .pageeditor > p:hover, .pageeditor > a:hover, .pageeditor > h1:hover, .pageeditor > h2:hover, .pageeditor > h3:hover, .pageeditor > table:hover, .pageeditor > ul:hover, .pageeditor > span:hover {
 	background: #FCD1D9;
 }
-#pageeditor .marked {
+.pageeditor .marked {
 	background: #FA9DAF;
 }
 .pageeditmenu {

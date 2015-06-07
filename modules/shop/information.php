@@ -20,12 +20,37 @@ for($c = 0; $c < count($str); $c++) {
 }
 if(isset($_SESSION["user"])) {
 	$details = $_SESSION["user"]["contactdetails"];
-	$formV[0] = $details["firstname"]." ".$details["middlenames"]." ".$details["sirname"];
-	$formV[1] = $details["address"];
-	$formV[2] = $details["postalcode"];
-	$formV[3] = $details["town"];
-	$formV[4] = $details["mail"];
-	$formV[5] = $details["phonenumber"];
+	$list = [
+		["firstname", "middlenames", "sirname"],
+		["address"],
+		["postalcode"],
+		["town"],
+		["mail"],
+		["phonenumber"]
+	];
+	foreach($list as $k => $v) {
+		foreach($v as $k2 => $v2) {
+			if(isset($details[$v2])) {
+				if($details[$v2] !== "") {
+					if(count($v) > 1) {
+						$v[$k2] = $details[$v2];
+					}
+					$formV[$k] = implode(" ", $v);
+				} else {
+					$formV[$k] = $details[$v];
+				}
+			}
+		}
+	}
+	/*
+	if($ok === true) {
+		$formV[0] = $details["firstname"]." ".$details["middlenames"]." ".$details["sirname"];
+		$formV[1] = $details["address"];
+		$formV[2] = $details["postalcode"];
+		$formV[3] = $details["town"];
+		$formV[4] = $details["mail"];
+		$formV[5] = $details["phonenumber"];
+	}*/
 	if(!isset($_SESSION["shop_information"])) {
 		foreach($formV as $k => $v) {
 			$formValue[$k] = " value=\"".$formV[$k]."\"";

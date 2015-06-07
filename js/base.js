@@ -38,6 +38,9 @@ function dialog(txt, object) {
 		obj("dialog").style.opacity = 1;
 		event.preventDefault();
 		return false;
+	} else {
+		dialogObj = null;
+		return true;
 	}
 }
 function dialogFinish(mode) {

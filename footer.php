@@ -1,5 +1,6 @@
 <div id="footer"><?php
-elements::write("p", "!:!copyright!:!");
+page::write("footer");
+//elements::write("p", "!:!copyright!:!");
 ?></div>
 </body>
 </html>

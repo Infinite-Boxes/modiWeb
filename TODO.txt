@@ -1,11 +1,13 @@
 ::: TODO :::
 
 pageeditor: 
-	ändra så man kan ändra fler sidor än bara inom id: "content"
+	Fixa så man kan ändra textfärgen
 registreringssida
 	lös så att ifall registrering B blir fel så raderas registrering A.
 mail-utskick
 Redigera registreringsmail
 kortbetalning
+Skapa sida
+	Fixa "required fields"
 Lang:
 	menynamn beroende på lang

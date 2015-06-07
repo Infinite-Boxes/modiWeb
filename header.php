@@ -119,7 +119,7 @@ if(isset($_SESSION["user"])) {
 	if(PAGE != "pages") {
 		$editable = page::editable($_GET["_page"]);
 		if($editable !== false) {
-			echo("<a href=\"pages?id=".$editable."\" class=\"admineditable\">Redigera sidan</a>");
+			echo("<a href=\"pages?type=page&id=".$editable."\" class=\"admineditable\">Redigera sidan</a>");
 		}
 	}
 }

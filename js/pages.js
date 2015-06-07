@@ -1,5 +1,6 @@
 // --- Toolbox ---
 // Tools for the pageeditor
+var pageContainer = "pageeditor";
 var tools_marked = -1;
 var tools_cid = 0;
 var tools_min = false;
@@ -27,12 +28,13 @@ var tools_editMode = "GUI";
 function tools_init() {
 	tools_load();
 	tools_changeTools();
+	obj(pageContainer).classList.add("pageeditor");
 }
 function tools_save() {
 	popup("Sparar sidan...");
 	tools_mark("none");
-	for(var c = 0; c < obj("pageeditor").children.length; c++) {
-		var o = obj("pageeditor").children[c];
+	for(var c = 0; c < obj(pageContainer).children.length; c++) {
+		var o = obj(pageContainer).children[c];
 		if(o.classList.contains("marked")) {
 			o.classList.remove("marked");
 		}
@@ -49,7 +51,7 @@ function tools_save() {
 		}
 		tools_enableEvents(o);
 	}
-	var toSend = obj("pageeditor").innerHTML;
+	var toSend = obj(pageContainer).innerHTML;
 	
 	ajax("functions/savepage.php", "POST", "tools_saved", "", "id="+pageId+"&content="+toSend);
 	tools_load();
@@ -58,8 +60,8 @@ function tools_saved(msg) {
 	popup(msg, 1000);
 }
 function tools_load() {
-	for(var c = 0; c < obj("pageeditor").children.length; c++) {
-		var o = obj("pageeditor").children[c];
+	for(var c = 0; c < obj(pageContainer).children.length; c++) {
+		var o = obj(pageContainer).children[c];
 		o.id = "el"+c;
 		o.vars = [];
 		o.tabIndex = c+1;
@@ -197,10 +199,10 @@ function tools_minmax() {
 	}
 }
 function tools_create(type) {
-	var main = obj("pageeditor");
+	var main = obj(pageContainer);
 	var object = document.createElement(type);
-	var id = "el"+obj("pageeditor").children.length;
-	object.setAttribute("tabIndex", obj("pageeditor").children.length+1);
+	var id = "el"+obj(pageContainer).children.length;
+	object.setAttribute("tabIndex", obj(pageContainer).children.length+1);
 	tools_objects.push(id);
 	var ev = document.createAttribute("onclick");
 	if(type == "A") {
@@ -252,9 +254,9 @@ function tools_create(type) {
 	}
 }
 function tools_createCode() {
-	var main = obj("pageeditor");
+	var main = obj(pageContainer);
 	var object = document.createElement("DIV");
-	var id = "el"+obj("pageeditor").children.length;
+	var id = "el"+obj(pageContainer).children.length;
 	tools_objects.push(id);
 	var ev = document.createAttribute("onclick");
 	ev.value = "tools_mark(this);";
@@ -271,9 +273,9 @@ function tools_createCode() {
 	tools_editCode();
 }
 function tools_createSnippet() {
-	var main = obj("pageeditor");
+	var main = obj(pageContainer);
 	var object = document.createElement("DIV");
-	var id = "el"+obj("pageeditor").children.length;
+	var id = "el"+obj(pageContainer).children.length;
 	tools_objects.push(id);
 	var ev = document.createAttribute("onclick");
 	ev.value = "tools_mark(this);";
@@ -543,9 +545,9 @@ function tools_mark(object) {
 			tools_marked = object;
 			obj("tools_current").innerHTML = "<b>Markerat:</b> "+tools_marked.id;
 			tools_editType(tools_marked.vars.type, object);
-			for(var c = 0; c < obj("pageeditor").children.length; c++) {
-				if(obj("pageeditor").children[c].classList.contains("marked")) {
-					obj("pageeditor").children[c].classList.remove("marked");
+			for(var c = 0; c < obj(pageContainer).children.length; c++) {
+				if(obj(pageContainer).children[c].classList.contains("marked")) {
+					obj(pageContainer).children[c].classList.remove("marked");
 				}
 			}
 			object.classList.add("marked");
@@ -588,7 +590,7 @@ function tools_mark(object) {
 }
 function tools_del() {
 	if(tools_marked !== -1) {
-		obj("pageeditor").removeChild(tools_marked);
+		obj(pageContainer).removeChild(tools_marked);
 		tools_mark("none");
 		tools_editCode(false);
 		tols_codeEditing = false;
@@ -599,21 +601,21 @@ function tools_del() {
 function tools_move(dir) {
 	if(tools_marked !== -1) {
 		var pos = 0;
-		for(var c = 0; c < obj("pageeditor").children.length; c++) {
-			if(obj("pageeditor").children[c] == tools_marked) {
-				var co = obj("pageeditor").children[c];
+		for(var c = 0; c < obj(pageContainer).children.length; c++) {
+			if(obj(pageContainer).children[c] == tools_marked) {
+				var co = obj(pageContainer).children[c];
 				if(dir == "up") {
 					if(c == 0) {
 						popup("Redan först");
 					} else {
-						obj("pageeditor").insertBefore(co, obj("pageeditor").children[c-1]);
+						obj(pageContainer).insertBefore(co, obj(pageContainer).children[c-1]);
 						return;
 					}
 				} else if(dir == "down") {
-					if(c == obj("pageeditor").children.length-1) {
+					if(c == obj(pageContainer).children.length-1) {
 						popup("Redan sist");
 					} else {
-						obj("pageeditor").insertBefore(obj("pageeditor").children[c+1], co);
+						obj(pageContainer).insertBefore(obj(pageContainer).children[c+1], co);
 						return;
 					}
 				}
@@ -675,7 +677,7 @@ function tools_textSize(size) {
 	if(tools_marked !== -1) {
 		var str = tools_marked.innerHTML;
 		
-		var main = obj("pageeditor");
+		var main = obj(pageContainer);
 		var object = document.createElement(size);
 		var id = tools_marked.id//"el"+tools_cid;
 		//tools_objects.push(id);
@@ -694,7 +696,7 @@ function tools_textSize(size) {
 			object.style[atts[c]] = tools_marked.style[atts[c]];
 		}
 		main.appendChild(object);
-		obj("pageeditor").replaceChild(object, tools_marked);
+		obj(pageContainer).replaceChild(object, tools_marked);
 		tools_mark(object);
 		tools_updateCodearea();
 	}
@@ -882,14 +884,14 @@ function tools_list(todo) {
 function tools_getAllObjects(type) {
 	if (typeof(type)==='undefined') type = "";
 	var objects = [];
-	for(var v in obj("pageeditor").children) {
+	for(var v in obj(pageContainer).children) {
 		for(var v2 in tools_objects) {
 			if(type != "") {
-				if(obj("pageeditor").children[v].tagName == type) {
-					objects.push(obj("pageeditor").children[v]);
+				if(obj(pageContainer).children[v].tagName == type) {
+					objects.push(obj(pageContainer).children[v]);
 				}
 			} else {
-				objects.push(obj("pageeditor").children[v]);
+				objects.push(obj(pageContainer).children[v]);
 			}
 		}
 	}
@@ -952,10 +954,10 @@ function tools_editAllCode() {
 		tools_mark("none");
 		tools_disable(obj("allTools"));
 		tools_undisable(obj("allCode"));
-		var allCode = obj("pageeditor").cloneNode(true);
+		var allCode = obj(pageContainer).cloneNode(true);
 		for(var child in allCode.children) {
 			var to = allCode.children[child];
-			var or = obj("pageeditor").children[child];
+			var or = obj(pageContainer).children[child];
 			if(to.tagName == "DIV") {
 				if(typeof or.vars !== "undefined") {
 					if(typeof or.vars.moduleName !== "undefined") {
@@ -985,7 +987,7 @@ function tools_editAllCode() {
 	}
 }
 function tools_updateAllCode() {
-	obj("pageeditor").innerHTML = obj("allCodeTextarea").value;
+	obj(pageContainer).innerHTML = obj("allCodeTextarea").value;
 	tools_load();
 	popup("Sidan har uppdaterats");
 }
