@@ -1,7 +1,16 @@
 ﻿<?php
 require("inc/bootstrap.php");
-echo("<h1>".$_GET["e"]."</h1>");
 $err = lang::getText("err_".$_GET["e"]);
-if($err !== false) {
-	echo("<p>".$err."</p>");
+if(file_exists("page.php")) {
+	if($err !== false) {
+		msg::warning($err);
+		header("Location: home");
+	} else {
+		msg::warning("ERROR: ".$_GET["e"]);
+	}
+} else {
+	echo("<h1>".$_GET["e"]."</h1>");
+	if($err !== false) {
+		echo("<p>".$err."</p>");
+	}
 }

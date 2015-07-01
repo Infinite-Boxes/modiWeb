@@ -3,6 +3,8 @@ $pageType = "page";
 if(isset($_GET["type"])) {
 	if($_GET["type"] === "footer") {
 		$pageType = "footer";
+	} elseif($_GET["type"] === "header") {
+		$pageType = "headerContent";
 	}
 }
 if($pageType === "page") {

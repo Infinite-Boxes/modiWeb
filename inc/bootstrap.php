@@ -1,11 +1,11 @@
 <?php
 session_start();
-//$sitePath = "/";
-$sitePath = "/modiweb/";
-define("SITEPATH", $sitePath);
+define("SCRIPTTIME", microtime(true));
+require("vars.php");
+define("SITEPATH", $vars["sitePath"]);
 $currentPath = str_replace(substr(strrchr($_SERVER["SCRIPT_NAME"], "/"), 1), "", $_SERVER["SCRIPT_NAME"]);
-if($sitePath != "/") {
-	$currentPath = str_replace($sitePath, "", strtolower($currentPath));
+if($vars["sitePath"] != "/") {
+	$currentPath = str_replace($vars["sitePath"], "", strtolower($currentPath));
 } else {
 	$currentPath = substr($currentPath, 1);
 }
@@ -14,7 +14,7 @@ for($c = 0; $c < substr_count($currentPath, "/"); $c++) {
 	$rootPath .= "../";
 }
 define("BASEPAGE", "home");
-$tempstr = str_replace($sitePath, "", strtolower($_SERVER["REQUEST_URI"]));
+$tempstr = str_replace($vars["sitePath"], "", strtolower($_SERVER["REQUEST_URI"]));
 if(strpos($tempstr, "?") !== false) {
 	define("PAGE", substr($tempstr, 0, strpos($tempstr, "?")));
 	define("PAGEGETS", substr($tempstr, strpos($tempstr, "?")));

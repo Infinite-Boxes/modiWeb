@@ -55,4 +55,3 @@ class statistics {
 		return $ret;
 	}
 }
-?>

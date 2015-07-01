@@ -34,4 +34,3 @@ class browsercheck {
 		return self::$browser;
 	}
 }
-browsercheck::init();

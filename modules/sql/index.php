@@ -1,10 +1,12 @@
 <?php
 class sql {
 	private static $pdo;
-	public static function init() {
+	public static function setup() {
 		$db = Config::getDB();
 		$options  = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'");
 		self::$pdo = new PDO($db["dsn"], $db["user"], $db["pass"], $options);
+	}
+	public static function init() {
 	}
 	private static function sanitize($q, $type = true) {
 		$rep = [];
@@ -75,5 +77,4 @@ class sql {
 		return $ret;
 	}
 }
-sql::init();
-?>
+sql::setup();

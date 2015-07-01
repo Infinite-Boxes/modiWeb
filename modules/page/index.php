@@ -43,6 +43,7 @@ class page {
 				$replacement = "";
 			}
 			$txt = substr_replace($txt, $replacement, $pos, ($pos2-$pos)+8);
+			//$txt = str_replace("!MOD!", "MODULE:", $txt);
 			if($c == 500) {
 				echo(lang::getText("limit_exceeded_variables"));
 				break;
@@ -364,6 +365,11 @@ class page {
 					</optgroup>
 				</select>
 			</form>", "attr" => " class=\"tool\""]);
+			
+		self::tool(["header" => "Färg", "content" => "<form onsubmit=\"return false;\" id=\"tools_color\"><script>tools_loadTool(obj('tools_color').parentNode.parentNode, 'P H1 H2 H3 A'); obj('tools_color').parentNode.parentNode.classList.add('tool'); </script>
+				<input type=\"text\" id=\"tool_color\" placeholder=\"Färg\" oninput=\"tools_updColor();\" onchange=\"tools_updColor();\">
+				<input type=\"color\" id=\"tool_colorPick\" style=\"width: 20px;\" oninput=\"tools_updColorPick();\" onchange=\"tools_updColorPick();\">
+			</form>", "attr" => " class=\"tool\""]);
 		
 		self::tool(["header" => "Avstånd", "content" => "<form onsubmit=\"return false;\" id=\"tools_marginDiv\"><script>tools_loadTool(obj('tools_marginDiv').parentNode.parentNode, 'P A H1 H2 H3 IMG TABLE UL DIV MOD'); obj('tools_marginDiv').parentNode.parentNode.classList.add('tool'); </script>
 			<input type=\"text\" id=\"tool_marginu\" size=1 onchange=\"tools_marginEnd();\" onkeyup=\"tools_updMargin();\" />
@@ -445,6 +451,12 @@ class page {
 			</form>", "attr" => " class=\"tool\""]);
 		self::tool(["header" => "Bild", "content" => "<form onsubmit=\"return false;\" id=\"tools_urlDiv\"><script>tools_loadTool(obj('tools_urlDiv').parentNode.parentNode, 'IMG'); obj('tools_urlDiv').parentNode.parentNode.classList.add('tool'); </script>
 				".$imgText."
+			</form>"]);
+		self::tool(["header" => "Bildtext", "content" => "<form onsubmit=\"return false;\" id=\"tools_imgAlt\"><script>tools_loadTool(obj('tools_imgAlt').parentNode.parentNode, 'IMG'); obj('tools_imgAlt').parentNode.parentNode.classList.add('tool'); </script>
+				".elements::checkbox("tool_imgAlt", "true", "false", "img/tool_subtext.png", "tools_imgAlt(this);")."
+			</form>"]);
+		self::tool(["header" => "Bildruta", "content" => "<form onsubmit=\"return false;\" id=\"tools_imgContainer\"><script>tools_loadTool(obj('tools_imgContainer').parentNode.parentNode, 'IMG'); obj('tools_imgContainer').parentNode.parentNode.classList.add('tool'); </script>
+				".elements::checkbox("tool_imgContainer", "true", "false", "img/tool_imgcontainer.png", "tools_imgContainer(this);")."
 			</form>"]);
 		self::tool(["header" => "Stil", "content" => "<form onsubmit=\"return false;\" id=\"tools_style\"><script>tools_loadTool(obj('tools_style').parentNode.parentNode, 'P H1 H2 H3 A'); obj('tools_style').parentNode.parentNode.classList.add('tool'); </script>
 				".elements::checkbox("tool_bold", "true", "false", "img/tool_bold.png", "tools_style('bold');")."

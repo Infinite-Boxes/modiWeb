@@ -10,23 +10,22 @@ class Config {
 	private static $editorSnippets = [];
 	private static $keys = [];
 	static public function init() {
-		require("sql.php");
-		// Required modules
-		self::$db["dsn"] = $sqlInformation["dsn"];
-		self::$db["user"] = $sqlInformation["user"];
-		self::$db["pass"] = $sqlInformation["pass"];
+		require("vars.php");
+		self::$db["dsn"] = "mysql:host=".$vars["sql"]["host"].";dbname=".$vars["sql"]["database"];
+		self::$db["user"] = $vars["sql"]["username"];
+		self::$db["pass"] = $vars["sql"]["password"];
 		
-		self::$db["prefix"] = "modiweb";
+		self::$db["prefix"] = $vars["prefix"];
 		
 		//self::$css["theme"] = "theme.css";
 		
-		self::$menu["orientation"] = "horizontal";
+		self::$menu["orientation"] = $vars["menuOrientation"];
 		
-		// Other modules
+		// Required modules
 		array_push(self::$modules, ["base", false]);
+		array_push(self::$modules, ["sql", false]);
 		array_push(self::$modules, ["msg", false]);
 		array_push(self::$modules, ["browsercheck", false]);
-		//array_push(self::$modules, ["sql", false]);
 		array_push(self::$modules, ["log", false]);
 		array_push(self::$modules, ["statistics", false]);
 		array_push(self::$modules, ["elements", false]);
@@ -34,28 +33,32 @@ class Config {
 		array_push(self::$modules, ["users", false]);
 		array_push(self::$modules, ["lang", false]);
 		array_push(self::$modules, ["dates", false]);
+		array_push(self::$modules, ["cronjobs", false]);
+		array_push(self::$modules, ["mail", false]);
 		
-		array_push(self::$modules, ["shop", false]);
-		
-		self::loadModule("sql");
+		// Other modules
+		foreach($vars["modules"] as $v) {
+			array_push(self::$modules, [$v, false]);
+		}
+		//self::loadModule("sql");
 		// SET SESSIONS
 		if(isset($_SESSION["user"])) {
 			$_SESSION["lang"] = $_SESSION["user"]["base"]["lang"];
 		} else {
 			if(!isset($_SESSION["lang"])) {
 				$_SESSION["lang"] = self::getConfig("default_lang");
-			} else {
-				$_SESSION["lang"] = self::getConfig("default_lang");
 			}
 		}
-		self::loadModules();
 		
+		self::loadModules();
+		self::runInits();
 		
 		// PROTECTED PAGES
-		array_push(self::$protectedPages, "pages");
-		array_push(self::$protectedPages, "admin_modiweb");
-		array_push(self::$protectedPages, "admin_pages");
-		array_push(self::$protectedPages, "admin_images");
+		array_push(self::$protectedPages, ["pages", "a"]);
+		array_push(self::$protectedPages, ["admin", "a"]);
+		array_push(self::$protectedPages, ["admin_modiweb", "a"]);
+		//array_push(self::$protectedPages, ["admin_pages", "a"]);
+		array_push(self::$protectedPages, ["admin_images", "a"]);
 		
 		// KEYS. These CANNOT be altered
 		self::$keys["shipping"]["posten"] = "0eb30c21-625c-429b-9f8b-d696327f00d1";
@@ -83,6 +86,13 @@ class Config {
 			}
 		}
 		return false;
+	}
+	private static function runInits() {
+		foreach(self::$modules as $v) {
+			if(method_exists($v[0], "init") === true) {
+				call_user_func([$v[0], "init"]);
+			}
+		}
 	}
 	public static function addUserFunction($name, $function) {
 		if(isset(debug_backtrace()[1]["class"])) {
@@ -141,20 +151,48 @@ class Config {
 	public static function runSnippet($function) {
 		return call_user_func([self::$editorSnippets[$function]["caller"], self::$editorSnippets[$function]["function"]]);
 	}
-	public static function addToProtectedPages($page) {
-		array_push(self::$protectedPages, $page);
+	public static function addToProtectedPages($page, $rights) {
+		array_push(self::$protectedPages, [$page, $rights]);
 	}
 	public static function isProtectedPage($page) {
 		$ret = false;
+		$cpage = false;
 		foreach(self::$protectedPages as $v) {
-			if($page == $v) {
+			if($page === $v[0]) {
+				$cpage = $v;
 				$ret = true;
 			}
 		}
-		if(isset($_SESSION["user"])) {
-			$ret = false;
+		if(!isset($_SESSION["user"])) {
+			if($cpage !== false) {
+				$ret = true;
+			}
+		} else {
+			$topVal = 99999999999999999;
+			if(strlen($_SESSION["user"]["base"]["rights"]) === 1) {
+				$rights = [$_SESSION["user"]["base"]["rights"]];
+			} else {
+				$rights = str_split($_SESSION["user"]["base"]["rights"]);
+			}
+			foreach($rights as $v) {
+				if(self::rightsVal($v) < $topVal) {
+					$topVal = self::rightsVal($v);
+				}
+			}
+			if($cpage !== false) {
+				if(self::rightsVal($cpage[1]) >= $topVal) {
+					$ret = false;
+				}
+			}
 		}
 		return $ret;
+	}
+	private static function rightsVal($key) {
+		$rights = [
+			"a" => 0,
+			"u" => 1
+		];
+		return $rights[strtolower($key)];
 	}
 	public static function getDB() {
 		return self::$db;

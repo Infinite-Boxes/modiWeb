@@ -118,6 +118,9 @@ var statVar = \"".statistics::rec()."\";
 if(isset($_SESSION["user"])) {
 	if(PAGE != "pages") {
 		$editable = page::editable($_GET["_page"]);
+		if(users::isAdmin() === false) {
+			$editable = false;
+		}
 		if($editable !== false) {
 			echo("<a href=\"pages?type=page&id=".$editable."\" class=\"admineditable\">Redigera sidan</a>");
 		}
@@ -153,12 +156,12 @@ if(isset($_SESSION["user"])) {
 </div>
 </div>");
 }
-echo("
-<div id=\"header\">
-<div id=\"headerContent\">
-");
 ?>
-<img src="<?php echo(ROOT); ?>img/logo.png" alt="Banner" />
+<div id="header">
+<div id="headerContent">
+<?php
+page::write("header");
+?>
 </div>
 <?php
 menu::write();
@@ -173,7 +176,7 @@ if((count($msgs["warnings"]) > 0) || (count($msgs["notices"]) > 0)) {
 	$showWarnings = false;
 }
 if($showWarnings == true) {
-	echo("<div id=\"msg\"><div class=\"window\" onmouseover=\"fadeNotice();\">");
+	echo("<div id=\"msg\"><div class=\"window\" onclick=\"killNotice();\" onmouseover=\"fadeNotice();\">");
 	if(count($msgs["warnings"]) > 0) {
 		foreach($msgs["warnings"] as $k => $v) {
 			echo("<p class=\"warning\">".$v."</p>");

@@ -1,14 +1,33 @@
 <?php
 class base {
 	private static $sortKey = false;
+	static public function init() {
+		Config::addSnippet("LoadingTime", "loadTime");
+	}
+	static public function o($var) {
+		echo("<pre>");
+		print_r($var);
+		echo("</pre>");
+	}
+	static public function loadTime() {
+		return "<p class=\"loadingTimeText\">".lang::getText("loadtime1")." ".round(microtime(true)-SCRIPTTIME, 3)." ".lang::getText("loadtime2")."</p>";
+	}
 	static public function stringSafe($str) {
 		return urlencode(utf8_decode($str));//str_replace($k, $v, $str);
 	}
 	static private function sortByFunction($a, $b) {
-		if($a[self::$sortKey] === $b[self::$sortKey]) {
-			return 0;
+		$ret = 0;
+		if(isset($a[self::$sortKey])) {
+			$va = $a[self::$sortKey];
+		} else {
+			$va = 0;
 		}
-		return ($a[self::$sortKey] < $b[self::$sortKey]) ? -1 : 1;
+		if(isset($b[self::$sortKey])) {
+			$vb = $b[self::$sortKey];
+		} else {
+			$vb = 0;
+		}
+		return ($va < $vb) ? -1 : 1;
 	}
 	static public function sortBy($arr, $key) {
 		self::$sortKey = $key;
@@ -191,5 +210,8 @@ class base {
 		}
 		usort($pages, array("base", "searchSort"));
 		return $pages;
+	}
+	static public function adminError($cat, $type, $txt) {
+		
 	}
 }

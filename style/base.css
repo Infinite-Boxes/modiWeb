@@ -309,6 +309,10 @@ input[type="button"],input[type="submit"] {
 	padding: 2px 10px; 
 	background: linear-gradient(180deg, #fff, #ddd);
 }
+input[type="submit"] {
+	background: linear-gradient(180deg, #afa, #8d8);
+	border-color: #0a0;
+}
 input[type="file"] {
 	padding: 0px 10px 0px 0px;
 	border-radius: 0px 10px 10px 0px;
@@ -360,7 +364,7 @@ input[type=radio]:checked + label {
 	width: 100%;
 	z-index: 500;
 	text-align: center;
-	transition: opacity 1s;
+	transition: opacity 500ms;
 }
 #msg > div {
 	margin: auto;
@@ -651,6 +655,32 @@ div .button:hover  p {
 .tabWindow > .openedTab:last-of-type:first-of-type > .tabHeader {
 	border-radius: 10px 10px 0px 0px;
 }
+#langMenu img {
+	background: #ccc;
+	max-width: 20px;
+	padding: 2px;
+	margin: 0px;
+	border: 1px solid #000;
+	border-radius: 5px;
+	transition: background 200ms;
+}
+#langMenu img:hover {
+	background: #fff;
+}
+#langMenuList {
+	display: none;
+	position: absolute;
+	background: #fff;
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid #aaa;
+}
+#langMenuList a {
+	display: block;
+}
+.flagList img {
+	padding: 0px 0.5px;
+}
 
 .adminNewsItem:nth-of-type(1) {
 	margin: 0px 0px 10px;
@@ -891,13 +921,13 @@ div .button:hover  p {
 	overflow: hidden;
 	word-wrap: break-word;
 }
-.img {
+.img:not(.containerFreeImg) {
 	border: 1px solid #bbb;
 	background: #fff;
 	padding: 5px;
 	margin: 5px;
 }
-.img img {
+.img:not(.containerFreeImg) img {
 	border: none;
 	margin: 0px;
 	padding: 0px;
@@ -933,10 +963,19 @@ div .button:hover  p {
 	padding: 0px 20px 0px 0px;
 }
 
-/* Specials */
+.pagesList td {
+	margin: 0px;
+	padding: 1px 2px;
+}
+
+/*	Specials */
 .secondTdFull tr td:nth-of-type(2) *:not(input[type="checkbox"]) {
 	overflow: hidden;
 	margin: 0px;
 	padding: 3px;
 	width: 100%;
+}
+.loadingTimeText {
+	font-size: 0.6em;
+	color: #ccc !important;
 }

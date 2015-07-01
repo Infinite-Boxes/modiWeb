@@ -3,11 +3,15 @@
 require("inc/bootstrap.php");
 if(substr($_GET["_page"], 0, 5) !== "_func") {
 	if(!config::isProtectedPage($_GET["_page"])) {
-		if(moduleManifest::hasMenu($_GET["_page"]) != false) {
+		if(moduleManifest::hasMenu($_GET["_page"]) !== false) {
 			$pageType = moduleManifest::menuType($_GET["_page"]);
 			if($pageType === false) {
-				require("header.php");
-				include(moduleManifest::menuModule($_GET["_page"])["file"]);
+				if(file_exists(moduleManifest::menuModule($_GET["_page"])["file"])) {
+					require("header.php");
+					include(moduleManifest::menuModule($_GET["_page"])["file"]);
+				} else {
+					header("Location: error404");
+				}
 			} elseif($pageType == "page") {
 				$prerun = sql::get("SELECT prefunction FROM ".Config::dbPrefix()."pages WHERE name = \"".moduleManifest::menuModule($_GET["_page"])["file"]."\"");
 				if($prerun !== false) {
@@ -19,15 +23,23 @@ if(substr($_GET["_page"], 0, 5) !== "_func") {
 					$ret = true;
 				}
 				if($ret === true) {
-					require("header.php");
-					page::write(moduleManifest::menuModule($_GET["_page"])["file"]);
+					if(sql::get("SELECT name FROM ".Config::dbPrefix()."pages WHERE url = '".$_GET["_page"]."'") !== false) {
+						require("header.php");
+						page::write(moduleManifest::menuModule($_GET["_page"])["file"]);
+					} else {
+						header("Location: error404");
+					}
 				} else {
 					msg::warning($ret);
 					header("Location: ".BASEPAGE);
 				}
 			} else {
-				require("header.php");
-				include(moduleManifest::menuModule($_GET["_page"])["file"]);
+				if(file_exists(moduleManifest::menuModule($_GET["_page"])["file"])) {
+					require("header.php");
+					include(moduleManifest::menuModule($_GET["_page"])["file"]);
+				} else {
+					header("Location: error404");
+				}
 			}
 		} elseif(!menu::isUser($_GET["_page"])) {
 			if(file_exists($_GET["_page"].".php")) {

@@ -138,6 +138,7 @@ if(isset($_POST["mail"])) {
 		exit();
 	}
 }
+$inserted = false;
 if($err !== false) {
 	$msg = "";
 	if(count($err) === 1) {
@@ -188,10 +189,17 @@ if($err !== false) {
 		}
 		if($_POST[$keys[$key]] !== "") {
 			array_push($post2, $v);
+			$val2Post = $_POST[$keys[$key]];
+			if($v === "password") {
+				$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
+				$salt = sprintf("$2a$%02d$", 50) . $salt;
+				$hash = crypt($_POST[$keys[$key]], $salt);
+				$val2Post = $hash;
+			}
 			if($types[$key] === "str") {
-				array_push($vals2, "'".$_POST[$keys[$key]]."'");
+				array_push($vals2, "'".$val2Post."'");
 			} else {
-				array_push($vals2, $_POST[$keys[$key]]);
+				array_push($vals2, $val2Post);
 			}
 		}
 	}
@@ -203,15 +211,18 @@ if($err !== false) {
 		header("Location: userregister");
 		exit();
 	} else {
-		$sql = "INSERT INTO ".Config::dbPrefix()."users (".implode(", ", $post2).") values (".$vals2.")";
-		$ok = sql::insert("INSERT INTO ".Config::dbPrefix()."users (".implode(", ", $post2).") values (".$vals2.")");
-		if($ok[0] === false) {
+		$ok2 = sql::insert("INSERT INTO ".Config::dbPrefix()."users (contactid, ".implode(", ", $post2).") values (".$ok.", ".$vals2.")");
+		if($ok2[0] === false) {
+			$ok3 = sql::del("DELETE FROM ".Config::dbPrefix()."contactdetails WHERE id = ".$ok);
+			if($ok3 === false) {
+				base::adminError("USER", "SQL", "Kunde inte radera informationen från contactdetails när användaren försökte skapas men stötte på ett problem");
+			}
 			msg::warning(lang::getText("error_usernotcreated"));
 			header("Location: userregister");
 			exit();
 	} else {
 			msg::notice(lang::getText("usercreated"));
-			header("Location: userregister");
+			header("Location: home");
 			exit();
 		}
 	}

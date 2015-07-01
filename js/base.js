@@ -405,7 +405,7 @@ function openTab(o) {
 		}
 	}
 }
-var baseTime = 3000;
+var baseTime = 500;
 function fadeNotice() {
 	if(obj("msg") !== false) {
 		if((noticeTimer1 !== null) || (noticeTimer2 !== null)) {
@@ -415,13 +415,32 @@ function fadeNotice() {
 		}
 		noticeTimer1 = setTimeout(function() {
 			obj("msg").style.opacity = 0;
-		}, baseTime+(obj("msg").innerHTML.length*15));
+		}, baseTime+(obj("msg").innerHTML.length*10));
 		noticeTimer2 = setTimeout(function() {
 			obj("msg").parentNode.removeChild(obj("msg"));
-		}, baseTime+1000+(obj("msg").innerHTML.length*15));
+		}, baseTime+500+(obj("msg").innerHTML.length*10));
 	}
 }
-
+function killNotice() {
+	if(obj("msg") !== false) {
+		if((noticeTimer1 !== null) || (noticeTimer2 !== null)) {
+			clearTimeout(noticeTimer1);
+			clearTimeout(noticeTimer2);
+		}
+		obj("msg").style.opacity = 0;
+		noticeTimer2 = setTimeout(function() {
+			obj("msg").parentNode.removeChild(obj("msg"));
+		}, 500);
+	}
+}
+function openLangMenu() {
+	var o = obj("langMenuList");
+	if(o.style.display !== "block") {
+		o.style.display = "block";
+	} else {
+		o.style.display = "none";
+	}
+}
 
 function recStatistics() {
 	//ajax("functions/recordstatistic.php"+statVar, "GET", "formatContent");//popup

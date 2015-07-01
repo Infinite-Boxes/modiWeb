@@ -1,3 +1,9 @@
+<?php
+if(isset($_SESSION["user"])) {
+	msg::notice(lang::getText("alreadyloggedin"));
+	header("Location: home");
+}
+?>
 <h3><?php echo(lang::getText("register")); ?></h3>
 <form action="func_createaccount" method="POST" onload="this.reset();">
 <?php

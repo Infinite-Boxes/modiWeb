@@ -40,8 +40,8 @@ class moduleManifest {
 						if(isset($menu["name"])) {
 							array_push(self::$menuPages, $menu);
 							if(isset($menu["link"])) {
-								if(isset($menu["protected"])) {
-									Config::addToProtectedPages($menu["link"]);
+								if(isset($menu["protection"])) {
+									Config::addToProtectedPages($menu["link"], $menu["protection"]);
 								}
 								if(isset($menu["visible"])) {
 									$vis = $menu["visible"];
@@ -67,10 +67,15 @@ class moduleManifest {
 								} else {
 									$linkable = true;
 								}
-								if(isset($menu["parent"])) {
-									array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => $menu["parent"]]);
+								if(isset($menu["order"])) {
+									$order = $menu["order"];
 								} else {
-									array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => ""]);
+									$order = false;
+								}
+								if(isset($menu["parent"])) {
+									array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => $menu["parent"], "order" => $order]);
+								} else {
+									array_push($menuPush, ["name" => $menu["name"], "link" => $menu["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => "", "order" => $order]);
 								}
 							}
 						} elseif(isset($menu[0]["name"])) {
@@ -78,8 +83,8 @@ class moduleManifest {
 								array_push(self::$menuPages, $menu[$k]);
 								if(isset($menu[$k]["name"])) {
 									if(isset($menu[$k]["link"])) {
-										if(isset($menu[$k]["protected"])) {
-											Config::addToProtectedPages($menu[$k]["link"]);
+										if(isset($menu[$k]["protection"])) {
+											Config::addToProtectedPages($menu[$k]["link"], $menu[$k]["protection"]);
 										}
 										if(isset($menu[$k]["visible"])) {
 											$vis = $menu[$k]["visible"];
@@ -105,10 +110,15 @@ class moduleManifest {
 										} else {
 											$linkable = true;
 										}
-										if(isset($menu[$k]["parent"])) {
-											array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => $v["parent"]]);
+										if(isset($menu[$k]["order"])) {
+											$order = $menu[$k]["order"];
 										} else {
-											array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => ""]);
+											$order = false;
+										}
+										if(isset($menu[$k]["parent"])) {
+											array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => $v["parent"], "order" => $order]);
+										} else {
+											array_push($menuPush, ["name" => $v["name"], "link" => $v["link"], "file" => $file, "visible" => $vis, "type" => $type, "linkable" => $linkable, "parent" => "", "order" => $order]);
 										}
 									}
 								}
@@ -154,6 +164,8 @@ class moduleManifest {
 		}
 		if(count($ret) === 0) {
 			$ret = false;
+		} else {
+			$ret = base::sortBy($ret, "order");
 		}
 		return $ret;
 	}
@@ -186,6 +198,7 @@ class moduleManifest {
 			}
 			return $ret;
 		} else {
+			echo($val." is empty!<br>");
 			return false;
 		}
 	}

@@ -526,7 +526,7 @@ function tools_followLink() {
 				if(tools_link2follow == tools_marked) {
 					tools_link2follow = "";
 				} else {
-					popup("Är du säker på att du vill följa denna länken? Klicka igen.");
+					popup("Vill du följa denna länken? Klicka då igen.");
 					tools_link2follow = tools_marked;
 					setTimeout(function() {
 						tools_link2follow = "";
@@ -564,7 +564,10 @@ function tools_mark(object) {
 			if(object.style.fontFamily !== "") {
 				tools_updateFontlist(object.style.fontFamily);
 			} else {
-				tools_updateFontlist("");
+				tools_updateFontlist("");			// asd aspd kasp odkapofdk paoskd fpoaskf d
+			}
+			if(object.vars.type === "IMG") {
+				
 			}
 			if(object.vars.type == "DIV") {
 				tools_editCode(true);
@@ -625,6 +628,32 @@ function tools_move(dir) {
 		popup("Inget markerat");
 	}
 }
+function tools_updColor() {
+	if(tools_marked !== -1) {
+		var col = obj("tool_color").value;
+		if(col !== "") {
+			tools_marked.style.color = col;
+			if((col.length === 7) && (col[0] === "#")) {
+				obj("tool_colorPick").value = col;
+			}
+		} else {
+			tools_marked.style.color = "";
+			obj("tool_colorPick").value = "#000000";
+		}
+	}
+}
+function tools_updColorPick() {
+	if(tools_marked !== -1) {
+		var col = obj("tool_colorPick").value;
+		if(col !== "") {
+			tools_marked.style.color = col;
+			obj("tool_color").value = col;
+		} else {
+			tools_marked.style.color = "";
+			obj("tool_color").value = "";
+		}
+	}
+}
 function tools_align(align) {
 	if(tools_marked !== -1) {
 		tools_marked.style.textAlign = align;
@@ -669,6 +698,48 @@ function tools_style(type) {
 				} else {
 					tools_marked.style.fontStyle = "";
 				}
+				break;
+		}
+	}
+}
+function tools_imgAlt(o) {
+	if(tools_marked !== -1) {
+		switch(tools_marked.children.length) {
+			case 1:
+				tools_addRemoveAlt(true);
+				break;
+			case 2:
+				tools_addRemoveAlt(false);
+				break;
+		}
+	}
+}
+function tools_addRemoveAlt(way) {
+	if(way === true) {
+		if(typeof tools_marked.children[1] === "undefined") {
+			var p = document.createElement("P");
+			p.classList.add("subtext");
+			tools_marked.appendChild(p);
+		}
+		for(var c in subtextsIndex) {
+			if(subtextsIndex[c] == obj("toolsImageUrl").value) {
+				tools_marked.children[1].innerHTML = subtexts[c];
+			}
+		}
+	} else {
+		if(typeof tools_marked.children[1] !== "undefined") {
+			tools_marked.removeChild(tools_marked.children[1]);
+		}
+	}
+}
+function tools_imgContainer(o) {
+	if(tools_marked !== -1) {
+		switch(tools_marked.classList.contains("containerFreeImg")) {
+			case true:
+				tools_marked.classList.remove("containerFreeImg");
+				break;
+			case false:
+				tools_marked.classList.add("containerFreeImg");
 				break;
 		}
 	}
@@ -905,18 +976,22 @@ function tools_updateImage(def) {
 		if(obj("toolsImageUrl").value !== "false") {
 			tools_marked.children[0].src = obj("toolsImageUrl").value;
 			if(typeof tools_marked.children[1] === "undefined") {
-				var p = document.createElement("P");
+				/*var p = document.createElement("P");
 				p.classList.add("subtext");
-				tools_marked.appendChild(p);
+				tools_marked.appendChild(p);*/
 			}
-			for(var c in subtextsIndex) {
-				if(subtextsIndex[c] == obj("toolsImageUrl").value) {
-					tools_marked.children[1].innerHTML = subtexts[c];
+			if(typeof tools_marked.children[1] !== "undefined") {
+				for(var c in subtextsIndex) {
+					if(subtextsIndex[c] == obj("toolsImageUrl").value) {
+						tools_marked.children[1].innerHTML = subtexts[c];
+					}
 				}
 			}
 		} else if(def === true) {
 			tools_marked.children[0].src = "img/tools_emptyimage.png";
-			tools_marked.children[1].innerHTML = "";
+			if(typeof tools_marked.children[1] !== "undefined") {
+				tools_marked.children[1].innerHTML = "";
+			}
 		}
 		tools_updateCodearea();
 	}

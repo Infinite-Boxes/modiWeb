@@ -105,5 +105,14 @@ class users {
 		}
 		return $flags[$flag];
 	}
+	public static function isAdmin() {
+		$rights = str_split($_SESSION["user"]["base"]["rights"]);
+		$ret = false;
+		foreach($rights as $v) {
+			if($v === "A") {
+				$ret = true;
+			}
+		}
+		return $ret;
+	}
 }
-?>

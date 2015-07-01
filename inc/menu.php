@@ -6,9 +6,8 @@ class menu {
 		//self::add("Hem", "hem");
 		if(isset($_SESSION["user"])) {
 			self::add("Admin", "admin", "main", "0");
-			self::add("ModiWeb", "admin_modiweb", "admin", "0");
-			self::add("Sidor", "admin_pages", "admin", "0");
-			self::add("Bilder", "admin_images", "admin", "0");
+			//self::add("ModiWeb", "admin_modiweb", "admin", "0");
+			//self::add("Bilder", "admin_images", "admin", "2");
 		}
 		// PAGES
 		$pages = sql::get("SELECT * FROM ".Config::dbPrefix()."pages WHERE url IS NOT NULL AND inmenu = 1 ORDER BY -ord DESC");
@@ -63,6 +62,9 @@ class menu {
 		}
 	}
 	static public function add($name, $url, $parent = "main", $order = "0") {
+		if(($order === "") || (gettype($order) === "boolean")) {
+			$order = "0";
+		}
 		$toPush = ["name" => $name, "url" => $url, "order" => $order];
 		if($parent == "") {
 			$parent = "main";
@@ -70,7 +72,9 @@ class menu {
 		if(!isset(self::$items[$parent])) {
 			self::$items[$parent] = [];
 		}
-		array_push(self::$items[$parent], $toPush);
+		if(Config::isProtectedPage($toPush["url"]) === false) {
+			array_push(self::$items[$parent], $toPush);
+		}
 	}
 	static private function isLast($url) {
 		$ret = false;

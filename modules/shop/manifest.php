@@ -8,7 +8,7 @@ array_push($vars["menu"], ["name" => "ShoppingCart_shipping", "link" => "shop_sh
 array_push($vars["menu"], ["name" => "ShoppingCart_payment", "link" => "shop_payment", "file" => "payment.php", "visible" => false, "type" => "file", "searchable" => false]);
 array_push($vars["menu"], ["name" => "ShoppingCart_done", "link" => "shop_done", "file" => "done.php", "visible" => false, "type" => "file", "searchable" => false]);
 
-array_push($vars["menu"], ["name" => "Shop", "link" => "admin_shop", "file" => "admin_shop.php", "visible" => true, "type" => "file", "parent" => "admin", "protected" => true, "searchable" => false]);
+array_push($vars["menu"], ["name" => "Shop", "link" => "admin_shop", "file" => "admin_shop.php", "visible" => true, "type" => "file", "parent" => "admin", "protection" => "a", "searchable" => false]);
 
 $vars["integrate"] = [];
 array_push($vars["integrate"], ["position" => "topright", "pages" => ["all"], "notPages" => ["shop_cart", "shop_client", "shop_shipping", "shop_payment", "shop_done"], "url" => "integratecart.php", "prio" => "1000"]);

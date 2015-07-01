@@ -1,13 +1,16 @@
 ::: TODO :::
 
-pageeditor: 
-	Fixa så man kan ändra textfärgen
-registreringssida
-	lös så att ifall registrering B blir fel så raderas registrering A.
-mail-utskick
-Redigera registreringsmail
-kortbetalning
-Skapa sida
-	Fixa "required fields"
-Lang:
-	menynamn beroende på lang
+* mail-utskick
+* Menyn
+	- OVERHAUL av PHP-koden. Specifikt hur man lägger till menyobjekt
+	- Switch mellan float o vanlig
+* Redigera registreringsmail
+* kortbetalning
+* Bilder
+	- Gallery-modul
+* Skapa sida
+	- Fixa "required fields"
+* Lang:
+	- menynamn beroende på lang
+* shop
+	- Fixa antal produkter i varje kategori

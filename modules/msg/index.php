@@ -21,5 +21,3 @@ class msg {
 		return $ret;
 	}
 }
-msg::init();
-?>

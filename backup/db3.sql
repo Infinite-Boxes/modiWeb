@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_config_site` (
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Configuration for the site';
 
--- Dumping data for table modiweb.modiweb_config_site: ~2 rows (approximately)
+-- Dumping data for table modiweb.modiweb_config_site: ~4 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_config_site` DISABLE KEYS */;
 INSERT INTO `modiweb_config_site` (`id`, `name`, `admname`, `val`) VALUES
 	(1, 'title', 'title', 'ModiWeb'),
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_contactdetails` (
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Kontaktdetaljer. Namn, adress osv';
 
--- Dumping data for table modiweb.modiweb_contactdetails: ~3 rows (approximately)
+-- Dumping data for table modiweb.modiweb_contactdetails: ~2 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_contactdetails` DISABLE KEYS */;
 INSERT INTO `modiweb_contactdetails` (`id`, `firstname`, `middlenames`, `sirname`, `ssn`, `address`, `postalcode`, `town`, `country`, `email`, `phonenumber`) VALUES
 	(1, 'David', 'Elias Christoffer', 'Andersson', '8802113533', 'Bryggaregatan 32', 25227, 'Helsingborg', 'Sweden', 'rrx_88@hotmail.com', '0739772996'),
@@ -58,21 +58,16 @@ CREATE TABLE IF NOT EXISTS `modiweb_cronjobs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` tinytext COLLATE utf32_bin NOT NULL,
   `type` tinytext COLLATE utf32_bin NOT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `ends` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `rule` tinytext COLLATE utf32_bin NOT NULL,
   `func` text COLLATE utf32_bin NOT NULL,
   `finished` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
 
--- Dumping data for table modiweb.modiweb_cronjobs: ~3 rows (approximately)
+-- Dumping data for table modiweb.modiweb_cronjobs: ~1 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_cronjobs` DISABLE KEYS */;
-INSERT INTO `modiweb_cronjobs` (`id`, `name`, `type`, `time`, `updated`, `ends`, `rule`, `func`, `finished`) VALUES
-	(1, 'test', 'ONCE', '2015-06-25 19:10:09', '2015-06-29 19:17:03', '0000-00-00 00:00:00', '', 'mail::sendPage("woho")', 0),
-	(2, 'test2', 'ONCE', '2015-10-28 19:10:09', '2015-06-29 19:17:03', '2015-06-29 19:17:39', '', 'mail::sendPage("woho2")', 0),
-	(3, 'test3', 'ONCE', '2015-06-20 19:10:09', '2015-06-29 19:17:03', '2015-06-29 19:17:39', '', 'mail::test()', 0);
+INSERT INTO `modiweb_cronjobs` (`id`, `name`, `type`, `rule`, `func`, `finished`) VALUES
+	(1, 'test', 'ONCE', '2015-06-25 22:35', 'cronjobs::test("woho")', 0);
 /*!40000 ALTER TABLE `modiweb_cronjobs` ENABLE KEYS */;
 
 
@@ -85,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_images` (
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
 
--- Dumping data for table modiweb.modiweb_images: ~0 rows (approximately)
+-- Dumping data for table modiweb.modiweb_images: ~1 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_images` DISABLE KEYS */;
 INSERT INTO `modiweb_images` (`id`, `name`, `url`, `alt`) VALUES
 	(7, 'Logo', 'img/user/logo.png', 'Logotyp');
@@ -102,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_lang` (
   UNIQUE KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=257 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
 
--- Dumping data for table modiweb.modiweb_lang: ~236 rows (approximately)
+-- Dumping data for table modiweb.modiweb_lang: ~246 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_lang` DISABLE KEYS */;
 INSERT INTO `modiweb_lang` (`id`, `name`, `lang`, `val`, `protected`) VALUES
 	(1, 'currency', 'SE', 'kr', 0),
@@ -381,7 +376,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_log` (
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Errorlogging, with var-dumping etc.';
 
--- Dumping data for table modiweb.modiweb_log: ~0 rows (approximately)
+-- Dumping data for table modiweb.modiweb_log: ~1 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_log` DISABLE KEYS */;
 INSERT INTO `modiweb_log` (`id`, `time`, `type`, `message`, `path`, `vardump`) VALUES
 	(1, '2015-03-13 12:37:20', 'error', '2: include(numbero.php): failed to open stream: No such file or', 'C:/xampp/htdocs/modiWeb/page.php', 'Array\n(\n    [_GET] => Array\n        (\n            [_page] => numbero\n        )\n\n    [_POST] => Array\n        (\n        )\n\n    [_COOKIE] => Array\n        (\n            [PHPSESSID] => gmmuo38j4qihnjqner51mpo0e6\n        )\n\n    [_FILES] => Array\n        (\n        )\n\n    [_SERVER] => Array\n        (\n            [REDIRECT_MIBDIRS] => C:/xampp/php/extras/mibs\n            [REDIRECT_MYSQL_HOME] => xamppmysqlin\n            [REDIRECT_OPENSSL_CONF] => C:/xampp/apache/bin/openssl.cnf\n            [REDIRECT_PHP_PEAR_SYSCONF_DIR] => xamppphp\n            [REDIRECT_PHPRC] => xamppphp\n            [REDIRECT_TMP] => xampp	mp\n            [REDIRECT_STATUS] => 200\n            [MIBDIRS] => C:/xampp/php/extras/mibs\n            [MYSQL_HOME] => xamppmysqlin\n            [OPENSSL_CONF] => C:/xampp/apache/bin/openssl.cnf\n            [PHP_PEAR_SYSCONF_DIR] => xamppphp\n            [PHPRC] => xamppphp\n            [TMP] => xampp	mp\n            [HTTP_HOST] => localhost\n            [HTTP_CONNECTION] => keep-alive\n            [HTTP_CACHE_CONTROL] => max-age=0\n            [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n            [HTTP_USER_AGENT] => Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36\n            [HTTP_REFERER] => http://localhost/modiWeb/test\n            [HTTP_ACCEPT_ENCODING] => gzip, deflate, sdch\n            [HTTP_ACCEPT_LANGUAGE] => en-US,en;q=0.8,sv;q=0.6\n            [HTTP_COOKIE] => PHPSESSID=gmmuo38j4qihnjqner51mpo0e6\n            [PATH] => C:ProgramDataOracleJavajavapath;C:Program Files (x86)InteliCLS Client;C:Program FilesInteliCLS Client;C:windowssystem32;C:windows;C:windowsSystem32Wbem;C:windowsSystem32WindowsPowerShellv1.0;C:Program FilesIntelIntel(R) Management Engine ComponentsDAL;C:Program FilesIntelIntel(R) Management Engine ComponentsIPT;C:Program Files (x86)IntelIntel(R) Management Engine ComponentsDAL;C:Program Files (x86)IntelIntel(R) Management Engine ComponentsIPT;C:Program FilesLenovoBluetooth Software;C:Program FilesLenovoBluetooth Softwaresyswow64;C:Program FilesMicrosoft SQL Server110ToolsBinn;C:Program Files (x86)Microsoft SDKsTypeScript1.0\n            [SystemRoot] => C:windows\n            [COMSPEC] => C:windowssystem32cmd.exe\n            [PATHEXT] => .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC\n            [WINDIR] => C:windows\n            [SERVER_SIGNATURE] => <address>Apache/2.4.9 (Win32) OpenSSL/1.0.1g PHP/5.5.11 Server at localhost Port 80</address>\n\n            [SERVER_SOFTWARE] => Apache/2.4.9 (Win32) OpenSSL/1.0.1g PHP/5.5.11\n            [SERVER_NAME] => localhost\n            [SERVER_ADDR] => ::1\n            [SERVER_PORT] => 80\n            [REMOTE_ADDR] => ::1\n            [DOCUMENT_ROOT] => C:/xampp/htdocs\n            [REQUEST_SCHEME] => http\n            [CONTEXT_PREFIX] => \n            [CONTEXT_DOCUMENT_ROOT] => C:/xampp/htdocs\n            [SERVER_ADMIN] => postmaster@localhost\n            [SCRIPT_FILENAME] => C:/xampp/htdocs/modiWeb/page.php\n            [REMOTE_PORT] => 52057\n            [REDIRECT_QUERY_STRING] => _page=numbero\n            [REDIRECT_URL] => /modiWeb/numbero\n            [GATEWAY_INTERFACE] => CGI/1.1\n            [SERVER_PROTOCOL] => HTTP/1.1\n            [REQUEST_METHOD] => GET\n            [QUERY_STRING] => _page=numbero\n            [REQUEST_URI] => /modiWeb/numbero\n            [SCRIPT_NAME] => /modiWeb/page.php\n            [PHP_SELF] => /modiWeb/page.php\n            [REQUEST_TIME_FLOAT] => 1426246640.186\n            [REQUEST_TIME] => 1426246640\n        )\n\n    [_SESSION] => Array\n        (\n            [prepage] => error.php?e=404\n            [rid] => $1$dP..ix/.$K2MgbjEyEE7oxzul9fg1o.\n            [user] => Array\n                (\n                    [base] => Array\n                        (\n                            [id] => 1\n                            [username] => admin\n                            [password] => $2WDW3kZP7foI\n                            [contactid] => 64\n                            [lang] => SE\n                        )\n\n                    [contactdetails] => Array\n                        (\n                            [id] => 64\n                            [firstname] => David\n                            [middlenames] => Elias Christoffer\n                            [sirname] => Andersson\n                            [ssn] => 8802113533\n                            [address] => Bryggaregatan 32\n                            [town] => Helsingborg\n                            [country] => Sweden\n                        )\n\n                )\n\n        )\n\n    [sitePath] => /modiweb/\n    [currentPath] => \n    [rootPath] => \n    [c] => 0\n    [tempstr] => numbero\n    [GLOBALS] => Array\n *RECURSION*\n    [cPage] => \n    [msgs] => Array\n        (\n            [warnings] => Array\n                (\n                )\n\n            [notices] => Array\n                (\n                )\n\n        )\n\n    [showWarnings] => \n    [file] => 1\n    [filter] => Array\n        (\n            [0] => Array\n                (\n                    [name] => Test\n                    [url] => test\n                )\n\n            [1] => Array\n                (\n                    [name] => Vi testar\n                    [url] => numbero2\n                )\n\n        )\n\n    [v] => Array\n        (\n            [name] => Vi testar\n            [url] => numbero2\n        )\n\n    [k] => 1\n)\n');
@@ -462,7 +457,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_paymentmethods` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Types of paymentmethods';
 
--- Dumping data for table modiweb.modiweb_paymentmethods: ~2 rows (approximately)
+-- Dumping data for table modiweb.modiweb_paymentmethods: ~3 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_paymentmethods` DISABLE KEYS */;
 INSERT INTO `modiweb_paymentmethods` (`id`, `adminname`, `name`, `activated`, `info`, `fetchid`) VALUES
 	(1, 'Klarna Faktura', 'klarna invoice ', 1, 'Betala med faktura.', -1),
@@ -488,7 +483,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_products` (
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Produkterna för hemsidan';
 
--- Dumping data for table modiweb.modiweb_products: ~7 rows (approximately)
+-- Dumping data for table modiweb.modiweb_products: ~6 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_products` DISABLE KEYS */;
 INSERT INTO `modiweb_products` (`id`, `name`, `active`, `url`, `cat`, `desc_short`, `desc_long`, `price`, `img`, `flags`, `upvotes`, `downvotes`) VALUES
 	(1, 'testprodukt1', 1, 'test-produkt1', 21, 'Första testet', 'Detta första test är så fruktansvärt häftig. Alltså, riktigt jäkla häftigt! Bara så fett coolt att alla är avundsjuka på denna produkten. Det är den bästaste någonsin. EVER!', 299.90, 'phone.jpg', 'S', NULL, NULL),
@@ -620,7 +615,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_users` (
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Users of the page';
 
--- Dumping data for table modiweb.modiweb_users: ~3 rows (approximately)
+-- Dumping data for table modiweb.modiweb_users: ~2 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_users` DISABLE KEYS */;
 INSERT INTO `modiweb_users` (`id`, `username`, `password`, `contactid`, `lang`, `rights`) VALUES
 	(1, 'admin', '$2WDW3kZP7foI', 1, 'SE', 'AU'),
@@ -637,7 +632,7 @@ CREATE TABLE IF NOT EXISTS `modiweb_users_requiredfields` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf32 COLLATE=utf32_bin COMMENT='Required fields for a useraccount';
 
--- Dumping data for table modiweb.modiweb_users_requiredfields: ~11 rows (approximately)
+-- Dumping data for table modiweb.modiweb_users_requiredfields: ~13 rows (approximately)
 /*!40000 ALTER TABLE `modiweb_users_requiredfields` DISABLE KEYS */;
 INSERT INTO `modiweb_users_requiredfields` (`id`, `field`, `user`, `admin`) VALUES
 	(1, 'username', 1, 1),
