@@ -3,6 +3,9 @@ require("inc/bootstrap.php");
 $err = lang::getText("err_".$_GET["e"]);
 if(file_exists("page.php")) {
 	if($err !== false) {
+		/*if($_GET["e"] === "404") {
+			$err = "sida ".PAGE.". "..$err;
+		}*/
 		msg::warning($err);
 		header("Location: home");
 	} else {

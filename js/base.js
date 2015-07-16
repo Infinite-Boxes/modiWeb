@@ -109,19 +109,17 @@ function fader(state) {
 	}
 }
 function groupMinimize(object) {
-	if(object.parentNode.id != "") {
-		if(object.parentNode.children[1].classList.contains("groupcontentDisabled")) {
-			object.parentNode.children[1].classList.remove("groupcontentDisabled");
-		} else {
-			object.parentNode.children[1].classList.add("groupcontentDisabled");
-		}
+	if(object.parentNode.children[1].classList.contains("groupcontentDisabled")) {
+		object.parentNode.children[1].classList.remove("groupcontentDisabled");
+	} else {
+		object.parentNode.children[1].classList.add("groupcontentDisabled");
 	}
 }
 var popupTimer1 = false;
 var popupTimer2 = false;
 function popup(txt, time) {
 	if(typeof time === "undefined") {
-		time = 2000;
+		time = 500+(txt.length*5);
 	}
 	obj("popup").style.display = "block";
 	obj("popup").innerHTML = txt;

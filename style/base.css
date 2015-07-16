@@ -2,9 +2,6 @@
     font-family: theano;
     src: url('../fonts/theano.ttf') format('truetype');
 }
-.borderAll * {
-	border: 1px solid #f00;
-}
 html {
 	margin: 0px 0px 5px;
 }
@@ -46,7 +43,7 @@ a:not([href="#"]):hover, *[onclick]:hover {
 }
 *[onclick] {
 	color: #D22F4F;
-	cursor: pointer;
+	cursor: pointer !important;
 }
 a[href="#"]:not([onclick]) {
 	color: #116F50;
@@ -54,6 +51,9 @@ a[href="#"]:not([onclick]) {
 }
 a img {
 	border: none;
+}
+.borderAll * {
+	border: 1px solid #f00;
 }
 #content a img:not(.imgbutton):not(.imgNotLinked) {
 	border: initial;
@@ -288,6 +288,13 @@ table {
 }
 .tableLinks tr:hover td a {
 	background: #EE5573;
+}
+table th {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+.tdBorders > tbody > tr > td, .tdBorders > tbody > tr > th {
+	border: 1px solid #ddd;
 }
 /*
 				INPUT
@@ -966,6 +973,60 @@ div .button:hover  p {
 .pagesList td {
 	margin: 0px;
 	padding: 1px 2px;
+}
+
+/*	---	Dates ---	*/
+/* Calendar */
+.calendar {
+	border: 1px solid #bbb;
+	border-radius: 5px;
+	padding: 1%;
+	margin: 0px;
+	display: inline-block;
+	margin-bottom: 50px;
+}
+.calendar h3, .calendar p{
+	text-align: center;
+}
+.calendar > p {
+	display: block;
+}
+.calendar td {
+	padding: 1px;
+}
+.calendar td p {
+	display: block;
+	padding: 2px;
+	margin: 0px;
+}
+.calendar td:not(.otherMonth) p {
+	border: 1px solid #bbb;
+	border-radius: 5px;
+	transition: border-color 200ms;
+}
+.calendar td:not(.otherMonth) p:hover {
+	border-color: #fff;
+}
+.calendar .pickedDate {
+	border-color: #000 !important;
+}
+.calendar .currentDate {
+	color: #0a0;
+	font-weight: bold;
+}
+.calendar .otherMonth p {
+	color: #bbb;
+}
+.calendar .calendarYear, .calendar .calendarMonth {
+	display: table;
+	width: 100%;
+}
+.calendar .calendarYear > *, .calendar .calendarMonth > * {
+	display: table-cell;
+	width: auto;
+}
+.calendar .calendarYear > *:nth-child(1), .calendar .calendarMonth > *:nth-child(1), .calendar .calendarYear > *:nth-child(3), .calendar .calendarMonth > *:nth-child(3) {
+	width: 15px;
 }
 
 /*	Specials */

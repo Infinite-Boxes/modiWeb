@@ -15,8 +15,10 @@ class Config {
 		self::$db["user"] = $vars["sql"]["username"];
 		self::$db["pass"] = $vars["sql"]["password"];
 		
-		self::$db["prefix"] = $vars["prefix"];
+		define("DOMAIN", $vars["domain"]);
 		
+		self::$db["prefix"] = $vars["dbprefix"];
+		define("dbPrefix", self::$db["prefix"]."_");
 		//self::$css["theme"] = "theme.css";
 		
 		self::$menu["orientation"] = $vars["menuOrientation"];
@@ -41,6 +43,8 @@ class Config {
 			array_push(self::$modules, [$v, false]);
 		}
 		//self::loadModule("sql");
+		
+		self::loadModules();
 		// SET SESSIONS
 		if(isset($_SESSION["user"])) {
 			$_SESSION["lang"] = $_SESSION["user"]["base"]["lang"];
@@ -49,8 +53,6 @@ class Config {
 				$_SESSION["lang"] = self::getConfig("default_lang");
 			}
 		}
-		
-		self::loadModules();
 		self::runInits();
 		
 		// PROTECTED PAGES

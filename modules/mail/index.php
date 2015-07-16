@@ -52,7 +52,11 @@ class mail {
 		if($page === false) {
 			return false;
 		}
-		echo("mailPage");
+		return true;
+	}
+	static public function sendPage_cron($v) {
+		$ret = self::sendPage($v[0], $v[1], $v[2]);
+		return $ret;
 	}
 	static public function test() {
 		

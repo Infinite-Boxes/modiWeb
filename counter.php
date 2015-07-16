@@ -11,6 +11,7 @@ function ok($var){
 	if(substr($var, -4) == ".ttf") { $ret = false; }
 	if(substr($var, -4) == ".png") { $ret = false; }
 	if(substr($var, -4) == ".jpg") { $ret = false; }
+	if(substr($var, -4) == ".gif") { $ret = false; }
 	if(substr($var, -4) == ".txt") { $ret = false; }
 	if(substr($var, -4) == ".sql") { $ret = false; }
 	if(substr($var, -7) == ".config") { $ret = false; }

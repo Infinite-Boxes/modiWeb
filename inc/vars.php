@@ -1,15 +1,16 @@
 <?php
 // VARIABLES //
-$vars["sitePath"] = "/modiweb/";
-$vars["sql"]["host"] = "localhost";
-$vars["sql"]["database"] = "modiweb";
-$vars["sql"]["username"] = "root";
-$vars["sql"]["password"] = "";
+$vars["sitePath"] = 		"/modiweb/";
+$vars["domain"] = 			"infinite-boxes.com";
+$vars["sql"]["host"] = 		"localhost";
+$vars["sql"]["database"] = 	"modiweb";
+$vars["sql"]["username"] = 	"root";
+$vars["sql"]["password"] = 	"";
 $vars["modules"] = [
 	"shop"
 ];
-$vars["prefix"] = "modiweb";
-$vars["menuOrientation"] = "horizontal";
+$vars["dbprefix"] = 		"modiweb";
+$vars["menuOrientation"] = 	"horizontal";
 
 /*
 $sqlInformation = [
