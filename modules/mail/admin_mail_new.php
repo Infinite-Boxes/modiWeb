@@ -2,6 +2,9 @@
 <form action="admin_mail_createnew" method="POST">
 <table>
 <tr>
+	<th><p><?php echo(lang::getText("msgname")); ?></p></th>
+	<td><input type="text" name="name"></td>
+</tr><tr>
 	<th><p><?php echo(lang::getText("mailfrom")); ?></p></th>
 	<td><select name="from"><?php
 		$sendable = true;
@@ -103,7 +106,7 @@
 			?>
 			<script>
 			function updDate(date) {
-				var d = new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2))-1, parseInt(date.substr(8, 2)));
+				var d = new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2))-1, parseInt(date.substr(8, 2)), parseInt(date.substr(11, 2)), parseInt(date.substr(14, 2)));
 				if(date.substr(-5) !== "ERROR") {
 					var now = new Date();
 					if(d.getTime() < now.getTime()) {
@@ -116,10 +119,10 @@
 					obj("typeonce").children[3].value = "false";
 					obj("dateElement").innerHTML = "<?php echo(lang::getText("error")); ?>";
 				}
+				obj("typerepeat").children[6].value = "false";
 			}
 			</script>
 			<input type="hidden" name="oncestartdate" value="false">
-			
 		</div><div id="typerepeat" style="display: none;">
 			<p id="dateElement2" onclick="{
 				var childnr = 1;
@@ -184,14 +187,13 @@
 			<script>
 			function updDate2(date) {
 				if(date.substr(-5) !== "ERROR") {
-					var d = new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2))-1, parseInt(date.substr(8, 2)));
+					var d = new Date(parseInt(date.substr(0, 4)), parseInt(date.substr(5, 2))-1, parseInt(date.substr(8, 2)), parseInt(date.substr(11, 2)), parseInt(date.substr(14, 2)));
 					var now = new Date();
 					if(d.getTime() < now.getTime()) {
 						obj("dateElement2").innerHTML = '<?php echo(lang::getText("send")." ".strtolower(lang::getText("immediatly"))); ?> ('+date+')';
 					} else {
 						obj("dateElement2").innerHTML = '<?php echo(lang::getText("startdate")); ?>: '+date;
 					}
-					
 					obj("typerepeat").children[5].value = date;
 					var weekdays = [];
 					weekdays[0] = "<?php echo(lang::getText("monday")); ?>";
@@ -233,6 +235,7 @@
 					obj("typerepeat").children[5].value = "false";
 					obj("dateElement2").innerHTML = "<?php echo(lang::getText("error")); ?>";
 				}
+				obj("typeonce").children[3].value = "false";
 			}
 			function updDate3(date) {
 				if(date.substr(-5) !== "ERROR") {
@@ -242,6 +245,7 @@
 					obj("dateElement3").innerHTML = "<?php echo(lang::getText("error")); ?>";
 					obj("typerepeat").children[6].value = "FALSE";
 				}
+				obj("typeonce").children[3].value = "false";
 			}
 			</script>
 			<input type="hidden" name="repeatstartdate" value="false">

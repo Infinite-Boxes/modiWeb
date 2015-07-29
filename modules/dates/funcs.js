@@ -31,7 +31,11 @@ function calendar_setDateAndTime(date, time) {
 		if(time.length < 3) {
 			time = "ERROR";
 		} else {
-			time = "0"+time;
+			if(parseInt(time.substr(1, 2)) > 59) {
+				time = "ERROR";
+			} else {
+				time = "0"+time;
+			}
 		}
 	} else if((time > 2459) || (time.length > 4)) {
 		time = "ERROR";

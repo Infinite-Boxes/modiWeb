@@ -10,11 +10,13 @@ class sql {
 	}
 	private static function sanitize($q, $type = true) {
 		$rep = [];
-		$rep[0] = [";", "pass"];
-		$rep[1] = ["AND", ""];
-		$rep[2] = ["OR", ""];
-		$rep[3] = ["SELECT", ""];
-		$rep[4] = ["FROM", ""];
+		$rep[0] = ["'", ""];
+		$rep[1] = ["\"", ""];
+		$rep[2] = [";", "key:pass"];
+		$rep[3] = ["AND", "key"];
+		$rep[4] = ["OR", "key"];
+		$rep[5] = ["SELECT", "key"];
+		$rep[6] = ["FROM", "key"];
 		$dangers = [];
 		foreach($rep as $k => $v) {
 			$explode = explode(":", $v[1]);

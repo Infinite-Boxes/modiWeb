@@ -9,6 +9,17 @@ class base {
 		print_r($var);
 		echo("</pre>");
 	}
+	static public function checkVar($var) {
+		if(isset($var)) {
+			if($var !== "") {
+				return $var;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 	static public function loadTime() {
 		return "<p class=\"loadingTimeText\">".lang::getText("loadtime1")." ".round(microtime(true)-SCRIPTTIME, 3)." ".lang::getText("loadtime2")."</p>";
 	}
